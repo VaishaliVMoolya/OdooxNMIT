@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Window Actions -->
+    <!-- Window Actions: Employees -->
     <record id="action_dayflow_employee" model="ir.actions.act_window">
         <field name="name">Employees</field>
         <field name="res_model">hr.employee</field>
@@ -12,28 +12,69 @@
         </field>
     </record>
 
-    <record id="action_dayflow_attendance" model="ir.actions.act_window">
-        <field name="name">Attendance</field>
+    <!-- Window Actions: Attendance -->
+    <record id="action_dayflow_attendance_my" model="ir.actions.act_window">
+        <field name="name">My Attendance</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+        <field name="context">{'search_default_myattendances': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Track your daily check-in and check-out records.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_dayflow_attendance_all" model="ir.actions.act_window">
+        <field name="name">All Attendances (Admin)</field>
         <field name="res_model">hr.attendance</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Track daily employee check-in and check-out logs.
+                Manage organization-wide employee check-in and check-out logs.
             </p>
         </field>
     </record>
 
-    <record id="action_dayflow_leave" model="ir.actions.act_window">
-        <field name="name">Time Off / Leave Requests</field>
+    <!-- Window Actions: Time Off / Leave Requests -->
+    <record id="action_dayflow_leave_my" model="ir.actions.act_window">
+        <field name="name">My Time Off</field>
+        <field name="res_model">hr.leave</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+        <field name="context">{'search_default_my_leaves': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Submit a new Paid, Sick, or Unpaid Time Off request.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_dayflow_leave_to_approve" model="ir.actions.act_window">
+        <field name="name">Time Off to Approve</field>
+        <field name="res_model">hr.leave</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('dayflow_status', '=', 'pending')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No pending time off applications to review!
+            </p>
+        </field>
+    </record>
+
+    <record id="action_dayflow_leave_all" model="ir.actions.act_window">
+        <field name="name">All Time Off Requests</field>
         <field name="res_model">hr.leave</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Apply for leave or manage employee leave applications.
+                Overview of all employee time off applications.
             </p>
         </field>
     </record>
 
+    <!-- Window Actions: Payroll -->
     <record id="action_dayflow_payroll" model="ir.actions.act_window">
         <field name="name">Payroll &amp; Salary</field>
         <field name="res_model">dayflow.payroll</field>
@@ -45,6 +86,7 @@
         </field>
     </record>
 
+    <!-- Window Actions: Documents -->
     <record id="action_dayflow_document" model="ir.actions.act_window">
         <field name="name">Employee Documents</field>
         <field name="res_model">dayflow.document</field>
@@ -61,31 +103,66 @@
               name="Dayflow"
               sequence="1"/>
 
-    <!-- Submenus -->
+    <!-- 1. Employees Menu -->
     <menuitem id="menu_dayflow_employee"
               name="Employees"
               parent="menu_dayflow_root"
               action="action_dayflow_employee"
               sequence="10"/>
 
-    <menuitem id="menu_dayflow_attendance"
+    <!-- 2. Attendance Top Menu & Submenus -->
+    <menuitem id="menu_dayflow_attendance_root"
               name="Attendance"
               parent="menu_dayflow_root"
-              action="action_dayflow_attendance"
               sequence="20"/>
 
-    <menuitem id="menu_dayflow_leave"
+    <menuitem id="menu_dayflow_attendance_my"
+              name="My Attendance"
+              parent="menu_dayflow_attendance_root"
+              action="action_dayflow_attendance_my"
+              sequence="10"/>
+
+    <menuitem id="menu_dayflow_attendance_all"
+              name="All Attendances"
+              parent="menu_dayflow_attendance_root"
+              action="action_dayflow_attendance_all"
+              groups="dayflow.group_dayflow_admin"
+              sequence="20"/>
+
+    <!-- 3. Time Off Top Menu & Submenus -->
+    <menuitem id="menu_dayflow_leave_root"
               name="Time Off"
               parent="menu_dayflow_root"
-              action="action_dayflow_leave"
               sequence="30"/>
 
+    <menuitem id="menu_dayflow_leave_my"
+              name="My Time Off"
+              parent="menu_dayflow_leave_root"
+              action="action_dayflow_leave_my"
+              sequence="10"/>
+
+    <menuitem id="menu_dayflow_leave_to_approve"
+              name="Time Off to Approve"
+              parent="menu_dayflow_leave_root"
+              action="action_dayflow_leave_to_approve"
+              groups="dayflow.group_dayflow_admin"
+              sequence="20"/>
+
+    <menuitem id="menu_dayflow_leave_all"
+              name="All Requests"
+              parent="menu_dayflow_leave_root"
+              action="action_dayflow_leave_all"
+              groups="dayflow.group_dayflow_admin"
+              sequence="30"/>
+
+    <!-- 4. Payroll Menu -->
     <menuitem id="menu_dayflow_payroll"
               name="Payroll"
               parent="menu_dayflow_root"
               action="action_dayflow_payroll"
               sequence="40"/>
 
+    <!-- 5. Documents Menu -->
     <menuitem id="menu_dayflow_document"
               name="Documents"
               parent="menu_dayflow_root"

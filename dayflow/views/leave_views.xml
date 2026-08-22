@@ -6,13 +6,28 @@
         <field name="model">hr.leave</field>
         <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
         <field name="arch" type="xml">
+            <!-- Add Dayflow Action Buttons to Header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_dayflow_approve" string="Approve (HR)"
+                        type="object" class="oe_highlight btn-success"
+                        groups="dayflow.group_dayflow_admin"/>
+                <button name="action_dayflow_reject" string="Reject (HR)"
+                        type="object" class="btn-danger"
+                        groups="dayflow.group_dayflow_admin"/>
+                <field name="dayflow_status" widget="statusbar"
+                       statusbar_visible="pending,approved,rejected"/>
+            </xpath>
+
             <xpath expr="//field[@name='holiday_status_id']" position="after">
-                <field name="dayflow_leave_type"/>
-                <field name="dayflow_status"/>
+                <field name="dayflow_leave_type" required="1"/>
+                <field name="attachment_submitted"/>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
-                <field name="remarks"/>
-                <field name="admin_comments"/>
+                <field name="remarks" placeholder="Enter reason for time off request..."/>
+                <field name="admin_comments" placeholder="HR / Admin decision comments..."
+                       groups="dayflow.group_dayflow_admin"/>
+                <field name="approved_by_id" readonly="1"
+                       options="{'no_open': True}"/>
             </xpath>
         </field>
     </record>
@@ -25,7 +40,43 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
                 <field name="dayflow_leave_type"/>
-                <field name="dayflow_status"/>
+                <field name="dayflow_status" widget="badge"
+                       decoration-warning="dayflow_status == 'pending'"
+                       decoration-success="dayflow_status == 'approved'"
+                       decoration-danger="dayflow_status == 'rejected'"/>
+                <field name="remarks" optional="show"/>
+                <field name="admin_comments" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Leave Request Dedicated Dayflow Search & Filter View -->
+    <record id="hr_leave_view_filter_dayflow" model="ir.ui.view">
+        <field name="name">hr.leave.filter.dayflow</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_leaves']" position="after">
+                <separator/>
+                <filter string="Pending Approval" name="filter_dayflow_pending"
+                        domain="[('dayflow_status', '=', 'pending')]"/>
+                <filter string="Approved Leaves" name="filter_dayflow_approved"
+                        domain="[('dayflow_status', '=', 'approved')]"/>
+                <filter string="Rejected Requests" name="filter_dayflow_rejected"
+                        domain="[('dayflow_status', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Paid Time Off" name="filter_type_paid"
+                        domain="[('dayflow_leave_type', '=', 'paid')]"/>
+                <filter string="Sick Leave" name="filter_type_sick"
+                        domain="[('dayflow_leave_type', '=', 'sick')]"/>
+                <filter string="Unpaid Leaves" name="filter_type_unpaid"
+                        domain="[('dayflow_leave_type', '=', 'unpaid')]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Leave Type" name="group_by_leave_type"
+                        context="{'group_by': 'dayflow_leave_type'}"/>
+                <filter string="Dayflow Status" name="group_by_dayflow_status"
+                        context="{'group_by': 'dayflow_status'}"/>
             </xpath>
         </field>
     </record>
