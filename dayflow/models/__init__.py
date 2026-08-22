@@ -4,3 +4,4 @@ from . import attendance
 from . import leave
 from . import payroll
 from . import document
+from . import auth
