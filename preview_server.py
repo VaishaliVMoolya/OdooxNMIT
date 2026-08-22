@@ -1123,15 +1123,15 @@ HTML_CONTENT = """<!DOCTYPE html>
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="metric-label">Paid Time Off</div>
-                    <div class="num" style="color: #34d399;">12 Days</div>
+                    <div class="num" style="color: #34d399;" id="leave-bal-paid">24 Days</div>
                 </div>
                 <div class="stat-box">
                     <div class="metric-label">Sick Leave</div>
-                    <div class="num" style="color: #fbbf24;">8 Days</div>
+                    <div class="num" style="color: #fbbf24;" id="leave-bal-sick">7 Days</div>
                 </div>
                 <div class="stat-box">
                     <div class="metric-label">Unpaid Leave</div>
-                    <div class="num" style="color: #60a5fa;">Unlimited</div>
+                    <div class="num" style="color: #60a5fa;" id="leave-bal-unpaid">Unlimited</div>
                 </div>
             </div>
 
@@ -2198,6 +2198,23 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function renderLeaves() {
+            const activeEmp = state.role === 'employee' ? state.currentEmployee : null;
+            const relevantLeaves = activeEmp ? state.leaves.filter(l => l.employee === activeEmp) : state.leaves;
+
+            const usedPaid = relevantLeaves.filter(l => l.type === 'paid' && l.status === 'approved').reduce((sum, l) => sum + (l.days || 0), 0);
+            const usedSick = relevantLeaves.filter(l => l.type === 'sick' && l.status === 'approved').reduce((sum, l) => sum + (l.days || 0), 0);
+
+            const remPaid = Math.max(0, 24 - usedPaid);
+            const remSick = Math.max(0, 7 - usedSick);
+
+            const elPaid = document.getElementById('leave-bal-paid');
+            const elSick = document.getElementById('leave-bal-sick');
+            const elUnpaid = document.getElementById('leave-bal-unpaid');
+
+            if (elPaid) elPaid.innerText = `${remPaid} Days`;
+            if (elSick) elSick.innerText = `${remSick} Days`;
+            if (elUnpaid) elUnpaid.innerText = 'Unlimited';
+
             const tbody = document.getElementById('tbl-leave');
             let data = state.role === 'employee' ? state.leaves.filter(l => l.employee === state.currentEmployee) : state.leaves;
 
@@ -2368,6 +2385,13 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            const activeRec = state.attendances.find(a => a.isActive && a.employee === state.currentEmployee);
+            if (activeRec) {
+                state.isCheckedIn = true;
+                state.activeCheckInTime = activeRec.checkIn;
+                state.checkInTimestamp = activeRec.id;
+                state.tickerInterval = setInterval(updateLiveTicker, 1000);
+            }
             renderAll();
         });
     </script>
@@ -2376,6 +2400,11 @@ HTML_CONTENT = """<!DOCTYPE html>
 """
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_HEAD(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.end_headers()
+
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html; charset=utf-8')
