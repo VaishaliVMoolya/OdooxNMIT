@@ -2,7 +2,7 @@
 """
 Dayflow HRMS - Unified Live UI Preview Server
 Odoo x NMIT Hackathon
-All-in-One Dashboard, Employees, Attendance, Time Off, Documents, Payroll, and Admin Profile
+All-in-One Dashboard, Employees, Attendance, Time Off (with New Button, Interactive Calendar, National Holidays & Pop-up Modal), Documents, Payroll, and Admin Profile
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -14,7 +14,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow HRMS — Workspace & Admin Profile Console</title>
+    <title>Dayflow HRMS — Workspace & Admin Console</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -333,6 +333,146 @@ HTML_CONTENT = """<!DOCTYPE html>
             .two-col-grid { grid-template-columns: 1fr; }
         }
 
+        /* Interactive Calendar Grid */
+        .cal-layout {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 960px) {
+            .cal-layout { grid-template-columns: 1fr; }
+        }
+
+        .cal-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .cal-grid-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.4rem;
+        }
+
+        .cal-day-name {
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding-bottom: 0.4rem;
+        }
+
+        .cal-cell {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-line);
+            min-height: 75px;
+            padding: 0.45rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .cal-cell:hover {
+            border-color: var(--accent-purple);
+            background-color: rgba(113, 75, 103, 0.15);
+        }
+
+        .cal-cell.weekend {
+            background-color: rgba(32, 36, 51, 0.4);
+            opacity: 0.85;
+        }
+
+        .cal-cell.holiday {
+            border-color: rgba(245, 158, 11, 0.6);
+            background-color: rgba(245, 158, 11, 0.12);
+        }
+
+        .cal-cell.leave-day {
+            border-color: rgba(59, 130, 246, 0.6);
+            background-color: rgba(59, 130, 246, 0.15);
+        }
+
+        .cal-tag {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 0.15rem 0.3rem;
+            border-radius: 4px;
+            margin-top: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cal-tag.tag-holiday {
+            background-color: rgba(245, 158, 11, 0.25);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .cal-tag.tag-leave {
+            background-color: rgba(59, 130, 246, 0.25);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        /* Holiday List on Side */
+        .holiday-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .holiday-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 0.75rem 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            transition: all 0.15s ease;
+        }
+
+        .holiday-item:hover {
+            border-color: var(--accent-amber);
+            transform: translateX(2px);
+        }
+
+        .holiday-date-badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 6px;
+            padding: 0.3rem 0.5rem;
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-align: center;
+            min-width: 58px;
+        }
+
+        .holiday-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .holiday-type {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
         /* Employee Grid */
         .emp-grid {
             display: grid;
@@ -377,6 +517,8 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         .emp-name { font-size: 1rem; font-weight: 700; }
+        .emp-job { font-size: 0.78rem; color: var(--text-muted); }
+
         /* Tables */
         .table-wrap {
             width: 100%;
@@ -770,7 +912,161 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- ADMIN PROFILE TAB (Excalidraw Design) -->
+        <!-- TIME OFF / LEAVE TAB (With New Button, Calendar & National Holidays) -->
+        <div id="panel-leave" class="tab-panel">
+            <div class="header-row">
+                <div>
+                    <h1 class="header-title">Time Off & Leave Management</h1>
+                    <p class="header-sub">Plan time off, view official national holidays, and track leave balances</p>
+                </div>
+                <button class="btn btn-primary" style="font-size: 0.95rem; padding: 0.5rem 1.3rem;" onclick="openLeaveModal(null)">+ New</button>
+            </div>
+
+            <!-- Balance Metric Cards -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="metric-label">Paid Time Off (PTO)</div>
+                    <div class="num" style="color: #34d399;">14 Days Available</div>
+                </div>
+                <div class="stat-box">
+                    <div class="metric-label">Sick Leave</div>
+                    <div class="num" style="color: #fbbf24;">07 Days Available</div>
+                </div>
+                <div class="stat-box">
+                    <div class="metric-label">Unpaid Leave</div>
+                    <div class="num" style="color: #60a5fa;">Unlimited</div>
+                </div>
+                <div class="stat-box">
+                    <div class="metric-label">Upcoming National Holidays</div>
+                    <div class="num" style="color: var(--accent-purple-hover);">4 This Year</div>
+                </div>
+            </div>
+
+            <!-- Calendar & National Holidays Layout -->
+            <div class="cal-layout">
+                <!-- Left: Interactive Calendar Grid -->
+                <div class="card" style="margin-bottom: 0;">
+                    <div class="cal-header-bar">
+                        <div style="display:flex; align-items:center; gap: 0.75rem;">
+                            <h3 style="font-size: 1.1rem; color: #fff;">August 2026</h3>
+                            <span class="badge badge-purple">Official Work Calendar</span>
+                        </div>
+                        <div style="display:flex; gap:0.4rem;">
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;">&lt;</button>
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;">Today</button>
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;">&gt;</button>
+                        </div>
+                    </div>
+
+                    <!-- 7-Day Columns -->
+                    <div class="cal-grid-days" style="margin-bottom: 0.4rem;">
+                        <div class="cal-day-name">Mon</div>
+                        <div class="cal-day-name">Tue</div>
+                        <div class="cal-day-name">Wed</div>
+                        <div class="cal-day-name">Thu</div>
+                        <div class="cal-day-name">Fri</div>
+                        <div class="cal-day-name" style="color:#f87171;">Sat</div>
+                        <div class="cal-day-name" style="color:#f87171;">Sun</div>
+                    </div>
+
+                    <!-- Dynamic Calendar Tiles -->
+                    <div class="cal-grid-days" id="cal-grid-tiles"></div>
+                    
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.75rem; text-align:center;">
+                        💡 Click on any date tile above or click <strong>+ New</strong> to apply for leave.
+                    </p>
+                </div>
+
+                <!-- Right: National & Public Holidays -->
+                <div class="card" style="margin-bottom: 0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1.05rem; color: #fbbf24;">🗓️ National Holidays 2026</h3>
+                        <span class="badge badge-amber">Public / Paid</span>
+                    </div>
+
+                    <div class="holiday-list">
+                        <div class="holiday-item">
+                            <div class="holiday-date-badge">AUG 15<br><span style="font-size:0.65rem; font-weight:normal;">Sat</span></div>
+                            <div>
+                                <div class="holiday-name">🇮🇳 Independence Day</div>
+                                <div class="holiday-type">Gazetted National Holiday</div>
+                            </div>
+                        </div>
+
+                        <div class="holiday-item">
+                            <div class="holiday-date-badge">AUG 19<br><span style="font-size:0.65rem; font-weight:normal;">Wed</span></div>
+                            <div>
+                                <div class="holiday-name">🌸 Raksha Bandhan</div>
+                                <div class="holiday-type">Restricted Holiday</div>
+                            </div>
+                        </div>
+
+                        <div class="holiday-item">
+                            <div class="holiday-date-badge">AUG 26<br><span style="font-size:0.65rem; font-weight:normal;">Wed</span></div>
+                            <div>
+                                <div class="holiday-name">🦚 Janmashtami</div>
+                                <div class="holiday-type">Gazetted Public Holiday</div>
+                            </div>
+                        </div>
+
+                        <div class="holiday-item">
+                            <div class="holiday-date-badge">SEP 07<br><span style="font-size:0.65rem; font-weight:normal;">Mon</span></div>
+                            <div>
+                                <div class="holiday-name">🐘 Ganesh Chaturthi</div>
+                                <div class="holiday-type">Public Festival Holiday</div>
+                            </div>
+                        </div>
+
+                        <div class="holiday-item">
+                            <div class="holiday-date-badge">OCT 02<br><span style="font-size:0.65rem; font-weight:normal;">Fri</span></div>
+                            <div>
+                                <div class="holiday-name">🕊️ Gandhi Jayanti</div>
+                                <div class="holiday-type">National Holiday</div>
+                            </div>
+                        </div>
+
+                        <div class="holiday-item">
+                            <div class="holiday-date-badge">NOV 01<br><span style="font-size:0.65rem; font-weight:normal;">Sun</span></div>
+                            <div>
+                                <div class="holiday-name">🪔 Diwali (Deepavali)</div>
+                                <div class="holiday-type">Festival Holiday</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 6px; padding: 0.65rem; margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
+                        📌 <em>Company policy: Official national holidays are 100% paid and do not count against your annual PTO balance.</em>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Off Requests & Review History Table -->
+            <div class="card" style="margin-top: 1.25rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
+                    <h3 style="font-size: 1.05rem;">Time Off Requests History</h3>
+                    <span class="badge badge-purple">HR Governance</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Reason / Remarks</th>
+                                <th>Status</th>
+                                <th>HR Decision</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-leave"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN PROFILE TAB -->
         <div id="panel-profile" class="tab-panel">
             <!-- Profile Hero Header -->
             <div class="profile-hero">
@@ -872,7 +1168,6 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             <!-- Section 2: Salary & Compensation Breakdown -->
             <div id="psec-salary" class="profile-section">
-                <!-- Salary Hero Summary -->
                 <div class="stats-grid">
                     <div class="stat-box">
                         <div class="metric-label">Monthly Base Wage</div>
@@ -892,7 +1187,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Compensation Components Table -->
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
                         <h3 style="font-size: 1.05rem; color: var(--accent-green);">Earnings & Allowances Components</h3>
@@ -938,7 +1232,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                     </div>
                 </div>
 
-                <!-- Deductions Table -->
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
                         <h3 style="font-size: 1.05rem; color: var(--accent-red);">Deductions & Statutory Taxes</h3>
@@ -1009,9 +1302,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                             <div class="lbl">Security Group</div>
                             <div class="val"><span class="badge badge-purple">dayflow.group_dayflow_admin</span></div>
                         </div>
-                    </div>
-                    <div style="background-color: var(--bg-card); border: 1px solid var(--border-line); padding: 1rem; border-radius: 8px; font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
-                        🛡️ <strong>Admin Privileges:</strong> Full authorization to approve/reject time off requests, verify compliance documents, adjust employee salary structures, provision user accounts, and review executive metrics.
                     </div>
                 </div>
             </div>
@@ -1109,77 +1399,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                             </tr>
                         </thead>
                         <tbody id="tbl-attendance"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- TIME OFF / LEAVE TAB -->
-        <div id="panel-leave" class="tab-panel">
-            <div class="header-row">
-                <h1 class="header-title">Time Off & Leave Management</h1>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="metric-label">Paid Time Off</div>
-                    <div class="num" style="color: #34d399;">12 Days</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Sick Leave</div>
-                    <div class="num" style="color: #fbbf24;">8 Days</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Unpaid Leave</div>
-                    <div class="num" style="color: #60a5fa;">Unlimited</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 style="font-size: 1.05rem; margin-bottom: 1rem;">Apply for Time Off</h3>
-                <form onsubmit="handleLeaveSubmit(event)">
-                    <div class="form-row">
-                        <div class="field">
-                            <label>Leave Type</label>
-                            <select id="leave-type" class="input" required>
-                                <option value="paid">Paid Time Off</option>
-                                <option value="sick">Sick Leave</option>
-                                <option value="unpaid">Unpaid Leave</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Start Date</label>
-                            <input type="date" id="leave-start" class="input" required>
-                        </div>
-                        <div class="field">
-                            <label>End Date</label>
-                            <input type="date" id="leave-end" class="input" required>
-                        </div>
-                    </div>
-                    <div class="field" style="margin-bottom: 1rem;">
-                        <label>Reason / Remarks</label>
-                        <textarea id="leave-reason" class="input" rows="2" placeholder="State reason..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit Application</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Type</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Days</th>
-                                <th>Reason</th>
-                                <th>Status</th>
-                                <th>HR Decision</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbl-leave"></tbody>
                     </table>
                 </div>
             </div>
@@ -1381,6 +1600,74 @@ HTML_CONTENT = """<!DOCTYPE html>
 
     </div>
 
+    <!-- LEAVE APPLICATION POP-UP MODAL (Excalidraw Design) -->
+    <div id="modal-leave-app" class="modal" style="display: none;">
+        <div class="modal-card" style="max-width: 560px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <div style="background:rgba(113,75,103,0.3); border:1px solid var(--accent-purple); padding:0.35rem 0.6rem; border-radius:6px; font-size:1.1rem;">📅</div>
+                    <div>
+                        <h3 style="font-size: 1.15rem;">New Time Off Application</h3>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Submit leave request for HR / Admin review</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="closeLeaveModal()">✕</button>
+            </div>
+
+            <form onsubmit="handleLeaveModalSubmit(event)">
+                <div class="field" style="margin-bottom: 0.85rem;">
+                    <label>Employee Name</label>
+                    <select id="mleave-emp" class="input" required>
+                        <option value="John Doe">John Doe (Senior Software Engineer)</option>
+                        <option value="Jane Smith">Jane Smith (Head of HR)</option>
+                        <option value="Robert Taylor">Robert Taylor (Product Manager)</option>
+                    </select>
+                </div>
+
+                <div class="field" style="margin-bottom: 0.85rem;">
+                    <label>Time Off Category</label>
+                    <select id="mleave-type" class="input" required>
+                        <option value="paid">Paid Time Off (PTO)</option>
+                        <option value="sick">Sick Leave</option>
+                        <option value="unpaid">Unpaid Leave</option>
+                        <option value="casual">Casual / Optional Leave</option>
+                    </select>
+                </div>
+
+                <div class="form-row" style="margin-bottom: 0.85rem;">
+                    <div class="field">
+                        <label>Start Date</label>
+                        <input type="date" id="mleave-start" class="input" onchange="calcLeaveDuration()" required>
+                    </div>
+                    <div class="field">
+                        <label>End Date</label>
+                        <input type="date" id="mleave-end" class="input" onchange="calcLeaveDuration()" required>
+                    </div>
+                </div>
+
+                <div class="stat-box" style="background: var(--bg-card); padding: 0.65rem 1rem; margin-bottom: 0.85rem;">
+                    <div class="metric-label">Calculated Duration</div>
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #60a5fa;" id="mleave-duration-preview">1 Working Day</div>
+                </div>
+
+                <div class="field" style="margin-bottom: 0.85rem;">
+                    <label>Reason / Remarks</label>
+                    <textarea id="mleave-reason" class="input" rows="2" placeholder="Explain the reason for your time off request..." required></textarea>
+                </div>
+
+                <div class="field" style="margin-bottom: 1.25rem;">
+                    <label>Supporting Document / Medical Note (Optional)</label>
+                    <input type="file" id="mleave-file" class="input" accept="image/*,.pdf,.doc,.docx">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeLeaveModal()">Discard</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.4rem;">Submit Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Document File Preview Modal -->
     <div id="file-modal" class="modal" style="display: none;">
         <div class="modal-card">
@@ -1509,6 +1796,12 @@ HTML_CONTENT = """<!DOCTYPE html>
             { id: 3, ref: 'PAY/2026/003', employee: 'Robert Taylor', structure: 'Product Lead', period: 'August 2026', base: 58000, allow: 9000, deduct: 3800, status: 'draft' }
         ];
 
+        const HOLIDAYS_AUG_2026 = {
+            15: '🇮🇳 Independence Day',
+            19: '🌸 Raksha Bandhan',
+            26: '🦚 Janmashtami'
+        };
+
         let state = {
             role: 'admin',
             currentEmployee: 'Jane Smith',
@@ -1522,7 +1815,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             employees: JSON.parse(localStorage.getItem('df_employees')) || DEFAULT_EMPLOYEES,
             documents: JSON.parse(localStorage.getItem('df_documents')) || DEFAULT_DOCUMENTS,
             payrolls: JSON.parse(localStorage.getItem('df_payrolls')) || DEFAULT_PAYROLL,
-            adminProfile: {
+            adminProfile: JSON.parse(localStorage.getItem('df_admin_profile')) || {
                 name: 'Jane Smith',
                 role: 'Admin / HR',
                 title: 'Head of Human Resources & Administration',
@@ -1605,6 +1898,8 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             if (tabId === 'profile') {
                 renderAdminProfile();
+            } else if (tabId === 'leave') {
+                renderCalendar();
             }
         }
 
@@ -1702,19 +1997,52 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderDashboard();
         }
 
-        /* Leave actions */
-        function handleLeaveSubmit(e) {
-            e.preventDefault();
-            const type = document.getElementById('leave-type').value;
-            const start = document.getElementById('leave-start').value;
-            const end = document.getElementById('leave-end').value;
-            const reason = document.getElementById('leave-reason').value;
+        /* Leave Modal & Calendar actions */
+        function openLeaveModal(prefilledDate) {
+            document.getElementById('mleave-emp').value = state.currentEmployee;
+            document.getElementById('mleave-type').value = 'paid';
 
-            const days = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
+            const defaultStart = prefilledDate || '2026-08-25';
+            const defaultEnd = prefilledDate || '2026-08-26';
+            document.getElementById('mleave-start').value = defaultStart;
+            document.getElementById('mleave-end').value = defaultEnd;
+            document.getElementById('mleave-reason').value = '';
+            document.getElementById('mleave-file').value = '';
+
+            calcLeaveDuration();
+            document.getElementById('modal-leave-app').style.display = 'flex';
+        }
+
+        function closeLeaveModal() {
+            document.getElementById('modal-leave-app').style.display = 'none';
+        }
+
+        function calcLeaveDuration() {
+            const startVal = document.getElementById('mleave-start').value;
+            const endVal = document.getElementById('mleave-end').value;
+
+            if (startVal && endVal) {
+                const s = new Date(startVal);
+                const e = new Date(endVal);
+                let diffDays = Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1;
+                if (diffDays <= 0) diffDays = 1;
+                document.getElementById('mleave-duration-preview').innerText = `${diffDays} Working Day${diffDays > 1 ? 's' : ''}`;
+            }
+        }
+
+        function handleLeaveModalSubmit(e) {
+            e.preventDefault();
+            const emp = document.getElementById('mleave-emp').value;
+            const type = document.getElementById('mleave-type').value;
+            const start = document.getElementById('mleave-start').value;
+            const end = document.getElementById('mleave-end').value;
+            const reason = document.getElementById('mleave-reason').value;
+
+            const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1);
 
             state.leaves.unshift({
                 id: Date.now(),
-                employee: state.currentEmployee,
+                employee: emp,
                 type: type,
                 startDate: start,
                 endDate: end,
@@ -1725,9 +2053,11 @@ HTML_CONTENT = """<!DOCTYPE html>
             });
 
             saveState();
+            closeLeaveModal();
             renderLeaves();
+            renderCalendar();
             renderDashboard();
-            e.target.reset();
+            alert('🎉 Time off request submitted successfully! Pending HR approval.');
         }
 
         function handleApproveLeave(id) {
@@ -1752,6 +2082,64 @@ HTML_CONTENT = """<!DOCTYPE html>
                 saveState();
                 renderAll();
             }
+        }
+
+        /* Calendar Render (August 2026) */
+        function renderCalendar() {
+            const container = document.getElementById('cal-grid-tiles');
+            if (!container) return;
+
+            // August 2026 starts on Saturday (Aug 1).
+            // In Mon-Sun grid: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6.
+            // Empty leading padding cells = 5.
+            let html = '';
+            for (let pad = 0; pad < 5; pad++) {
+                html += `<div class="cal-cell weekend" style="opacity: 0.25; cursor: default;"></div>`;
+            }
+
+            for (let day = 1; day <= 31; day++) {
+                const dayStr = day < 10 ? `0${day}` : `${day}`;
+                const dateStr = `2026-08-${dayStr}`;
+
+                // Calculate day of week
+                const dObj = new Date(2026, 7, day);
+                const dayOfWeek = dObj.getDay(); // 0 is Sun, 6 is Sat
+                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+                const holidayName = HOLIDAYS_AUG_2026[day];
+
+                // Check leaves
+                const matchedLeave = state.leaves.find(l => {
+                    const s = l.startDate;
+                    const e = l.endDate;
+                    return dateStr >= s && dateStr <= e;
+                });
+
+                let cellClasses = 'cal-cell';
+                if (isWeekend) cellClasses += ' weekend';
+                if (holidayName) cellClasses += ' holiday';
+                if (matchedLeave) cellClasses += ' leave-day';
+
+                let tagHtml = '';
+                if (holidayName) {
+                    tagHtml = `<span class="cal-tag tag-holiday" title="${holidayName}">${holidayName}</span>`;
+                } else if (matchedLeave) {
+                    const tagStyle = matchedLeave.status === 'approved' ? 'tag-leave' : 'tag-holiday';
+                    tagHtml = `<span class="cal-tag ${tagStyle}" title="${matchedLeave.employee} (${matchedLeave.type})">✈️ ${matchedLeave.employee.split(' ')[0]} - ${matchedLeave.type.toUpperCase()}</span>`;
+                }
+
+                html += `
+                    <div class="${cellClasses}" onclick="openLeaveModal('${dateStr}')" title="Click to apply leave on August ${day}, 2026">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="color:${isWeekend?'#f87171':'inherit'};">${day}</strong>
+                            ${holidayName ? '<span style="font-size:0.65rem; color:#fbbf24;">★</span>' : ''}
+                        </div>
+                        <div>${tagHtml}</div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
         }
 
         /* Employee actions */
@@ -1942,7 +2330,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                     pay.deduct = deduct;
                     pay.structure = struct;
 
-                    // If Jane Smith's salary was edited, update adminProfile as well
                     if (pay.employee === 'Jane Smith') {
                         state.adminProfile.monthlyWage = base;
                         state.adminProfile.struct = struct;
@@ -2049,7 +2436,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             const totalDeduct = pf + pt + insurance;
             const netSalary = totalEarnings - totalDeduct;
 
-            // Hero
             document.getElementById('prof-hero-name').innerText = p.name;
             document.getElementById('prof-hero-title').innerText = `${p.title} • ${p.dept}`;
             document.getElementById('prof-hero-login').innerText = `🔑 ${p.loginId}`;
@@ -2057,7 +2443,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             document.getElementById('prof-hero-phone').innerText = `📞 ${p.phone}`;
             document.getElementById('prof-hero-joined').innerText = `📅 Joined Jan 10, 2023`;
 
-            // Private Info
             document.getElementById('prof-dob').innerText = p.dob;
             document.getElementById('prof-gender').innerText = p.gender;
             document.getElementById('prof-nationality').innerText = p.nationality;
@@ -2076,7 +2461,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             document.getElementById('prof-bank-acc').innerText = p.bankAcc;
             document.getElementById('prof-bank-ifsc').innerText = p.bankIfsc;
 
-            // Salary Breakdown
             document.getElementById('prof-sal-wage').innerText = formatCurrency(wage);
             document.getElementById('prof-sal-ctc').innerText = formatCurrency(wage * 12);
             document.getElementById('prof-sal-net').innerText = formatCurrency(netSalary);
@@ -2220,7 +2604,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 return `
                     <tr>
                         <td><strong>${l.employee}</strong></td>
-                        <td>${l.type.toUpperCase()}</td>
+                        <td><span class="badge badge-purple">${l.type.toUpperCase()}</span></td>
                         <td>${l.startDate}</td>
                         <td>${l.endDate}</td>
                         <td>${l.days}d</td>
@@ -2360,6 +2744,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         function renderAll() {
             renderDashboard();
             renderAdminProfile();
+            renderCalendar();
             renderAttendance();
             renderLeaves();
             renderEmployees();
