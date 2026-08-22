@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Dayflow HRMS - Fully Functional Live UI Preview Server
-Renders an interactive, dynamic Dayflow HRMS interface covering:
-- Attendance Tracking & Live Ticker
-- Time Off / Leave Requests & HR Approvals
-- Employee Profile Directory & Account Provisioning (Person 2)
-- Real File Upload & HR Document Review / Verification Workflow (Person 2)
+Dayflow HRMS - Ultra-Clean, Decluttered Live UI Preview Server
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -17,162 +12,161 @@ HTML_CONTENT = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow HRMS — Live UI Preview</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Dayflow HRMS — Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #12131a;
-            --bg-secondary: #1a1c26;
-            --bg-card: #222533;
-            --bg-input: #2d3142;
-            --accent-purple: #714B67;
-            --accent-purple-hover: #86597a;
-            --accent-blue: #3b82f6;
+            --bg-body: #0f1117;
+            --bg-surface: #181b24;
+            --bg-card: #202433;
+            --bg-input: #292d3e;
+            --accent-purple: #714b67;
+            --accent-purple-hover: #885b7c;
             --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
+            --accent-amber: #f59e0b;
             --accent-red: #ef4444;
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
-            --border-color: #374151;
+            --accent-blue: #3b82f6;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-line: #2d3345;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            background-color: var(--bg-body);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* Top Navbar */
         .navbar {
-            background-color: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-line);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.75rem;
             position: sticky;
             top: 0;
             z-index: 50;
         }
 
-        .navbar-brand {
+        .brand {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 1.25rem;
+            gap: 0.6rem;
             font-weight: 700;
+            font-size: 1.15rem;
             color: #fff;
             text-decoration: none;
         }
 
-        .navbar-logo {
-            background: linear-gradient(135deg, var(--accent-purple), #9333ea);
-            color: white;
-            padding: 0.35rem 0.65rem;
+        .brand-badge {
+            background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+            color: #fff;
+            padding: 0.25rem 0.55rem;
             border-radius: 6px;
+            font-size: 0.85rem;
             font-weight: 800;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
         }
 
-        .navbar-nav {
+        .nav-links {
             display: flex;
+            gap: 0.35rem;
             list-style: none;
-            gap: 0.5rem;
         }
 
-        .nav-item {
-            padding: 0.5rem 1rem;
+        .nav-tab {
+            padding: 0.45rem 0.9rem;
             border-radius: 6px;
-            color: var(--text-secondary);
-            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.875rem;
             font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.2s;
+            cursor: pointer;
+            transition: all 0.15s ease;
         }
 
-        .nav-item:hover {
-            color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.05);
+        .nav-tab:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.04);
         }
 
-        .nav-item.active {
+        .nav-tab.active {
             color: #fff;
             background-color: var(--accent-purple);
         }
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .role-badge {
+        .user-pill {
             background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--border-line);
+            padding: 0.3rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
-        .role-badge select {
+        .user-pill select {
             background: transparent;
             border: none;
-            color: var(--text-primary);
-            font-size: 0.8rem;
+            color: var(--text-main);
             font-weight: 600;
+            font-size: 0.8rem;
             outline: none;
             cursor: pointer;
         }
 
+        /* Container & Layout */
         .container {
-            max-width: 1280px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 1.5rem;
             width: 100%;
             flex: 1;
         }
 
-        .page-header {
+        .header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
-        .page-title {
-            font-size: 1.5rem;
+        .header-title {
+            font-size: 1.35rem;
             font-weight: 700;
         }
 
-        .page-subtitle {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
+        .card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 10px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
+        /* Buttons */
         .btn {
-            padding: 0.5rem 1.25rem;
+            padding: 0.45rem 1.1rem;
             border-radius: 6px;
             border: none;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .btn:disabled {
@@ -180,60 +174,32 @@ HTML_CONTENT = """<!DOCTYPE html>
             cursor: not-allowed;
         }
 
-        .btn-primary {
-            background-color: var(--accent-purple);
-            color: white;
-        }
+        .btn-primary { background-color: var(--accent-purple); color: #fff; }
+        .btn-primary:hover:not(:disabled) { background-color: var(--accent-purple-hover); }
 
-        .btn-primary:hover:not(:disabled) {
-            background-color: var(--accent-purple-hover);
-        }
+        .btn-success { background-color: var(--accent-green); color: #fff; }
+        .btn-success:hover:not(:disabled) { filter: brightness(1.1); }
 
-        .btn-success {
-            background-color: var(--accent-green);
-            color: white;
-        }
-
-        .btn-success:hover:not(:disabled) {
-            filter: brightness(1.1);
-        }
-
-        .btn-danger {
-            background-color: var(--accent-red);
-            color: white;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            filter: brightness(1.1);
-        }
+        .btn-danger { background-color: var(--accent-red); color: #fff; }
+        .btn-danger:hover:not(:disabled) { filter: brightness(1.1); }
 
         .btn-secondary {
             background-color: var(--bg-input);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-line);
         }
+        .btn-secondary:hover:not(:disabled) { background-color: var(--border-line); }
 
-        .btn-secondary:hover:not(:disabled) {
-            background-color: var(--border-color);
-        }
-
-        .card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .action-banner {
+        /* Action Banner */
+        .banner {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(135deg, rgba(113, 75, 103, 0.15), rgba(34, 37, 51, 0.9));
-            border: 1px solid rgba(113, 75, 103, 0.4);
+            background: linear-gradient(135deg, rgba(113, 75, 103, 0.18), rgba(24, 27, 36, 0.95));
+            border: 1px solid rgba(113, 75, 103, 0.35);
             border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .banner-metrics {
@@ -242,108 +208,94 @@ HTML_CONTENT = """<!DOCTYPE html>
             align-items: center;
         }
 
-        .metric-group {
+        .metric {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.2rem;
         }
 
         .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+            font-size: 0.72rem;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
         }
 
-        .metric-value {
-            font-size: 1.35rem;
+        .metric-val {
+            font-size: 1.25rem;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
+        .dot { width: 9px; height: 9px; border-radius: 50%; }
+        .dot.green { background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .dot.red { background-color: var(--accent-red); }
 
-        .status-dot.green { background-color: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
-        .status-dot.red { background-color: var(--accent-red); }
-
+        /* Metrics Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
-        .stat-card {
+        .stat-box {
             background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 1.25rem;
+            border: 1px solid var(--border-line);
+            padding: 1rem 1.25rem;
             border-radius: 8px;
         }
 
-        .stat-card .val {
-            font-size: 1.6rem;
+        .stat-box .num {
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-top: 0.35rem;
+            margin-top: 0.25rem;
         }
 
-        .employee-grid {
+        /* Employee Grid */
+        .emp-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.25rem;
-            margin-top: 1rem;
-        }
-
-        .employee-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            position: relative;
-        }
-
-        .emp-header {
-            display: flex;
-            align-items: center;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
         }
 
-        .emp-avatar {
-            width: 50px;
-            height: 50px;
+        .emp-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .emp-head {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 1.1rem;
-            color: white;
+            color: #fff;
+            font-size: 1rem;
         }
 
-        .emp-info h4 { font-size: 1.05rem; font-weight: 700; }
-        .emp-info p { font-size: 0.8rem; color: var(--text-secondary); }
+        .emp-name { font-size: 1rem; font-weight: 700; }
+        .emp-job { font-size: 0.78rem; color: var(--text-muted); }
 
-        .emp-meta {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 0.75rem;
-        }
-
-        .table-responsive {
+        /* Tables */
+        .table-wrap {
             width: 100%;
             overflow-x: auto;
         }
@@ -352,197 +304,187 @@ HTML_CONTENT = """<!DOCTYPE html>
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
 
         th {
             background-color: var(--bg-card);
-            color: var(--text-secondary);
-            padding: 0.75rem 1rem;
+            color: var(--text-muted);
+            padding: 0.65rem 0.9rem;
             font-weight: 600;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-line);
+            font-size: 0.72rem;
             text-transform: uppercase;
-            font-size: 0.75rem;
             letter-spacing: 0.5px;
         }
 
         td {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+            padding: 0.75rem 0.9rem;
+            border-bottom: 1px solid rgba(45, 51, 69, 0.6);
         }
 
         tr:hover td {
-            background-color: rgba(255, 255, 255, 0.02);
+            background-color: rgba(255, 255, 255, 0.015);
         }
 
+        /* Badges */
         .badge {
             display: inline-flex;
             align-items: center;
-            padding: 0.25rem 0.6rem;
+            padding: 0.2rem 0.55rem;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.73rem;
             font-weight: 600;
         }
 
-        .badge-present { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-halfday { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .badge-absent { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .badge-leave { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .badge-pending { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .badge-role { background-color: rgba(113, 75, 103, 0.3); color: #e9d5ff; border: 1px solid rgba(113, 75, 103, 0.5); }
+        .badge-green { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-amber { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-red { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-purple { background-color: rgba(113, 75, 103, 0.3); color: #e9d5ff; border: 1px solid rgba(113, 75, 103, 0.5); }
 
-        .form-grid {
+        /* Forms */
+        .form-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 1.25rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
-        .form-group {
+        .field {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
-        .form-group label {
-            font-size: 0.85rem;
+        .field label {
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
 
-        .form-control {
+        .input {
             background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--border-line);
+            color: var(--text-main);
+            padding: 0.55rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             outline: none;
         }
 
-        .form-control:focus {
-            border-color: var(--accent-purple);
-        }
+        .input:focus { border-color: var(--accent-purple); }
 
-        .filter-bar {
+        /* Filter Pills */
+        .filter-group {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
         }
 
-        .filter-btn {
-            padding: 0.35rem 0.85rem;
+        .pill-btn {
+            padding: 0.3rem 0.75rem;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 600;
             background-color: var(--bg-card);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border: 1px solid var(--border-line);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
         }
 
-        .filter-btn.active {
+        .pill-btn.active {
             background-color: var(--accent-purple);
-            color: white;
+            color: #fff;
             border-color: var(--accent-purple);
         }
 
-        .modal-overlay {
+        /* Modal */
+        .modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0,0,0,0.75);
+            background-color: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 100;
         }
 
-        .modal-body {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            max-width: 700px;
+        .modal-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 10px;
+            max-width: 650px;
             width: 90%;
-            padding: 1.5rem;
+            padding: 1.25rem;
             max-height: 85vh;
             overflow-y: auto;
         }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- Top Navbar -->
     <nav class="navbar">
-        <a href="#" class="navbar-brand">
-            <span class="navbar-logo">DF</span> Dayflow HRMS
+        <a href="#" class="brand">
+            <span class="brand-badge">DF</span> Dayflow HRMS
         </a>
-        <ul class="navbar-nav">
-            <li class="nav-item" id="nav-employees" onclick="switchTab('employees')">Employees</li>
-            <li class="nav-item active" id="nav-attendance" onclick="switchTab('attendance')">Attendance</li>
-            <li class="nav-item" id="nav-leave" onclick="switchTab('leave')">Time Off</li>
-            <li class="nav-item" id="nav-payroll" onclick="switchTab('payroll')">Payroll</li>
-            <li class="nav-item" id="nav-documents" onclick="switchTab('documents')">Documents</li>
+        <ul class="nav-links">
+            <li class="nav-tab active" id="tab-btn-attendance" onclick="openTab('attendance')">Attendance</li>
+            <li class="nav-tab" id="tab-btn-leave" onclick="openTab('leave')">Time Off</li>
+            <li class="nav-tab" id="tab-btn-employees" onclick="openTab('employees')">Employees</li>
+            <li class="nav-tab" id="tab-btn-documents" onclick="openTab('documents')">Documents</li>
+            <li class="nav-tab" id="tab-btn-payroll" onclick="openTab('payroll')">Payroll</li>
         </ul>
-        <div class="nav-right">
-            <div class="role-badge">
-                Role: 
-                <select id="user-role-select" onchange="onRoleChange(this.value)">
-                    <option value="employee">Employee (John Doe)</option>
-                    <option value="admin">HR / Admin Manager</option>
-                </select>
-            </div>
+        <div class="user-pill">
+            <span>Signed in as:</span>
+            <select id="user-role-select" onchange="onRoleChange(this.value)">
+                <option value="employee">Employee (John Doe)</option>
+                <option value="admin">HR Manager (Admin)</option>
+            </select>
         </div>
     </nav>
 
     <div class="container">
 
         <!-- ATTENDANCE TAB -->
-        <div id="tab-attendance" class="tab-content active">
-            <div class="page-header">
+        <div id="panel-attendance" class="tab-panel active">
+            <div class="header-row">
                 <div>
-                    <h1 class="page-title">Attendance Tracking</h1>
-                    <p class="page-subtitle">Real-time check-in/out, worked hours calculation, and status logging</p>
+                    <h1 class="header-title">Attendance Tracking</h1>
                 </div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-secondary" onclick="resetAttendanceData()">Reset Data</button>
-                </div>
+                <button class="btn btn-secondary" onclick="resetData()">Reset Data</button>
             </div>
 
-            <div class="action-banner">
+            <div class="banner">
                 <div class="banner-metrics">
-                    <div class="metric-group">
-                        <span class="metric-label">Today's Status</span>
-                        <div class="metric-value">
-                            <span id="banner-status-dot" class="status-dot red"></span>
-                            <span id="banner-status-text">Not Checked In</span>
+                    <div class="metric">
+                        <span class="metric-label">Status</span>
+                        <div class="metric-val">
+                            <span id="dot-status" class="dot red"></span>
+                            <span id="txt-status">Not Checked In</span>
                         </div>
                     </div>
-                    <div class="metric-group">
-                        <span class="metric-label">Check In Time</span>
-                        <span class="metric-value" id="banner-checkin-time">--:--</span>
+                    <div class="metric">
+                        <span class="metric-label">Check-In</span>
+                        <span class="metric-val" id="txt-checkin-time">--:--</span>
                     </div>
-                    <div class="metric-group">
+                    <div class="metric">
                         <span class="metric-label">Working Hours</span>
-                        <span class="metric-value" id="banner-worked-hours" style="color: var(--accent-purple-hover);">0h 00m</span>
+                        <span class="metric-val" id="txt-worked-hours" style="color: var(--accent-purple-hover);">0h 00m</span>
                     </div>
                 </div>
-                <div class="banner-actions">
-                    <button id="btn-check-in" class="btn btn-success" onclick="handleCheckIn()">Check In</button>
-                    <button id="btn-check-out" class="btn btn-danger" onclick="handleCheckOut()" disabled>Check Out</button>
+                <div>
+                    <button id="btn-in" class="btn btn-success" onclick="handleCheckIn()">Check In</button>
+                    <button id="btn-out" class="btn btn-danger" onclick="handleCheckOut()" disabled>Check Out</button>
                 </div>
             </div>
 
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.1rem;">Attendance Logs & Worked Hours</h3>
-                    <span id="record-rule-tag" style="font-size: 0.8rem; color: var(--text-secondary);">Showing personal attendance logs (Record Rule Protected)</span>
-                </div>
-                <div class="table-responsive">
+                <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
@@ -556,264 +498,240 @@ HTML_CONTENT = """<!DOCTYPE html>
                                 <th>Extra Hours</th>
                             </tr>
                         </thead>
-                        <tbody id="attendance-table-body"></tbody>
+                        <tbody id="tbl-attendance"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <!-- TIME OFF / LEAVE TAB -->
-        <div id="tab-leave" class="tab-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Time Off & Leave Management</h1>
-                    <p class="page-subtitle">Apply for leave, review allocations, and manage approvals</p>
-                </div>
+        <div id="panel-leave" class="tab-panel">
+            <div class="header-row">
+                <h1 class="header-title">Time Off & Leave Management</h1>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="metric-label">Paid Time Off</div>
-                    <div class="val" style="color: #34d399;">12 Days</div>
+                    <div class="num" style="color: #34d399;">12 Days</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="metric-label">Sick Leave</div>
-                    <div class="val" style="color: #fbbf24;">8 Days</div>
+                    <div class="num" style="color: #fbbf24;">8 Days</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="metric-label">Unpaid Leave</div>
-                    <div class="val" style="color: #60a5fa;">Unlimited</div>
+                    <div class="num" style="color: #60a5fa;">Unlimited</div>
                 </div>
             </div>
 
-            <div class="card" id="apply-leave-card">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Apply for Time Off</h3>
+            <div class="card">
+                <h3 style="font-size: 1.05rem; margin-bottom: 1rem;">Apply for Time Off</h3>
                 <form onsubmit="handleLeaveSubmit(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
+                    <div class="form-row">
+                        <div class="field">
                             <label>Leave Type</label>
-                            <select id="leave-type" class="form-control" required>
+                            <select id="leave-type" class="input" required>
                                 <option value="paid">Paid Time Off</option>
                                 <option value="sick">Sick Leave</option>
-                                <option value="unpaid">Unpaid Leaves</option>
+                                <option value="unpaid">Unpaid Leave</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label>Start Date</label>
-                            <input type="date" id="leave-start-date" class="form-control" required>
+                            <input type="date" id="leave-start" class="input" required>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label>End Date</label>
-                            <input type="date" id="leave-end-date" class="form-control" required>
+                            <input type="date" id="leave-end" class="input" required>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <div class="field" style="margin-bottom: 1rem;">
                         <label>Reason / Remarks</label>
-                        <textarea id="leave-remarks" class="form-control" rows="2" placeholder="State reason for leave application..." required></textarea>
+                        <textarea id="leave-reason" class="input" rows="2" placeholder="State reason..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit Leave Application</button>
+                    <button type="submit" class="btn btn-primary">Submit Application</button>
                 </form>
             </div>
 
             <div class="card">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Leave Applications & Approval Workflow</h3>
-                <div class="table-responsive">
+                <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
                                 <th>Employee</th>
-                                <th>Leave Type</th>
+                                <th>Type</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Days</th>
                                 <th>Reason</th>
                                 <th>Status</th>
-                                <th>HR Comments / Actions</th>
+                                <th>HR Decision</th>
                             </tr>
                         </thead>
-                        <tbody id="leave-table-body"></tbody>
+                        <tbody id="tbl-leave"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- EMPLOYEES TAB (Person 2) -->
-        <div id="tab-employees" class="tab-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Employee Profiles & Directory</h1>
-                    <p class="page-subtitle">Manage organization member profiles, roles, joining dates, and account provisioning</p>
-                </div>
-                <button class="btn btn-primary" onclick="toggleAddEmpForm()">+ Add Employee</button>
+        <!-- EMPLOYEES TAB -->
+        <div id="panel-employees" class="tab-panel">
+            <div class="header-row">
+                <h1 class="header-title">Employee Directory</h1>
+                <button class="btn btn-primary" onclick="toggleEmpForm()">+ Add Employee</button>
             </div>
 
-            <div class="card" id="add-emp-card" style="display: none;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Create New Employee Profile</h3>
-                <form onsubmit="handleAddEmployee(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
+            <div class="card" id="form-emp-card" style="display: none;">
+                <h3 style="font-size: 1.05rem; margin-bottom: 1rem;">Create Employee Profile</h3>
+                <form onsubmit="handleAddEmp(event)">
+                    <div class="form-row">
+                        <div class="field">
                             <label>Full Name</label>
-                            <input type="text" id="emp-name" class="form-control" placeholder="e.g. Alice Johnson" required>
+                            <input type="text" id="emp-name" class="input" placeholder="Alice Johnson" required>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label>Work Email</label>
-                            <input type="email" id="emp-email" class="form-control" placeholder="alice@company.com" required>
+                            <input type="email" id="emp-email" class="input" placeholder="alice@company.com" required>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label>Job Title</label>
-                            <input type="text" id="emp-job" class="form-control" placeholder="e.g. Software Engineer" required>
+                            <input type="text" id="emp-job" class="input" placeholder="Software Engineer" required>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label>Department</label>
-                            <input type="text" id="emp-dept" class="form-control" placeholder="e.g. Engineering" required>
+                            <input type="text" id="emp-dept" class="input" placeholder="Engineering" required>
                         </div>
-                        <div class="form-group">
-                            <label>Dayflow Role</label>
-                            <select id="emp-role" class="form-control" required>
+                        <div class="field">
+                            <label>Role</label>
+                            <select id="emp-role" class="input" required>
                                 <option value="Employee">Employee</option>
                                 <option value="Admin / HR">Admin / HR</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label>Joining Date</label>
-                            <input type="date" id="emp-joining" class="form-control" required>
+                            <input type="date" id="emp-joining" class="input" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-success">Save Employee Profile</button>
+                    <button type="submit" class="btn btn-success">Save Profile</button>
                 </form>
             </div>
 
-            <div class="employee-grid" id="employee-grid"></div>
+            <div class="emp-grid" id="grid-employees"></div>
         </div>
 
-        <!-- DOCUMENTS TAB (Person 2 - Working Real File Upload & HR Review) -->
-        <div id="tab-documents" class="tab-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Employee Verification Documents</h1>
-                    <p class="page-subtitle">Upload real local files, inspect previews, and perform HR verification & reviews</p>
-                </div>
+        <!-- DOCUMENTS TAB -->
+        <div id="panel-documents" class="tab-panel">
+            <div class="header-row">
+                <h1 class="header-title">Employee Documents</h1>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="metric-label">ID Proofs</div>
-                    <div class="val" style="color: #60a5fa;" id="stat-id-proofs">0</div>
+                    <div class="num" style="color: #60a5fa;" id="stat-id">0</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="metric-label">Contracts</div>
-                    <div class="val" style="color: #34d399;" id="stat-contracts">0</div>
+                    <div class="num" style="color: #34d399;" id="stat-contract">0</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="metric-label">Certificates</div>
-                    <div class="val" style="color: #fbbf24;" id="stat-certificates">0</div>
+                    <div class="num" style="color: #fbbf24;" id="stat-cert">0</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="metric-label">Verified Documents</div>
-                    <div class="val" style="color: var(--accent-purple-hover);" id="stat-verified">0</div>
+                    <div class="num" style="color: var(--accent-purple-hover);" id="stat-verified">0</div>
                 </div>
             </div>
 
-            <!-- Real Working Upload Form -->
             <div class="card">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">📤 Upload Real Employee Verification Document</h3>
-                <form onsubmit="handleRealDocUpload(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
+                <h3 style="font-size: 1.05rem; margin-bottom: 1rem;">Upload Document</h3>
+                <form onsubmit="handleDocUpload(event)">
+                    <div class="form-row">
+                        <div class="field">
                             <label>Document Title</label>
-                            <input type="text" id="doc-title" class="form-control" placeholder="e.g. Passport ID Verification Copy" required>
+                            <input type="text" id="doc-title" class="input" placeholder="Passport Verification Copy" required>
                         </div>
-                        <div class="form-group">
+                        <div class="field">
                             <label>Employee</label>
-                            <select id="doc-employee" class="form-control" required>
+                            <select id="doc-employee" class="input" required>
                                 <option value="John Doe">John Doe</option>
                                 <option value="Jane Smith">Jane Smith</option>
                                 <option value="Robert Taylor">Robert Taylor</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Document Category</label>
-                            <select id="doc-type" class="form-control" required>
+                        <div class="field">
+                            <label>Category</label>
+                            <select id="doc-type" class="input" required>
                                 <option value="id_proof">ID Proof</option>
                                 <option value="contract">Contract</option>
                                 <option value="certificate">Certificate</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Choose File (PDF, Image, PNG, JPG, Doc)</label>
-                            <input type="file" id="real-file-input" class="form-control" accept="image/*,.pdf,.doc,.docx,.txt" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Issue Date (Optional)</label>
-                            <input type="date" id="doc-issue-date" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label>Expiry Date (Optional)</label>
-                            <input type="date" id="doc-expiry-date" class="form-control">
+                        <div class="field">
+                            <label>Select File (PDF, Image, Doc)</label>
+                            <input type="file" id="real-file-input" class="input" accept="image/*,.pdf,.doc,.docx,.txt" required>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 1.25rem;">
-                        <label>Employee Description / Remarks</label>
-                        <textarea id="doc-notes" class="form-control" rows="2" placeholder="Enter file remarks or notes..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit & Attach File</button>
+                    <button type="submit" class="btn btn-primary">Upload & Attach File</button>
                 </form>
             </div>
 
-            <!-- Document Attachment Library Table -->
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; flex-wrap:wrap; gap:0.5rem;">
-                    <h3 style="font-size: 1.1rem;">Document Verification & HR Review Library</h3>
-                    <div class="filter-bar">
-                        <button class="filter-btn active" id="filter-doc-all" onclick="filterDocCategory('all')">All</button>
-                        <button class="filter-btn" id="filter-doc-id_proof" onclick="filterDocCategory('id_proof')">ID Proofs</button>
-                        <button class="filter-btn" id="filter-doc-contract" onclick="filterDocCategory('contract')">Contracts</button>
-                        <button class="filter-btn" id="filter-doc-certificate" onclick="filterDocCategory('certificate')">Certificates</button>
-                        <button class="filter-btn" id="filter-doc-verified" onclick="filterDocCategory('verified')">Verified</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
+                    <h3 style="font-size: 1.05rem;">Document Library</h3>
+                    <div class="filter-group">
+                        <button class="pill-btn active" id="f-all" onclick="filterDoc('all')">All</button>
+                        <button class="pill-btn" id="f-id_proof" onclick="filterDoc('id_proof')">ID Proofs</button>
+                        <button class="pill-btn" id="f-contract" onclick="filterDoc('contract')">Contracts</button>
+                        <button class="pill-btn" id="f-certificate" onclick="filterDoc('certificate')">Certificates</button>
+                        <button class="pill-btn" id="f-verified" onclick="filterDoc('verified')">Verified</button>
                     </div>
                 </div>
-                <div class="table-responsive">
+                <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>Document Title</th>
+                                <th>Title</th>
                                 <th>Employee</th>
                                 <th>Category</th>
-                                <th>File Details</th>
+                                <th>File Info</th>
                                 <th>Uploaded</th>
                                 <th>Status</th>
-                                <th>File Action</th>
-                                <th>HR Review & Decision Workflow</th>
+                                <th>Action</th>
+                                <th>HR Review</th>
                             </tr>
                         </thead>
-                        <tbody id="document-table-body"></tbody>
+                        <tbody id="tbl-documents"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- PAYROLL PLACEHOLDER (Person 4) -->
-        <div id="tab-payroll" class="tab-content">
+        <!-- PAYROLL TAB -->
+        <div id="panel-payroll" class="tab-panel">
             <div class="card">
-                <h2>Payroll & Salary Management</h2>
-                <p style="color:var(--text-secondary); margin-top:0.5rem;">Managed by Person 4 (Base salary, allowances, deductions, net salary).</p>
+                <h2 style="font-size: 1.1rem;">Payroll & Salary Management</h2>
+                <p style="color:var(--text-muted); margin-top:0.35rem; font-size:0.875rem;">Managed by Person 4 (Payroll computation, base salary, allowances, net salary).</p>
             </div>
         </div>
 
     </div>
 
-    <!-- File View Modal -->
-    <div id="file-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-body">
+    <!-- Modal -->
+    <div id="file-modal" class="modal" style="display: none;">
+        <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 id="modal-file-title" style="font-size: 1.2rem;">Document Preview</h3>
-                <button class="btn btn-secondary" onclick="closeFileModal()">✕ Close</button>
+                <h3 id="modal-title" style="font-size: 1.1rem;">Document Preview</h3>
+                <button class="btn btn-secondary" onclick="closeModal()">✕</button>
             </div>
-            <div id="modal-file-content" style="min-height: 250px; display: flex; align-items: center; justify-content: center; background-color: var(--bg-primary); border-radius: 8px; padding: 1rem; border: 1px solid var(--border-color);">
+            <div id="modal-content" style="min-height: 220px; display: flex; align-items: center; justify-content: center; background-color: var(--bg-body); border-radius: 6px; padding: 1rem; border: 1px solid var(--border-line);">
             </div>
             <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-                <a id="modal-download-link" href="#" download class="btn btn-primary">💾 Download Document File</a>
+                <a id="modal-download" href="#" download class="btn btn-primary">💾 Download File</a>
             </div>
         </div>
     </div>
@@ -822,8 +740,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         const DEFAULT_ATTENDANCE = [
             { id: 1, date: '2026-08-21', employee: 'John Doe', checkIn: '09:00 AM', checkOut: '05:30 PM', status: 'present', workedHours: 8.5, effectiveHours: 8.5, extraHours: 0.5 },
             { id: 2, date: '2026-08-20', employee: 'John Doe', checkIn: '08:50 AM', checkOut: '06:10 PM', status: 'present', workedHours: 9.3, effectiveHours: 9.3, extraHours: 1.3 },
-            { id: 3, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0 },
-            { id: 4, date: '2026-08-21', employee: 'Jane Smith', checkIn: '08:55 AM', checkOut: '05:00 PM', status: 'present', workedHours: 8.08, effectiveHours: 8.08, extraHours: 0.08 }
+            { id: 3, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0 }
         ];
 
         const DEFAULT_LEAVE = [
@@ -838,9 +755,8 @@ HTML_CONTENT = """<!DOCTYPE html>
         ];
 
         const DEFAULT_DOCUMENTS = [
-            { id: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', size: '1.2 MB', date: '2026-08-10', expiry: '2030-08-10', status: 'verified', adminComments: 'Verified and approved by HR', fileData: '' },
-            { id: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', size: '450 KB', date: '2026-08-01', expiry: '2027-08-01', status: 'verified', adminComments: 'Signed 2026 contract on file', fileData: '' },
-            { id: 3, title: 'B.Tech Degree Certificate', employee: 'John Doe', type: 'certificate', filename: 'john_degree.pdf', size: '890 KB', date: '2026-08-15', expiry: '--', status: 'draft', adminComments: '', fileData: '' }
+            { id: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', size: '1.2 MB', date: '2026-08-10', status: 'verified', adminComments: 'Verified by HR', fileData: '' },
+            { id: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', size: '450 KB', date: '2026-08-01', status: 'verified', adminComments: 'Signed contract on file', fileData: '' }
         ];
 
         let state = {
@@ -864,7 +780,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             localStorage.setItem('df_documents', JSON.stringify(state.documents));
         }
 
-        function resetAttendanceData() {
+        function resetData() {
             localStorage.clear();
             state.attendances = JSON.parse(JSON.stringify(DEFAULT_ATTENDANCE));
             state.leaves = JSON.parse(JSON.stringify(DEFAULT_LEAVE));
@@ -875,30 +791,30 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderAll();
         }
 
-        function formatTime(date) {
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        function formatTime(d) {
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         }
 
-        function formatDate(date) {
-            return date.toISOString().split('T')[0];
+        function formatDate(d) {
+            return d.toISOString().split('T')[0];
         }
 
         function formatFileSize(bytes) {
-            if (!bytes || bytes === 0) return '0 B';
+            if (!bytes) return '0 B';
             const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const sizes = ['B', 'KB', 'MB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        function openTab(tabId) {
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
 
-            const targetNav = document.getElementById('nav-' + tabId);
-            if (targetNav) targetNav.classList.add('active');
-            const targetTab = document.getElementById('tab-' + tabId);
-            if (targetTab) targetTab.classList.add('active');
+            const btn = document.getElementById('tab-btn-' + tabId);
+            if (btn) btn.classList.add('active');
+            const panel = document.getElementById('panel-' + tabId);
+            if (panel) panel.classList.add('active');
         }
 
         function onRoleChange(role) {
@@ -915,7 +831,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             state.tickerInterval = setInterval(updateLiveTicker, 1000);
 
-            const newRecord = {
+            const newRec = {
                 id: Date.now(),
                 date: formatDate(now),
                 employee: state.currentEmployee,
@@ -928,7 +844,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 isActive: true
             };
 
-            state.attendances.unshift(newRecord);
+            state.attendances.unshift(newRec);
             saveState();
             renderAttendance();
         }
@@ -936,13 +852,12 @@ HTML_CONTENT = """<!DOCTYPE html>
         function updateLiveTicker() {
             if (!state.isCheckedIn || !state.checkInTimestamp) return;
 
-            const diffMs = Date.now() - state.checkInTimestamp;
-            const diffSec = Math.floor(diffMs / 1000);
+            const diffSec = Math.floor((Date.now() - state.checkInTimestamp) / 1000);
             const hrs = Math.floor(diffSec / 3600);
             const mins = Math.floor((diffSec % 3600) / 60);
             const secs = diffSec % 60;
 
-            document.getElementById('banner-worked-hours').innerText = `${hrs}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+            document.getElementById('txt-worked-hours').innerText = `${hrs}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
 
             const activeRec = state.attendances.find(a => a.isActive);
             if (activeRec) {
@@ -950,26 +865,21 @@ HTML_CONTENT = """<!DOCTYPE html>
                 activeRec.workedHours = workedHrs;
                 activeRec.effectiveHours = workedHrs;
                 activeRec.extraHours = workedHrs > 8.0 ? parseFloat((workedHrs - 8.0).toFixed(2)) : 0.0;
-                renderAttendanceTable();
+                renderAttendanceTbl();
             }
         }
 
         function handleCheckOut() {
             if (!state.isCheckedIn) return;
-
             const now = new Date();
-            const checkOutStr = formatTime(now);
-
             if (state.tickerInterval) clearInterval(state.tickerInterval);
 
             const activeRec = state.attendances.find(a => a.isActive);
             if (activeRec) {
-                activeRec.checkOut = checkOutStr;
+                activeRec.checkOut = formatTime(now);
                 activeRec.isActive = false;
-                const diffMs = state.checkInTimestamp ? (now.getTime() - state.checkInTimestamp) : 0;
-                const diffSec = Math.floor(diffMs / 1000);
+                const diffSec = Math.floor((now.getTime() - state.checkInTimestamp) / 1000);
                 const workedHrs = parseFloat((diffSec / 3600).toFixed(2));
-
                 activeRec.workedHours = workedHrs > 0 ? workedHrs : 0.1;
                 activeRec.effectiveHours = activeRec.workedHours;
                 activeRec.extraHours = activeRec.workedHours > 8.0 ? parseFloat((activeRec.workedHours - 8.0).toFixed(2)) : 0.0;
@@ -977,9 +887,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             }
 
             state.isCheckedIn = false;
-            state.activeCheckInTime = null;
-            state.checkInTimestamp = null;
-
             saveState();
             renderAttendance();
         }
@@ -987,27 +894,20 @@ HTML_CONTENT = """<!DOCTYPE html>
         function handleLeaveSubmit(e) {
             e.preventDefault();
             const type = document.getElementById('leave-type').value;
-            const startDate = document.getElementById('leave-start-date').value;
-            const endDate = document.getElementById('leave-end-date').value;
-            const remarks = document.getElementById('leave-remarks').value;
+            const start = document.getElementById('leave-start').value;
+            const end = document.getElementById('leave-end').value;
+            const reason = document.getElementById('leave-reason').value;
 
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            if (end < start) {
-                alert('End Date cannot be earlier than Start Date.');
-                return;
-            }
-
-            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            const days = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
 
             state.leaves.unshift({
                 id: Date.now(),
                 employee: state.currentEmployee,
                 type: type,
-                startDate: startDate,
-                endDate: endDate,
+                startDate: start,
+                endDate: end,
                 days: days,
-                remarks: remarks,
+                remarks: reason,
                 status: 'pending',
                 adminComments: ''
             });
@@ -1015,86 +915,45 @@ HTML_CONTENT = """<!DOCTYPE html>
             saveState();
             renderLeaves();
             e.target.reset();
-            alert('Leave application submitted!');
         }
 
-        function handleApproveLeave(leaveId) {
-            const commentsInput = document.getElementById('hr-comments-' + leaveId);
-            const comments = commentsInput ? commentsInput.value : 'Approved by HR';
-
-            const leave = state.leaves.find(l => l.id === leaveId);
+        function handleApproveLeave(id) {
+            const comment = document.getElementById('hr-leave-comment-' + id)?.value || 'Approved by HR';
+            const leave = state.leaves.find(l => l.id === id);
             if (leave) {
                 leave.status = 'approved';
-                leave.adminComments = comments;
-
-                let current = new Date(leave.startDate);
-                const end = new Date(leave.endDate);
-
-                while (current <= end) {
-                    if (current.getDay() !== 0 && current.getDay() !== 6) {
-                        const dStr = formatDate(current);
-                        const existingAtt = state.attendances.find(a => a.date === dStr && a.employee === leave.employee);
-                        if (existingAtt) {
-                            existingAtt.status = 'leave';
-                            existingAtt.remarks = `Approved ${leave.type} Leave`;
-                        } else {
-                            state.attendances.unshift({
-                                id: Date.now() + Math.random(),
-                                date: dStr,
-                                employee: leave.employee,
-                                checkIn: '09:00 AM',
-                                checkOut: '05:00 PM',
-                                status: 'leave',
-                                workedHours: 8.0,
-                                effectiveHours: 8.0,
-                                extraHours: 0.0
-                            });
-                        }
-                    }
-                    current.setDate(current.getDate() + 1);
-                }
-
+                leave.adminComments = comment;
                 saveState();
                 renderAll();
-                alert('Leave request approved!');
             }
         }
 
-        function handleRejectLeave(leaveId) {
-            const commentsInput = document.getElementById('hr-comments-' + leaveId);
-            const comments = commentsInput ? commentsInput.value : 'Rejected by HR';
-            const leave = state.leaves.find(l => l.id === leaveId);
+        function handleRejectLeave(id) {
+            const comment = document.getElementById('hr-leave-comment-' + id)?.value || 'Rejected by HR';
+            const leave = state.leaves.find(l => l.id === id);
             if (leave) {
                 leave.status = 'rejected';
-                leave.adminComments = comments;
+                leave.adminComments = comment;
                 saveState();
                 renderLeaves();
-                alert('Leave request rejected.');
             }
         }
 
-        function toggleAddEmpForm() {
-            const card = document.getElementById('add-emp-card');
+        function toggleEmpForm() {
+            const card = document.getElementById('form-emp-card');
             card.style.display = card.style.display === 'none' ? 'block' : 'none';
         }
 
-        function handleAddEmployee(e) {
+        function handleAddEmp(e) {
             e.preventDefault();
-            const name = document.getElementById('emp-name').value;
-            const email = document.getElementById('emp-email').value;
-            const job = document.getElementById('emp-job').value;
-            const dept = document.getElementById('emp-dept').value;
-            const role = document.getElementById('emp-role').value;
-            const joining = document.getElementById('emp-joining').value;
-
             state.employees.unshift({
                 id: Date.now(),
-                name: name,
-                email: email,
-                job: job,
-                dept: dept,
-                role: role,
-                joining: joining,
+                name: document.getElementById('emp-name').value,
+                email: document.getElementById('emp-email').value,
+                job: document.getElementById('emp-job').value,
+                dept: document.getElementById('emp-dept').value,
+                role: document.getElementById('emp-role').value,
+                joining: document.getElementById('emp-joining').value,
                 loginId: '',
                 provisioned: false
             });
@@ -1102,341 +961,251 @@ HTML_CONTENT = """<!DOCTYPE html>
             saveState();
             renderEmployees();
             e.target.reset();
-            toggleAddEmpForm();
-            alert('Employee profile created successfully!');
+            toggleEmpForm();
         }
 
-        function handleProvisionAccount(empId) {
-            const emp = state.employees.find(e => e.id === empId);
+        function handleProvision(id) {
+            const emp = state.employees.find(e => e.id === id);
             if (emp) {
                 const year = emp.joining ? emp.joining.split('-')[0] : '2026';
-                const nameComp = emp.name.replace(/[^A-Z0-9]/gi, '').toUpperCase();
-                const loginId = `DAYFLOW-${nameComp}-${year}-000${Math.floor(Math.random() * 90 + 10)}`;
-
                 emp.provisioned = true;
-                emp.loginId = loginId;
-
+                emp.loginId = `DAYFLOW-${emp.name.replace(/[^A-Z]/gi, '').toUpperCase()}-${year}-000${Math.floor(Math.random() * 90 + 10)}`;
                 saveState();
                 renderEmployees();
-                alert(`Account Provisioned Successfully!\n\nLogin ID: ${loginId}\nInitial Password: ${Math.random().toString(36).substring(2, 10)}`);
             }
         }
 
-        function filterDocCategory(category) {
-            state.currentDocFilter = category;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById('filter-doc-' + category);
-            if (activeBtn) activeBtn.classList.add('active');
+        function filterDoc(cat) {
+            state.currentDocFilter = cat;
+            document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            const b = document.getElementById('f-' + cat);
+            if (b) b.classList.add('active');
             renderDocuments();
         }
 
-        function handleRealDocUpload(e) {
+        function handleDocUpload(e) {
             e.preventDefault();
-            const title = document.getElementById('doc-title').value;
-            const employee = document.getElementById('doc-employee').value;
-            const type = document.getElementById('doc-type').value;
             const fileInput = document.getElementById('real-file-input');
-            const expiry = document.getElementById('doc-expiry-date').value || '--';
-            const notes = document.getElementById('doc-notes').value || 'Uploaded file attachment';
-
-            if (!fileInput.files || fileInput.files.length === 0) {
-                alert('Please select a local file to upload.');
-                return;
-            }
+            if (!fileInput.files || fileInput.files.length === 0) return;
 
             const file = fileInput.files[0];
             const reader = new FileReader();
 
             reader.onload = function(evt) {
-                const fileData = evt.target.result;
-                const sizeStr = formatFileSize(file.size);
-
                 state.documents.unshift({
                     id: Date.now(),
-                    title: title,
-                    employee: employee,
-                    type: type,
+                    title: document.getElementById('doc-title').value,
+                    employee: document.getElementById('doc-employee').value,
+                    type: document.getElementById('doc-type').value,
                     filename: file.name,
-                    size: sizeStr,
+                    size: formatFileSize(file.size),
                     date: formatDate(new Date()),
-                    expiry: expiry,
                     status: 'draft',
                     adminComments: '',
-                    notes: notes,
-                    fileData: fileData,
-                    fileType: file.type
+                    fileData: evt.target.result
                 });
 
                 saveState();
                 renderDocuments();
                 e.target.reset();
-                alert(`File "${file.name}" (${sizeStr}) uploaded successfully!\n\nDocument is now in Pending HR Verification status.`);
             };
 
             reader.readAsDataURL(file);
         }
 
-        function handleVerifyDoc(docId) {
-            const commentsInput = document.getElementById('doc-admin-comment-' + docId);
-            const comments = commentsInput && commentsInput.value ? commentsInput.value : 'Verified and approved by HR Manager';
-            const doc = state.documents.find(d => d.id === docId);
-
+        function handleVerifyDoc(id) {
+            const comment = document.getElementById('doc-comment-' + id)?.value || 'Verified by HR';
+            const doc = state.documents.find(d => d.id === id);
             if (doc) {
                 doc.status = 'verified';
-                doc.adminComments = comments;
+                doc.adminComments = comment;
                 saveState();
                 renderDocuments();
-                alert(`Document "${doc.title}" has been APPROVED & VERIFIED!`);
             }
         }
 
-        function handleRejectDoc(docId) {
-            const commentsInput = document.getElementById('doc-admin-comment-' + docId);
-            const comments = commentsInput && commentsInput.value ? commentsInput.value : 'Rejected by HR Manager. Please re-upload.';
-            const doc = state.documents.find(d => d.id === docId);
-
+        function handleRejectDoc(id) {
+            const comment = document.getElementById('doc-comment-' + id)?.value || 'Rejected by HR';
+            const doc = state.documents.find(d => d.id === id);
             if (doc) {
                 doc.status = 'rejected';
-                doc.adminComments = comments;
+                doc.adminComments = comment;
                 saveState();
                 renderDocuments();
-                alert(`Document "${doc.title}" has been REJECTED.`);
             }
         }
 
-        function previewFile(docId) {
-            const doc = state.documents.find(d => d.id === docId);
+        function previewFile(id) {
+            const doc = state.documents.find(d => d.id === id);
             if (!doc) return;
 
-            document.getElementById('modal-file-title').innerText = `${doc.title} (${doc.filename})`;
-            const container = document.getElementById('modal-file-content');
-            const downloadLink = document.getElementById('modal-download-link');
+            document.getElementById('modal-title').innerText = `${doc.title} (${doc.filename})`;
+            const container = document.getElementById('modal-content');
+            const link = document.getElementById('modal-download');
 
-            downloadLink.download = doc.filename;
-            downloadLink.href = doc.fileData || '#';
+            link.download = doc.filename;
+            link.href = doc.fileData || '#';
 
             if (doc.fileData && doc.fileData.startsWith('data:image')) {
-                container.innerHTML = `<img src="${doc.fileData}" style="max-width: 100%; max-height: 400px; border-radius: 6px;">`;
+                container.innerHTML = `<img src="${doc.fileData}" style="max-width:100%; max-height:360px; border-radius:6px;">`;
             } else if (doc.fileData && doc.fileData.startsWith('data:application/pdf')) {
-                container.innerHTML = `<embed src="${doc.fileData}" type="application/pdf" width="100%" height="400px" />`;
+                container.innerHTML = `<embed src="${doc.fileData}" type="application/pdf" width="100%" height="360px" />`;
             } else {
-                container.innerHTML = `
-                    <div style="text-align: center; color: var(--text-secondary);">
-                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📄</div>
-                        <p style="font-weight: 600; color: var(--text-primary);">${doc.filename}</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.25rem;">File Size: ${doc.size || 'N/A'}</p>
-                        <p style="font-size: 0.8rem; color: var(--accent-purple-hover); margin-top: 0.5rem;">Click the download button below to open this file.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div style="text-align:center; color:var(--text-muted);"><div style="font-size:2.5rem;">📄</div><p style="margin-top:0.5rem; color:#fff;">${doc.filename}</p></div>`;
             }
 
             document.getElementById('file-modal').style.display = 'flex';
         }
 
-        function closeFileModal() {
+        function closeModal() {
             document.getElementById('file-modal').style.display = 'none';
         }
 
-        function renderAttendanceBanner() {
-            const statusDot = document.getElementById('banner-status-dot');
-            const statusText = document.getElementById('banner-status-text');
-            const checkInTime = document.getElementById('banner-checkin-time');
-            const workedHours = document.getElementById('banner-worked-hours');
-            const btnIn = document.getElementById('btn-check-in');
-            const btnOut = document.getElementById('btn-check-out');
+        function renderAttendance() {
+            const dot = document.getElementById('dot-status');
+            const txt = document.getElementById('txt-status');
+            const checkIn = document.getElementById('txt-checkin-time');
+            const btnIn = document.getElementById('btn-in');
+            const btnOut = document.getElementById('btn-out');
 
             if (state.isCheckedIn) {
-                statusDot.className = 'status-dot green';
-                statusText.innerText = 'Present (Checked In)';
-                checkInTime.innerText = state.activeCheckInTime || '--:--';
+                dot.className = 'dot green';
+                txt.innerText = 'Present';
+                checkIn.innerText = state.activeCheckInTime || '--:--';
                 btnIn.disabled = true;
                 btnOut.disabled = false;
             } else {
-                statusDot.className = 'status-dot red';
-                statusText.innerText = 'Not Checked In';
-                checkInTime.innerText = '--:--';
-                workedHours.innerText = '0h 00m';
+                dot.className = 'dot red';
+                txt.innerText = 'Not Checked In';
+                checkIn.innerText = '--:--';
+                document.getElementById('txt-worked-hours').innerText = '0h 00m';
                 btnIn.disabled = false;
                 btnOut.disabled = true;
             }
+            renderAttendanceTbl();
         }
 
-        function renderAttendanceTable() {
-            const tbody = document.getElementById('attendance-table-body');
-            const tag = document.getElementById('record-rule-tag');
+        function renderAttendanceTbl() {
+            const tbody = document.getElementById('tbl-attendance');
+            let data = state.role === 'employee' ? state.attendances.filter(a => a.employee === state.currentEmployee) : state.attendances;
 
-            let filtered = state.attendances;
-            if (state.role === 'employee') {
-                filtered = state.attendances.filter(a => a.employee === state.currentEmployee);
-                tag.innerText = 'Showing personal attendance logs (Record Rule Protected)';
-            } else {
-                tag.innerText = 'Showing all organization attendance logs (HR / Admin Access)';
-            }
-
-            tbody.innerHTML = filtered.map(a => {
-                const badgeClass = a.status === 'present' ? 'badge-present' :
-                                   a.status === 'half_day' ? 'badge-halfday' :
-                                   a.status === 'leave' ? 'badge-leave' : 'badge-absent';
-                return `
-                    <tr>
-                        <td><strong>${a.date}</strong></td>
-                        <td>${a.employee}</td>
-                        <td>${a.checkIn}</td>
-                        <td>${a.checkOut}</td>
-                        <td><span class="badge ${badgeClass}">${a.status.toUpperCase().replace('_', ' ')}</span></td>
-                        <td>${a.workedHours}h</td>
-                        <td>${a.effectiveHours}h</td>
-                        <td style="color: ${a.extraHours > 0 ? 'var(--accent-green)' : 'inherit'}; font-weight: ${a.extraHours > 0 ? '700' : 'normal'};">${a.extraHours}h</td>
-                    </tr>
-                `;
-            }).join('');
+            tbody.innerHTML = data.map(a => `
+                <tr>
+                    <td><strong>${a.date}</strong></td>
+                    <td>${a.employee}</td>
+                    <td>${a.checkIn}</td>
+                    <td>${a.checkOut}</td>
+                    <td><span class="badge ${a.status==='present'?'badge-green':a.status==='half_day'?'badge-amber':'badge-red'}">${a.status.toUpperCase()}</span></td>
+                    <td>${a.workedHours}h</td>
+                    <td>${a.effectiveHours}h</td>
+                    <td style="color:${a.extraHours>0?'var(--accent-green)':'inherit'}">${a.extraHours}h</td>
+                </tr>
+            `).join('');
         }
 
         function renderLeaves() {
-            const tbody = document.getElementById('leave-table-body');
-            let filtered = state.leaves;
-            if (state.role === 'employee') {
-                filtered = state.leaves.filter(l => l.employee === state.currentEmployee);
-            }
+            const tbody = document.getElementById('tbl-leave');
+            let data = state.role === 'employee' ? state.leaves.filter(l => l.employee === state.currentEmployee) : state.leaves;
 
-            tbody.innerHTML = filtered.map(l => {
-                const badgeClass = l.status === 'approved' ? 'badge-present' :
-                                   l.status === 'rejected' ? 'badge-absent' : 'badge-pending';
-                const typeLabel = l.type === 'paid' ? 'Paid Time Off' : l.type === 'sick' ? 'Sick Leave' : 'Unpaid Leave';
+            tbody.innerHTML = data.map(l => {
+                const badge = l.status === 'approved' ? 'badge-green' : l.status === 'rejected' ? 'badge-red' : 'badge-amber';
+                let action = '';
 
-                let actionCol = '';
                 if (state.role === 'admin' && l.status === 'pending') {
-                    actionCol = `
-                        <div style="display:flex; flex-direction:column; gap:0.4rem;">
-                            <input type="text" id="hr-comments-${l.id}" class="form-control" style="font-size:0.75rem; padding:0.3rem;" placeholder="HR comment...">
-                            <div style="display:flex; gap:0.4rem;">
-                                <button class="btn btn-success" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="handleApproveLeave(${l.id})">Approve</button>
-                                <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="handleRejectLeave(${l.id})">Reject</button>
-                            </div>
+                    action = `
+                        <div style="display:flex; gap:0.3rem;">
+                            <input type="text" id="hr-leave-comment-${l.id}" class="input" style="font-size:0.75rem; padding:0.25rem 0.5rem;" placeholder="Comment...">
+                            <button class="btn btn-success" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleApproveLeave(${l.id})">Approve</button>
+                            <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleRejectLeave(${l.id})">Reject</button>
                         </div>
                     `;
                 } else {
-                    actionCol = `<span style="font-size:0.8rem; color:var(--text-secondary);">${l.adminComments || 'No HR comments'}</span>`;
+                    action = `<span style="font-size:0.8rem; color:var(--text-muted);">${l.adminComments || '--'}</span>`;
                 }
 
                 return `
                     <tr>
                         <td><strong>${l.employee}</strong></td>
-                        <td>${typeLabel}</td>
+                        <td>${l.type.toUpperCase()}</td>
                         <td>${l.startDate}</td>
                         <td>${l.endDate}</td>
-                        <td>${l.days} day(s)</td>
+                        <td>${l.days}d</td>
                         <td>${l.remarks}</td>
-                        <td><span class="badge ${badgeClass}">${l.status.toUpperCase()}</span></td>
-                        <td>${actionCol}</td>
+                        <td><span class="badge ${badge}">${l.status.toUpperCase()}</span></td>
+                        <td>${action}</td>
                     </tr>
                 `;
             }).join('');
         }
 
         function renderEmployees() {
-            const grid = document.getElementById('employee-grid');
+            const grid = document.getElementById('grid-employees');
             grid.innerHTML = state.employees.map(e => `
-                <div class="employee-card">
-                    <div class="emp-header">
-                        <div class="emp-avatar">${e.name.split(' ').map(n=>n[0]).join('')}</div>
-                        <div class="emp-info">
-                            <h4>${e.name}</h4>
-                            <p>${e.job}</p>
+                <div class="emp-card">
+                    <div class="emp-head">
+                        <div class="avatar">${e.name.split(' ').map(n=>n[0]).join('')}</div>
+                        <div>
+                            <div class="emp-name">${e.name}</div>
+                            <div class="emp-job">${e.job} • ${e.dept}</div>
                         </div>
                     </div>
-                    <div class="emp-meta">
-                        <div><strong>Dept:</strong> ${e.dept}</div>
-                        <div><strong>Email:</strong> ${e.email}</div>
-                        <div><strong>Joined:</strong> ${e.joining}</div>
-                        <div style="margin-top:0.3rem;">
-                            <span class="badge badge-role">${e.role}</span>
-                        </div>
-                        ${e.provisioned ? `
-                            <div style="margin-top:0.5rem; font-size:0.75rem; color:#34d399;">
-                                🔒 Account Provisioned<br><code style="color:var(--text-primary);">${e.loginId}</code>
-                            </div>
-                        ` : `
-                            <button class="btn btn-secondary" style="margin-top:0.5rem; font-size:0.75rem; padding:0.3rem 0.6rem;" onclick="handleProvisionAccount(${e.id})">
-                                Provision User Account
-                            </button>
-                        `}
+                    <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; gap:0.25rem;">
+                        <div>Email: ${e.email}</div>
+                        <div>Role: <span class="badge badge-purple">${e.role}</span></div>
+                        ${e.provisioned ? `<div style="color:#34d399; font-size:0.75rem; margin-top:0.25rem;">🔒 Account: <code>${e.loginId}</code></div>` :
+                        `<button class="btn btn-secondary" style="font-size:0.75rem; padding:0.25rem 0.5rem; margin-top:0.35rem;" onclick="handleProvision(${e.id})">Provision Account</button>`}
                     </div>
                 </div>
             `).join('');
         }
 
         function renderDocuments() {
-            document.getElementById('stat-id-proofs').innerText = state.documents.filter(d => d.type === 'id_proof').length;
-            document.getElementById('stat-contracts').innerText = state.documents.filter(d => d.type === 'contract').length;
-            document.getElementById('stat-certificates').innerText = state.documents.filter(d => d.type === 'certificate').length;
+            document.getElementById('stat-id').innerText = state.documents.filter(d => d.type === 'id_proof').length;
+            document.getElementById('stat-contract').innerText = state.documents.filter(d => d.type === 'contract').length;
+            document.getElementById('stat-cert').innerText = state.documents.filter(d => d.type === 'certificate').length;
             document.getElementById('stat-verified').innerText = state.documents.filter(d => d.status === 'verified').length;
 
-            const tbody = document.getElementById('document-table-body');
-            let filtered = state.documents;
-
-            if (state.role === 'employee') {
-                filtered = filtered.filter(d => d.employee === state.currentEmployee);
-            }
+            const tbody = document.getElementById('tbl-documents');
+            let data = state.documents;
+            if (state.role === 'employee') data = data.filter(d => d.employee === state.currentEmployee);
 
             if (state.currentDocFilter !== 'all') {
-                if (state.currentDocFilter === 'verified') {
-                    filtered = filtered.filter(d => d.status === 'verified');
-                } else {
-                    filtered = filtered.filter(d => d.type === state.currentDocFilter);
-                }
+                data = state.currentDocFilter === 'verified' ? data.filter(d => d.status === 'verified') : data.filter(d => d.type === state.currentDocFilter);
             }
 
-            tbody.innerHTML = filtered.map(d => {
-                const badgeClass = d.status === 'verified' ? 'badge-present' :
-                                   d.status === 'rejected' ? 'badge-absent' : 'badge-pending';
-                const statusLabel = d.status === 'verified' ? 'VERIFIED' :
-                                    d.status === 'rejected' ? 'REJECTED' : 'PENDING REVIEW';
+            tbody.innerHTML = data.map(d => {
+                const badge = d.status === 'verified' ? 'badge-green' : d.status === 'rejected' ? 'badge-red' : 'badge-amber';
+                let hrAction = '';
 
-                let hrWorkflowCol = '';
-                if (state.role === 'admin') {
-                    if (d.status === 'draft') {
-                        hrWorkflowCol = `
-                            <div style="display:flex; flex-direction:column; gap:0.35rem;">
-                                <input type="text" id="doc-admin-comment-${d.id}" class="form-control" style="font-size:0.75rem; padding:0.3rem;" placeholder="Review comment...">
-                                <div style="display:flex; gap:0.35rem;">
-                                    <button class="btn btn-success" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="handleVerifyDoc(${d.id})">Approve</button>
-                                    <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="handleRejectDoc(${d.id})">Reject</button>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        hrWorkflowCol = `<span style="font-size:0.8rem; color:var(--text-secondary);">${d.adminComments || 'No HR comments'}</span>`;
-                    }
+                if (state.role === 'admin' && d.status === 'draft') {
+                    hrAction = `
+                        <div style="display:flex; gap:0.3rem;">
+                            <input type="text" id="doc-comment-${d.id}" class="input" style="font-size:0.75rem; padding:0.25rem 0.5rem;" placeholder="Comment...">
+                            <button class="btn btn-success" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleVerifyDoc(${d.id})">Approve</button>
+                            <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleRejectDoc(${d.id})">Reject</button>
+                        </div>
+                    `;
                 } else {
-                    hrWorkflowCol = `<span style="font-size:0.8rem; color:var(--text-secondary);">${d.adminComments || 'Pending HR Review'}</span>`;
+                    hrAction = `<span style="font-size:0.8rem; color:var(--text-muted);">${d.adminComments || '--'}</span>`;
                 }
 
                 return `
                     <tr>
                         <td><strong>${d.title}</strong></td>
                         <td>${d.employee}</td>
-                        <td><span class="badge badge-role">${d.type.toUpperCase().replace('_', ' ')}</span></td>
-                        <td>
-                            <div><code>${d.filename}</code></div>
-                            <div style="font-size:0.75rem; color:var(--text-secondary);">${d.size || 'N/A'}</div>
-                        </td>
+                        <td><span class="badge badge-purple">${d.type.toUpperCase().replace('_', ' ')}</span></td>
+                        <td><code>${d.filename}</code> <span style="font-size:0.75rem; color:var(--text-muted);">(${d.size})</span></td>
                         <td>${d.date}</td>
-                        <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
-                        <td>
-                            <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="previewFile(${d.id})">
-                                👁️ View File
-                            </button>
-                        </td>
-                        <td>${hrWorkflowCol}</td>
+                        <td><span class="badge ${badge}">${d.status.toUpperCase()}</span></td>
+                        <td><button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="previewFile(${d.id})">👁️ View</button></td>
+                        <td>${hrAction}</td>
                     </tr>
                 `;
             }).join('');
         }
 
         function renderAll() {
-            renderAttendanceBanner();
-            renderAttendanceTable();
+            renderAttendance();
             renderLeaves();
             renderEmployees();
             renderDocuments();
@@ -1461,7 +1230,7 @@ def run_server(port=8000):
     server_address = ('', port)
     httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
     print("==================================================")
-    print(" Dayflow HRMS - Interactive Live UI Preview Server")
+    print(" Dayflow HRMS - Decluttered Live Preview Server")
     print(" Running at: http://localhost:%d" % port)
     print(" Press Ctrl+C to stop the server.")
     print("==================================================")
