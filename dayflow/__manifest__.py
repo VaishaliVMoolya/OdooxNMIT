@@ -24,6 +24,7 @@ Streamlined Human Resource Management System supporting:
     'data': [
         'security/dayflow_security.xml',
         'security/ir.model.access.csv',
+        'data/dayflow_sequence.xml',
         'views/menu_views.xml',
         'views/employee_views.xml',
         'views/attendance_views.xml',
