@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Dayflow HRMS - Ultra-Clean, Decluttered Live UI Preview Server
+Dayflow HRMS - Unified Live UI Preview Server
+Odoo x NMIT Hackathon
+All-in-One Dashboard, Employees, Attendance, Time Off, Documents, and Payroll Console
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -12,8 +14,8 @@ HTML_CONTENT = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow HRMS — Workspace</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Dayflow HRMS — Workspace & Management Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-body: #0f1117;
@@ -128,7 +130,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         /* Container & Layout */
         .container {
-            max-width: 1200px;
+            max-width: 1240px;
             margin: 0 auto;
             padding: 1.5rem;
             width: 100%;
@@ -145,6 +147,12 @@ HTML_CONTENT = """<!DOCTYPE html>
         .header-title {
             font-size: 1.35rem;
             font-weight: 700;
+        }
+
+        .header-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
         }
 
         .card {
@@ -189,6 +197,58 @@ HTML_CONTENT = """<!DOCTYPE html>
             border: 1px solid var(--border-line);
         }
         .btn-secondary:hover:not(:disabled) { background-color: var(--border-line); }
+
+        /* Hero KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 10px;
+            padding: 1.15rem 1.35rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-purple);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+        }
+
+        .kpi-icon-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        .kpi-blue { border-left: 4px solid var(--accent-blue); }
+        .kpi-blue .kpi-icon-box { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+
+        .kpi-green { border-left: 4px solid var(--accent-green); }
+        .kpi-green .kpi-icon-box { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+        .kpi-amber { border-left: 4px solid var(--accent-amber); }
+        .kpi-amber .kpi-icon-box { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+        .kpi-red { border-left: 4px solid var(--accent-red); }
+        .kpi-red .kpi-icon-box { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        .kpi-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); }
+        .kpi-val { font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1.1; margin-top: 2px; }
+        .kpi-sub { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); margin-top: 3px; }
 
         /* Action Banner */
         .banner {
@@ -253,6 +313,18 @@ HTML_CONTENT = """<!DOCTYPE html>
             font-size: 1.5rem;
             font-weight: 700;
             margin-top: 0.25rem;
+        }
+
+        /* 2-Column Grid Layout */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-col-grid { grid-template-columns: 1fr; }
         }
 
         /* Employee Grid */
@@ -341,6 +413,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         .badge-amber { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-red { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
         .badge-purple { background-color: rgba(113, 75, 103, 0.3); color: #e9d5ff; border: 1px solid rgba(113, 75, 103, 0.5); }
+        .badge-blue { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
 
         /* Forms */
         .form-row {
@@ -433,7 +506,8 @@ HTML_CONTENT = """<!DOCTYPE html>
             <span class="brand-badge">DF</span> Dayflow HRMS
         </a>
         <ul class="nav-links">
-            <li class="nav-tab active" id="tab-btn-attendance" onclick="openTab('attendance')">Attendance</li>
+            <li class="nav-tab active" id="tab-btn-dashboard" onclick="openTab('dashboard')">Dashboard</li>
+            <li class="nav-tab" id="tab-btn-attendance" onclick="openTab('attendance')">Attendance</li>
             <li class="nav-tab" id="tab-btn-leave" onclick="openTab('leave')">Time Off</li>
             <li class="nav-tab" id="tab-btn-employees" onclick="openTab('employees')">Employees</li>
             <li class="nav-tab" id="tab-btn-documents" onclick="openTab('documents')">Documents</li>
@@ -442,16 +516,139 @@ HTML_CONTENT = """<!DOCTYPE html>
         <div class="user-pill">
             <span>Signed in as:</span>
             <select id="user-role-select" onchange="onRoleChange(this.value)">
-                <option value="employee">Employee (John Doe)</option>
                 <option value="admin">HR Manager (Admin)</option>
+                <option value="employee">Employee (John Doe)</option>
             </select>
         </div>
     </nav>
 
     <div class="container">
 
+        <!-- DASHBOARD TAB (Person 4: Admin/HR Management Console) -->
+        <div id="panel-dashboard" class="tab-panel active">
+            <div class="header-row">
+                <div>
+                    <h1 class="header-title">Dayflow HRMS Management Console</h1>
+                    <p class="header-sub">Live organizational metrics, pending approvals, and executive summary</p>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="btn btn-primary" onclick="openTab('payroll')">💰 Salary Overview</button>
+                    <button class="btn btn-secondary" onclick="resetData()">↺ Refresh</button>
+                </div>
+            </div>
+
+            <!-- Hero KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-blue" onclick="openTab('employees')">
+                    <div class="kpi-icon-box">👥</div>
+                    <div>
+                        <div class="kpi-label">Total Employees</div>
+                        <div class="kpi-val" id="dash-kpi-employees">0</div>
+                        <div class="kpi-sub" style="color: #60a5fa;">View Directory →</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-green" onclick="openTab('attendance')">
+                    <div class="kpi-icon-box">✓</div>
+                    <div>
+                        <div class="kpi-label">Present Today</div>
+                        <div class="kpi-val" id="dash-kpi-present">0</div>
+                        <div class="kpi-sub" style="color: #34d399;">View Attendance →</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-amber" onclick="openTab('leave')">
+                    <div class="kpi-icon-box">📅</div>
+                    <div>
+                        <div class="kpi-label">On Leave Today</div>
+                        <div class="kpi-val" id="dash-kpi-on-leave">0</div>
+                        <div class="kpi-sub" style="color: #fbbf24;">View Time Off →</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-red" onclick="openTab('leave')">
+                    <div class="kpi-icon-box">⏳</div>
+                    <div>
+                        <div class="kpi-label">Pending Requests</div>
+                        <div class="kpi-val" id="dash-kpi-pending">0</div>
+                        <div class="kpi-sub" style="color: #f87171;">Review Hub →</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: Pending Leave Requests (Decision Hub) -->
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <div>
+                        <h3 style="font-size: 1.05rem;">Pending Leave Requests (Decision Hub)</h3>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Review and take immediate action on employee time off applications</p>
+                    </div>
+                    <span class="badge badge-amber" id="dash-badge-pending-count">0 Pending</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Category</th>
+                                <th>Duration</th>
+                                <th>Reason / Remarks</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-tbl-pending-leaves"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2-Column: Today's Attendance Summary & Employee Overview -->
+            <div class="two-col-grid">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
+                        <h3 style="font-size: 1.05rem;">Today's Attendance Overview</h3>
+                        <span class="badge badge-green" id="dash-badge-present-count">0 Active</span>
+                    </div>
+                    <div class="table-wrap" style="max-height: 300px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-tbl-today-attendance"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
+                        <h3 style="font-size: 1.05rem;">Employee Directory</h3>
+                        <span class="badge badge-purple" id="dash-badge-total-emp">0 Total</span>
+                    </div>
+                    <div style="margin-bottom: 0.75rem;">
+                        <input type="text" class="input" style="width: 100%; font-size: 0.8rem; padding: 0.4rem 0.6rem;" id="dash-search-emp" placeholder="Search by name, job, or department..." oninput="filterDashboardEmployees()">
+                    </div>
+                    <div class="table-wrap" style="max-height: 250px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Role</th>
+                                    <th>Joining</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-tbl-employees"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ATTENDANCE TAB -->
-        <div id="panel-attendance" class="tab-panel active">
+        <div id="panel-attendance" class="tab-panel">
             <div class="header-row">
                 <div>
                     <h1 class="header-title">Attendance Tracking</h1>
@@ -711,17 +908,67 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- PAYROLL TAB -->
+        <!-- PAYROLL TAB (Person 4: Salary Structure & Payroll Management) -->
         <div id="panel-payroll" class="tab-panel">
+            <div class="header-row">
+                <div>
+                    <h1 class="header-title">Payroll & Salary Structure Management</h1>
+                    <p class="header-sub">Manage base compensation, allowances, deductions, and salary disbursement</p>
+                </div>
+                <div id="admin-payroll-actions">
+                    <button class="btn btn-primary" onclick="openSalaryModal(null)">+ Add Salary Record</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="metric-label">Total Monthly Payroll</div>
+                    <div class="num" style="color: #60a5fa;" id="stat-payroll-total">₹0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div class="metric-label">Approved Records</div>
+                    <div class="num" style="color: #34d399;" id="stat-payroll-approved">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="metric-label">Paid Records</div>
+                    <div class="num" style="color: #a78bfa;" id="stat-payroll-paid">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="metric-label">Pending Drafts</div>
+                    <div class="num" style="color: #fbbf24;" id="stat-payroll-draft">0</div>
+                </div>
+            </div>
+
             <div class="card">
-                <h2 style="font-size: 1.1rem;">Payroll & Salary Management</h2>
-                <p style="color:var(--text-muted); margin-top:0.35rem; font-size:0.875rem;">Managed by Person 4 (Payroll computation, base salary, allowances, net salary).</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.05rem;">Employee Salary Structures & Compensation</h3>
+                    <span id="payroll-rule-tag" style="font-size: 0.78rem; color: var(--text-muted);">Showing organizational payroll records</span>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Employee</th>
+                                <th>Structure</th>
+                                <th>Period</th>
+                                <th style="text-align: right;">Base Salary</th>
+                                <th style="text-align: right;">Allowances</th>
+                                <th style="text-align: right;">Deductions</th>
+                                <th style="text-align: right;">Net Salary</th>
+                                <th style="text-align: center;">Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-payroll"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Modal -->
+    <!-- Document File Preview Modal -->
     <div id="file-modal" class="modal" style="display: none;">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -736,16 +983,64 @@ HTML_CONTENT = """<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- Edit Salary Modal (Person 4) -->
+    <div id="salary-modal" class="modal" style="display: none;">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.1rem;">Update Employee Salary Structure</h3>
+                <button class="btn btn-secondary" onclick="closeSalaryModal()">✕</button>
+            </div>
+            <form onsubmit="handleSaveSalary(event)">
+                <input type="hidden" id="modal-pay-id">
+                <div class="form-row">
+                    <div class="field">
+                        <label>Employee Name</label>
+                        <input type="text" id="modal-pay-emp" class="input" readonly>
+                    </div>
+                    <div class="field">
+                        <label>Salary Structure Title</label>
+                        <input type="text" id="modal-pay-struct" class="input" placeholder="e.g. Senior Technical">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field">
+                        <label>Base Salary (₹)</label>
+                        <input type="number" id="modal-pay-base" class="input" oninput="calcModalNetSalary()" required>
+                    </div>
+                    <div class="field">
+                        <label>Allowances (₹)</label>
+                        <input type="number" id="modal-pay-allow" class="input" oninput="calcModalNetSalary()" required>
+                    </div>
+                    <div class="field">
+                        <label>Deductions (₹)</label>
+                        <input type="number" id="modal-pay-deduct" class="input" oninput="calcModalNetSalary()" required>
+                    </div>
+                </div>
+                <div class="stat-box" style="background: var(--bg-card); margin-bottom: 1rem;">
+                    <div class="metric-label">Calculated Net Salary (Base + Allowances - Deductions)</div>
+                    <div class="num" style="color: #34d399;" id="modal-pay-net-preview">₹0.00</div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeSalaryModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Salary Structure</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const DEFAULT_ATTENDANCE = [
             { id: 1, date: '2026-08-21', employee: 'John Doe', checkIn: '09:00 AM', checkOut: '05:30 PM', status: 'present', workedHours: 8.5, effectiveHours: 8.5, extraHours: 0.5 },
             { id: 2, date: '2026-08-20', employee: 'John Doe', checkIn: '08:50 AM', checkOut: '06:10 PM', status: 'present', workedHours: 9.3, effectiveHours: 9.3, extraHours: 1.3 },
-            { id: 3, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0 }
+            { id: 3, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0 },
+            { id: 4, date: '2026-08-22', employee: 'Jane Smith', checkIn: '09:05 AM', checkOut: '--', status: 'present', workedHours: 2.5, effectiveHours: 2.5, extraHours: 0.0 },
+            { id: 5, date: '2026-08-22', employee: 'Robert Taylor', checkIn: '08:45 AM', checkOut: '--', status: 'present', workedHours: 2.8, effectiveHours: 2.8, extraHours: 0.0 }
         ];
 
         const DEFAULT_LEAVE = [
             { id: 101, employee: 'John Doe', type: 'sick', startDate: '2026-08-25', endDate: '2026-08-26', days: 2, remarks: 'Fever and rest recommended', status: 'pending', adminComments: '' },
-            { id: 102, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', status: 'approved', adminComments: 'Approved by HR' }
+            { id: 102, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', status: 'approved', adminComments: 'Approved by HR' },
+            { id: 103, employee: 'Robert Taylor', type: 'paid', startDate: '2026-08-23', endDate: '2026-08-24', days: 2, remarks: 'Attending developer conference', status: 'pending', adminComments: '' }
         ];
 
         const DEFAULT_EMPLOYEES = [
@@ -759,8 +1054,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             { id: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', size: '450 KB', date: '2026-08-01', status: 'verified', adminComments: 'Signed contract on file', fileData: '' }
         ];
 
+        const DEFAULT_PAYROLL = [
+            { id: 1, ref: 'PAY/2026/001', employee: 'John Doe', structure: 'Senior Technical', period: 'August 2026', base: 65000, allow: 12000, deduct: 4500, status: 'approved' },
+            { id: 2, ref: 'PAY/2026/002', employee: 'Jane Smith', structure: 'HR Specialist Base', period: 'August 2026', base: 55000, allow: 8000, deduct: 3500, status: 'paid' },
+            { id: 3, ref: 'PAY/2026/003', employee: 'Robert Taylor', structure: 'Product Lead', period: 'August 2026', base: 58000, allow: 9000, deduct: 3800, status: 'draft' }
+        ];
+
         let state = {
-            role: 'employee',
+            role: 'admin',
             currentEmployee: 'John Doe',
             isCheckedIn: false,
             activeCheckInTime: null,
@@ -770,7 +1071,8 @@ HTML_CONTENT = """<!DOCTYPE html>
             attendances: JSON.parse(localStorage.getItem('df_attendances')) || DEFAULT_ATTENDANCE,
             leaves: JSON.parse(localStorage.getItem('df_leaves')) || DEFAULT_LEAVE,
             employees: JSON.parse(localStorage.getItem('df_employees')) || DEFAULT_EMPLOYEES,
-            documents: JSON.parse(localStorage.getItem('df_documents')) || DEFAULT_DOCUMENTS
+            documents: JSON.parse(localStorage.getItem('df_documents')) || DEFAULT_DOCUMENTS,
+            payrolls: JSON.parse(localStorage.getItem('df_payrolls')) || DEFAULT_PAYROLL
         };
 
         function saveState() {
@@ -778,6 +1080,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             localStorage.setItem('df_leaves', JSON.stringify(state.leaves));
             localStorage.setItem('df_employees', JSON.stringify(state.employees));
             localStorage.setItem('df_documents', JSON.stringify(state.documents));
+            localStorage.setItem('df_payrolls', JSON.stringify(state.payrolls));
         }
 
         function resetData() {
@@ -786,9 +1089,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             state.leaves = JSON.parse(JSON.stringify(DEFAULT_LEAVE));
             state.employees = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
             state.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+            state.payrolls = JSON.parse(JSON.stringify(DEFAULT_PAYROLL));
             state.isCheckedIn = false;
             if (state.tickerInterval) clearInterval(state.tickerInterval);
             renderAll();
+        }
+
+        function formatCurrency(val) {
+            return '₹' + Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
         function formatTime(d) {
@@ -822,6 +1130,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderAll();
         }
 
+        /* Attendance actions */
         function handleCheckIn() {
             if (state.isCheckedIn) return;
             const now = new Date();
@@ -847,6 +1156,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             state.attendances.unshift(newRec);
             saveState();
             renderAttendance();
+            renderDashboard();
         }
 
         function updateLiveTicker() {
@@ -889,8 +1199,10 @@ HTML_CONTENT = """<!DOCTYPE html>
             state.isCheckedIn = false;
             saveState();
             renderAttendance();
+            renderDashboard();
         }
 
+        /* Leave actions */
         function handleLeaveSubmit(e) {
             e.preventDefault();
             const type = document.getElementById('leave-type').value;
@@ -914,31 +1226,35 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             saveState();
             renderLeaves();
+            renderDashboard();
             e.target.reset();
         }
 
         function handleApproveLeave(id) {
-            const comment = document.getElementById('hr-leave-comment-' + id)?.value || 'Approved by HR';
+            const commentInput = document.getElementById('hr-leave-comment-' + id);
+            const comment = commentInput ? commentInput.value : 'Approved by HR';
             const leave = state.leaves.find(l => l.id === id);
             if (leave) {
                 leave.status = 'approved';
-                leave.adminComments = comment;
+                leave.adminComments = comment || 'Approved by HR';
                 saveState();
                 renderAll();
             }
         }
 
         function handleRejectLeave(id) {
-            const comment = document.getElementById('hr-leave-comment-' + id)?.value || 'Rejected by HR';
+            const commentInput = document.getElementById('hr-leave-comment-' + id);
+            const comment = commentInput ? commentInput.value : 'Rejected by HR';
             const leave = state.leaves.find(l => l.id === id);
             if (leave) {
                 leave.status = 'rejected';
-                leave.adminComments = comment;
+                leave.adminComments = comment || 'Rejected by HR';
                 saveState();
-                renderLeaves();
+                renderAll();
             }
         }
 
+        /* Employee actions */
         function toggleEmpForm() {
             const card = document.getElementById('form-emp-card');
             card.style.display = card.style.display === 'none' ? 'block' : 'none';
@@ -946,7 +1262,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function handleAddEmp(e) {
             e.preventDefault();
-            state.employees.unshift({
+            const newEmp = {
                 id: Date.now(),
                 name: document.getElementById('emp-name').value,
                 email: document.getElementById('emp-email').value,
@@ -956,10 +1272,24 @@ HTML_CONTENT = """<!DOCTYPE html>
                 joining: document.getElementById('emp-joining').value,
                 loginId: '',
                 provisioned: false
+            };
+            state.employees.unshift(newEmp);
+
+            // Also create an initial draft payroll entry for the new employee
+            state.payrolls.push({
+                id: Date.now(),
+                ref: `PAY/2026/00${state.payrolls.length + 1}`,
+                employee: newEmp.name,
+                structure: 'Standard Base',
+                period: 'August 2026',
+                base: 45000,
+                allow: 6000,
+                deduct: 2500,
+                status: 'draft'
             });
 
             saveState();
-            renderEmployees();
+            renderAll();
             e.target.reset();
             toggleEmpForm();
         }
@@ -972,9 +1302,11 @@ HTML_CONTENT = """<!DOCTYPE html>
                 emp.loginId = `DAYFLOW-${emp.name.replace(/[^A-Z]/gi, '').toUpperCase()}-${year}-000${Math.floor(Math.random() * 90 + 10)}`;
                 saveState();
                 renderEmployees();
+                renderDashboard();
             }
         }
 
+        /* Document actions */
         function filterDoc(cat) {
             state.currentDocFilter = cat;
             document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
@@ -1059,6 +1391,165 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function closeModal() {
             document.getElementById('file-modal').style.display = 'none';
+        }
+
+        /* Payroll Modal & Actions (Person 4) */
+        function openSalaryModal(payId) {
+            const pay = state.payrolls.find(p => p.id === payId);
+            if (pay) {
+                document.getElementById('modal-pay-id').value = pay.id;
+                document.getElementById('modal-pay-emp').value = pay.employee;
+                document.getElementById('modal-pay-struct').value = pay.structure;
+                document.getElementById('modal-pay-base').value = pay.base;
+                document.getElementById('modal-pay-allow').value = pay.allow;
+                document.getElementById('modal-pay-deduct').value = pay.deduct;
+            } else {
+                document.getElementById('modal-pay-id').value = '';
+                document.getElementById('modal-pay-emp').value = state.employees[0]?.name || 'John Doe';
+                document.getElementById('modal-pay-struct').value = 'Standard Base';
+                document.getElementById('modal-pay-base').value = 50000;
+                document.getElementById('modal-pay-allow').value = 7500;
+                document.getElementById('modal-pay-deduct').value = 3000;
+            }
+            calcModalNetSalary();
+            document.getElementById('salary-modal').style.display = 'flex';
+        }
+
+        function closeSalaryModal() {
+            document.getElementById('salary-modal').style.display = 'none';
+        }
+
+        function calcModalNetSalary() {
+            const base = parseFloat(document.getElementById('modal-pay-base').value) || 0;
+            const allow = parseFloat(document.getElementById('modal-pay-allow').value) || 0;
+            const deduct = parseFloat(document.getElementById('modal-pay-deduct').value) || 0;
+            const net = base + allow - deduct;
+            document.getElementById('modal-pay-net-preview').innerText = formatCurrency(net);
+        }
+
+        function handleSaveSalary(e) {
+            e.preventDefault();
+            const idVal = document.getElementById('modal-pay-id').value;
+            const base = parseFloat(document.getElementById('modal-pay-base').value) || 0;
+            const allow = parseFloat(document.getElementById('modal-pay-allow').value) || 0;
+            const deduct = parseFloat(document.getElementById('modal-pay-deduct').value) || 0;
+            const struct = document.getElementById('modal-pay-struct').value || 'Standard Base';
+
+            if (idVal) {
+                const pay = state.payrolls.find(p => p.id === parseInt(idVal));
+                if (pay) {
+                    pay.base = base;
+                    pay.allow = allow;
+                    pay.deduct = deduct;
+                    pay.structure = struct;
+                }
+            } else {
+                const emp = document.getElementById('modal-pay-emp').value;
+                state.payrolls.push({
+                    id: Date.now(),
+                    ref: `PAY/2026/00${state.payrolls.length + 1}`,
+                    employee: emp,
+                    structure: struct,
+                    period: 'August 2026',
+                    base: base,
+                    allow: allow,
+                    deduct: deduct,
+                    status: 'draft'
+                });
+            }
+
+            saveState();
+            closeSalaryModal();
+            renderAll();
+        }
+
+        function handleApprovePayroll(id) {
+            const pay = state.payrolls.find(p => p.id === id);
+            if (pay) {
+                pay.status = 'approved';
+                saveState();
+                renderPayroll();
+                renderDashboard();
+            }
+        }
+
+        function handlePayPayroll(id) {
+            const pay = state.payrolls.find(p => p.id === id);
+            if (pay) {
+                pay.status = 'paid';
+                saveState();
+                renderPayroll();
+                renderDashboard();
+            }
+        }
+
+        /* Render Functions */
+        function renderDashboard() {
+            // Compute Live Metrics
+            const totalEmp = state.employees.length;
+            const presentToday = state.attendances.filter(a => a.status === 'present').length;
+            const onLeave = state.leaves.filter(l => l.status === 'approved').length;
+            const pendingLeaves = state.leaves.filter(l => l.status === 'pending');
+
+            document.getElementById('dash-kpi-employees').innerText = totalEmp;
+            document.getElementById('dash-kpi-present').innerText = presentToday;
+            document.getElementById('dash-kpi-on-leave').innerText = onLeave;
+            document.getElementById('dash-kpi-pending').innerText = pendingLeaves.length;
+            document.getElementById('dash-badge-pending-count').innerText = `${pendingLeaves.length} Pending`;
+            document.getElementById('dash-badge-present-count').innerText = `${presentToday} Active`;
+            document.getElementById('dash-badge-total-emp').innerText = `${totalEmp} Total`;
+
+            // Pending Leave Decisions Table
+            const tbodyPending = document.getElementById('dash-tbl-pending-leaves');
+            if (pendingLeaves.length === 0) {
+                tbodyPending.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">🎉 No pending leave requests! All applications have been reviewed.</td></tr>`;
+            } else {
+                tbodyPending.innerHTML = pendingLeaves.map(l => `
+                    <tr>
+                        <td><strong>${l.employee}</strong></td>
+                        <td><span class="badge badge-purple">${l.type.toUpperCase()}</span></td>
+                        <td>${l.startDate} → ${l.endDate} (${l.days}d)</td>
+                        <td style="color:var(--text-muted);">${l.remarks}</td>
+                        <td style="text-align: right;">
+                            <div style="display:inline-flex; gap:0.35rem;">
+                                <button class="btn btn-success" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="handleApproveLeave(${l.id})">Approve</button>
+                                <button class="btn btn-danger" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="handleRejectLeave(${l.id})">Reject</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Today's Attendance Overview
+            const tbodyAtt = document.getElementById('dash-tbl-today-attendance');
+            tbodyAtt.innerHTML = state.attendances.slice(0, 5).map(a => `
+                <tr>
+                    <td><strong>${a.employee}</strong></td>
+                    <td>${a.checkIn}</td>
+                    <td>${a.checkOut}</td>
+                    <td><span class="badge ${a.status==='present'?'badge-green':a.status==='half_day'?'badge-amber':'badge-red'}">${a.status.toUpperCase()}</span></td>
+                </tr>
+            `).join('');
+
+            // Employee Directory Preview
+            filterDashboardEmployees();
+        }
+
+        function filterDashboardEmployees() {
+            const query = (document.getElementById('dash-search-emp')?.value || '').toLowerCase();
+            const tbodyEmp = document.getElementById('dash-tbl-employees');
+            const filtered = state.employees.filter(e => e.name.toLowerCase().includes(query) || e.job.toLowerCase().includes(query) || e.dept.toLowerCase().includes(query));
+
+            tbodyEmp.innerHTML = filtered.map(e => `
+                <tr>
+                    <td>
+                        <strong>${e.name}</strong>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">${e.job}</div>
+                    </td>
+                    <td><span class="badge badge-purple">${e.role}</span></td>
+                    <td style="font-size:0.8rem; color:var(--text-muted);">${e.joining || '--'}</td>
+                </tr>
+            `).join('');
         }
 
         function renderAttendance() {
@@ -1204,11 +1695,72 @@ HTML_CONTENT = """<!DOCTYPE html>
             }).join('');
         }
 
+        function renderPayroll() {
+            let data = state.payrolls;
+            const tag = document.getElementById('payroll-rule-tag');
+            const adminActions = document.getElementById('admin-payroll-actions');
+
+            if (state.role === 'employee') {
+                data = data.filter(p => p.employee === state.currentEmployee);
+                if (tag) tag.innerText = 'Showing your personal salary structure (Record Rule Protected)';
+                if (adminActions) adminActions.style.display = 'none';
+            } else {
+                if (tag) tag.innerText = 'Showing organizational payroll records (Admin HR Access)';
+                if (adminActions) adminActions.style.display = 'block';
+            }
+
+            const totalNet = data.reduce((sum, p) => sum + (p.base + p.allow - p.deduct), 0);
+            const approved = data.filter(p => p.status === 'approved').length;
+            const paid = data.filter(p => p.status === 'paid').length;
+            const draft = data.filter(p => p.status === 'draft').length;
+
+            document.getElementById('stat-payroll-total').innerText = formatCurrency(totalNet);
+            document.getElementById('stat-payroll-approved').innerText = approved;
+            document.getElementById('stat-payroll-paid').innerText = paid;
+            document.getElementById('stat-payroll-draft').innerText = draft;
+
+            const tbody = document.getElementById('tbl-payroll');
+            tbody.innerHTML = data.map(p => {
+                const net = p.base + p.allow - p.deduct;
+                const badgeClass = p.status === 'paid' ? 'badge-green' : p.status === 'approved' ? 'badge-blue' : 'badge-amber';
+                let actions = '';
+
+                if (state.role === 'admin') {
+                    actions = `
+                        <div style="display:flex; justify-content:flex-end; gap:0.3rem;">
+                            <button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="openSalaryModal(${p.id})">✎ Edit</button>
+                            ${p.status === 'draft' ? `<button class="btn btn-primary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleApprovePayroll(${p.id})">Approve</button>` : ''}
+                            ${p.status === 'approved' ? `<button class="btn btn-success" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handlePayPayroll(${p.id})">Pay</button>` : ''}
+                        </div>
+                    `;
+                } else {
+                    actions = `<span style="font-size:0.8rem; color:var(--text-muted);">View Only</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td><strong style="color:var(--accent-purple-hover);">${p.ref}</strong></td>
+                        <td><strong>${p.employee}</strong></td>
+                        <td><span style="color:var(--text-muted); font-size:0.8rem;">${p.structure}</span></td>
+                        <td><span class="badge badge-purple">${p.period}</span></td>
+                        <td style="text-align: right;">${formatCurrency(p.base)}</td>
+                        <td style="text-align: right; color:#34d399;">+ ${formatCurrency(p.allow)}</td>
+                        <td style="text-align: right; color:#f87171;">- ${formatCurrency(p.deduct)}</td>
+                        <td style="text-align: right; font-weight:700; color:#fff;">${formatCurrency(net)}</td>
+                        <td style="text-align: center;"><span class="badge ${badgeClass}">${p.status.toUpperCase()}</span></td>
+                        <td style="text-align: right;">${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         function renderAll() {
+            renderDashboard();
             renderAttendance();
             renderLeaves();
             renderEmployees();
             renderDocuments();
+            renderPayroll();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -1230,7 +1782,7 @@ def run_server(port=8000):
     server_address = ('', port)
     httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
     print("==================================================")
-    print(" Dayflow HRMS - Decluttered Live Preview Server")
+    print(" Dayflow HRMS - Unified Live UI Preview Server")
     print(" Running at: http://localhost:%d" % port)
     print(" Press Ctrl+C to stop the server.")
     print("==================================================")
