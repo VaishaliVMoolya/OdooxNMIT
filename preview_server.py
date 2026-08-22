@@ -137,7 +137,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         .emp-name { font-size: 1rem; font-weight: 700; }
         .emp-job { font-size: 0.78rem; color: var(--text-muted); }
 
-        /* Tables */
+        /* Table */
         .table-wrap { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
         th { background-color: var(--bg-card); color: var(--text-muted); padding: 0.65rem 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-line); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
