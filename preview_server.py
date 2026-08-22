@@ -2402,11 +2402,13 @@ HTML_CONTENT = """<!DOCTYPE html>
             setSession(user);
             applySession(user);
 
+            // Login Security Alert: Routed strictly to HR Administrators
             triggerNotification(
                 `Security: Login Alert (${user.name})`,
-                user.email || `${user.loginId}@company.com`,
+                'admin@dayflow.org',
                 'login',
-                `Security notification: Successful login for account ${user.loginId} (${user.role.toUpperCase()}) at ${new Date().toLocaleTimeString()}.`
+                `Security audit: User ${user.name} (${user.loginId} • ${user.role.toUpperCase()}) authenticated at ${new Date().toLocaleTimeString()}.`,
+                'admin'
             );
         }
 
@@ -2415,6 +2417,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             // Reset transient session state (NEVER destroy persistent business records)
             state.role = 'admin';
             state.currentEmployee = 'Jane Smith';
+            state.currentEmployeeEmail = 'admin@dayflow.org';
             state.currentEmployeeId = null;
             state.viewingEmployeeId = null;
             state.isCheckedIn = false;
@@ -2432,12 +2435,14 @@ HTML_CONTENT = """<!DOCTYPE html>
                 emp = state.adminProfile;
                 state.role = 'admin';
                 state.currentEmployee = 'Jane Smith';
+                state.currentEmployeeEmail = 'admin@dayflow.org';
                 state.currentUserId = user.userId || 'u_admin';
                 state.currentEmployeeId = null;
             } else {
                 emp = state.employees.find(e => e.id === user.employeeId || (e.code && e.code.toLowerCase() === user.loginId.toLowerCase()) || (e.loginId && e.loginId.toLowerCase() === user.loginId.toLowerCase()) || (e.email && e.email.toLowerCase() === (user.email||'').toLowerCase())) || state.employees[0];
                 state.role = 'employee';
                 state.currentEmployee = emp ? emp.name : user.name;
+                state.currentEmployeeEmail = user.email || (emp ? emp.email : `${user.loginId}@company.com`);
                 state.currentUserId = user.userId;
                 state.currentEmployeeId = emp ? emp.id : user.employeeId;
             }
@@ -2499,20 +2504,30 @@ HTML_CONTENT = """<!DOCTYPE html>
             return true;
         }
 
-        /* Notifications Engine */
-        function triggerNotification(title, recipient, type, body) {
+        /* Notifications Engine with Strict Role-Based Privacy */
+        function triggerNotification(title, recipient, type, body, targetRole = 'all') {
             const notif = {
                 id: Date.now(),
                 title: title,
                 recipient: recipient,
                 type: type,
+                targetRole: targetRole,
                 time: 'Just now',
                 body: body
             };
             state.notifications.unshift(notif);
             saveState();
             renderNotifications();
-            showToast(title, `${body} (Sent to: ${recipient})`);
+
+            // Strict Privacy: Only show toast popups if the current logged-in user is an admin,
+            // OR if the notification is specifically addressed to this employee.
+            if (type === 'login' || targetRole === 'admin') {
+                if (state.role === 'admin') {
+                    showToast(title, `${body} (Admin Security Alert)`);
+                }
+            } else {
+                showToast(title, `${body} (Sent to: ${recipient})`);
+            }
         }
 
         function showToast(title, message) {
@@ -2521,7 +2536,9 @@ HTML_CONTENT = """<!DOCTYPE html>
             const toast = document.createElement('div');
             toast.className = 'toast-msg';
             toast.innerHTML = `
-                <div style="font-size: 1.3rem;">✉️</div>
+                <div style="display:flex; align-items:center; justify-content:center; color:#60a5fa;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
                 <div>
                     <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">${title}</div>
                     <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; line-height: 1.4;">${message}</div>
@@ -2542,24 +2559,46 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function clearNotifications() {
-            state.notifications = [];
+            if (state.role === 'admin') {
+                state.notifications = [];
+            } else {
+                // Remove only notifications for current employee
+                const curEmail = (state.currentEmployeeEmail || '').toLowerCase();
+                state.notifications = state.notifications.filter(n => (n.recipient || '').toLowerCase() !== curEmail);
+            }
             saveState();
             renderNotifications();
         }
 
         function renderNotifications() {
+            let notifList = state.notifications || [];
+
+            // Strict Role-Based Visibility:
+            // - Admins see system alerts, login security notices, and leave queue updates.
+            // - Employees ONLY see transactional notifications specifically addressed to them (Leave approved/rejected).
+            if (state.role !== 'admin') {
+                const curEmail = (state.currentEmployeeEmail || '').toLowerCase();
+                const curName = (state.currentEmployee || '').toLowerCase();
+                notifList = notifList.filter(n => {
+                    if (n.type === 'login') return false; // Non-admins NEVER receive login alerts
+                    if (n.targetRole === 'admin') return false;
+                    const rec = (n.recipient || '').toLowerCase();
+                    return rec === curEmail || (curName && rec.includes(curName));
+                });
+            }
+
             const countEl = document.getElementById('notif-count');
-            if (countEl) countEl.innerText = state.notifications.length;
+            if (countEl) countEl.innerText = notifList.length;
 
             const listEl = document.getElementById('notif-list-container');
             if (!listEl) return;
-            if (state.notifications.length === 0) {
-                listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">No notifications yet.</div>`;
+            if (notifList.length === 0) {
+                listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">No notifications for your account.</div>`;
                 return;
             }
 
-            listEl.innerHTML = state.notifications.map(n => {
-                const icon = n.type.includes('leave_approved') ? '✅' : n.type.includes('leave_rejected') ? '❌' : n.type.includes('leave') ? '📅' : n.type.includes('login') ? '🔑' : '👤';
+            listEl.innerHTML = notifList.map(n => {
+                const icon = n.type.includes('leave_approved') ? '✅' : n.type.includes('leave_rejected') ? '❌' : n.type.includes('leave') ? '📅' : n.type.includes('login') ? '🔒' : '👤';
                 return `
                     <div style="background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 8px; padding: 0.85rem 1rem; display: flex; gap: 0.75rem; align-items: flex-start;">
                         <div style="font-size: 1.25rem;">${icon}</div>
