@@ -2554,6 +2554,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function toggleNotificationModal() {
+            renderNotifications();
             const modal = document.getElementById('modal-notifications');
             modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
         }
@@ -2571,19 +2572,21 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function renderNotifications() {
+            const curRole = state.role || 'employee';
             let notifList = state.notifications || [];
 
             // Strict Role-Based Visibility:
-            // - Admins see system alerts, login security notices, and leave queue updates.
-            // - Employees ONLY see transactional notifications specifically addressed to them (Leave approved/rejected).
-            if (state.role !== 'admin') {
+            // - Admins see all security alerts, system login notices, and leave queue updates.
+            // - Employees ONLY see notifications specifically addressed to them (Leave approved/rejected).
+            if (curRole !== 'admin') {
                 const curEmail = (state.currentEmployeeEmail || '').toLowerCase();
                 const curName = (state.currentEmployee || '').toLowerCase();
                 notifList = notifList.filter(n => {
-                    if (n.type === 'login') return false; // Non-admins NEVER receive login alerts
+                    // Non-admins NEVER receive login alerts
+                    if (n.type === 'login' || n.type === 'login_security' || (n.title && n.title.includes('Login Alert'))) return false;
                     if (n.targetRole === 'admin') return false;
                     const rec = (n.recipient || '').toLowerCase();
-                    return rec === curEmail || (curName && rec.includes(curName));
+                    return (curEmail && rec === curEmail) || (curName && rec.includes(curName));
                 });
             }
 
@@ -2593,7 +2596,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             const listEl = document.getElementById('notif-list-container');
             if (!listEl) return;
             if (notifList.length === 0) {
-                listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">No notifications for your account.</div>`;
+                listEl.innerHTML = `<div style="text-align:center; padding:2.5rem 1rem; color:var(--text-muted); font-size:0.88rem;">No notifications for your account.</div>`;
                 return;
             }
 
@@ -4489,6 +4492,11 @@ Role: ${newUser.role.toUpperCase()}`);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Clean up any legacy login notifications stored in localStorage for non-admins
+            if (state.notifications && state.notifications.length) {
+                state.notifications = state.notifications.filter(n => !(n.type === 'login' && n.recipient !== 'admin@dayflow.org'));
+                saveState();
+            }
             const session = getSession();
             if (session) {
                 applySession(session);
