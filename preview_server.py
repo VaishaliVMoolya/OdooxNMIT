@@ -2,7 +2,7 @@
 """
 Dayflow HRMS - Unified Live UI Preview Server
 Odoo x NMIT Hackathon
-All-in-One Dashboard, Employees, Attendance, Time Off (with New Button, Interactive Calendar, National Holidays & Pop-up Modal), Documents, Payroll, and Admin Profile
+All-in-One Dashboard, Employees, Attendance, Time Off (with Role-Based Access: Calendar for Employees only, HR Decision Hub for Admin), Documents, Payroll, and Admin Profile
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -333,7 +333,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             .two-col-grid { grid-template-columns: 1fr; }
         }
 
-        /* Interactive Calendar Grid */
+        /* Interactive Calendar Grid (Employee Only) */
         .cal-layout {
             display: grid;
             grid-template-columns: 2.2fr 1fr;
@@ -912,44 +912,60 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- TIME OFF / LEAVE TAB (With New Button, Calendar & National Holidays) -->
+        <!-- TIME OFF / LEAVE TAB (Role-Based: Calendar for Employees Only) -->
         <div id="panel-leave" class="tab-panel">
             <div class="header-row">
                 <div>
-                    <h1 class="header-title">Time Off & Leave Management</h1>
-                    <p class="header-sub">Plan time off, view official national holidays, and track leave balances</p>
+                    <h1 class="header-title" id="leave-header-title">Time Off & Leave Management</h1>
+                    <p class="header-sub" id="leave-header-sub">Plan time off, view official national holidays, and track leave balances</p>
                 </div>
-                <button class="btn btn-primary" style="font-size: 0.95rem; padding: 0.5rem 1.3rem;" onclick="openLeaveModal(null)">+ New</button>
+                <button class="btn btn-primary" id="btn-leave-new" style="font-size: 0.95rem; padding: 0.5rem 1.3rem;" onclick="openLeaveModal(null)">+ New</button>
             </div>
 
-            <!-- Balance Metric Cards -->
-            <div class="stats-grid">
+            <!-- Balance Metric Cards (Role-Sensitive) -->
+            <div class="stats-grid" id="leave-metrics-grid">
                 <div class="stat-box">
-                    <div class="metric-label">Paid Time Off (PTO)</div>
-                    <div class="num" style="color: #34d399;">14 Days Available</div>
+                    <div class="metric-label" id="leave-lbl-p1">Paid Time Off (PTO)</div>
+                    <div class="num" style="color: #34d399;" id="leave-val-p1">14 Days Available</div>
                 </div>
                 <div class="stat-box">
-                    <div class="metric-label">Sick Leave</div>
-                    <div class="num" style="color: #fbbf24;">07 Days Available</div>
+                    <div class="metric-label" id="leave-lbl-p2">Sick Leave</div>
+                    <div class="num" style="color: #fbbf24;" id="leave-val-p2">07 Days Available</div>
                 </div>
                 <div class="stat-box">
-                    <div class="metric-label">Unpaid Leave</div>
-                    <div class="num" style="color: #60a5fa;">Unlimited</div>
+                    <div class="metric-label" id="leave-lbl-p3">Unpaid Leave</div>
+                    <div class="num" style="color: #60a5fa;" id="leave-val-p3">Unlimited</div>
                 </div>
                 <div class="stat-box">
-                    <div class="metric-label">Upcoming National Holidays</div>
-                    <div class="num" style="color: var(--accent-purple-hover);">4 This Year</div>
+                    <div class="metric-label" id="leave-lbl-p4">Upcoming National Holidays</div>
+                    <div class="num" style="color: var(--accent-purple-hover);" id="leave-val-p4">4 This Year</div>
                 </div>
             </div>
 
-            <!-- Calendar & National Holidays Layout -->
-            <div class="cal-layout">
+            <!-- Admin HR Decision Banner (Visible Only to Admin) -->
+            <div id="leave-admin-banner" class="card" style="display:none; background: linear-gradient(135deg, rgba(113, 75, 103, 0.22), rgba(32, 36, 51, 0.95)); border: 1px solid rgba(113, 75, 103, 0.45); margin-bottom: 1.25rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <h3 style="font-size: 1.1rem; color: #fff;">🛡️ HR Leave Management & Decision Console</h3>
+                            <span class="badge badge-purple">Admin Mode</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                            Review all pending applications from employees across the company. The calendar view is reserved for employee self-service.
+                        </p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openLeaveModal(null)">+ Create Leave for Employee</button>
+                </div>
+            </div>
+
+            <!-- Calendar & National Holidays Layout (Role-Protected: VISIBLE ONLY TO EMPLOYEES) -->
+            <div class="cal-layout" id="leave-cal-container">
                 <!-- Left: Interactive Calendar Grid -->
                 <div class="card" style="margin-bottom: 0;">
                     <div class="cal-header-bar">
                         <div style="display:flex; align-items:center; gap: 0.75rem;">
                             <h3 style="font-size: 1.1rem; color: #fff;">August 2026</h3>
-                            <span class="badge badge-purple">Official Work Calendar</span>
+                            <span class="badge badge-purple">Employee Work Calendar</span>
                         </div>
                         <div style="display:flex; gap:0.4rem;">
                             <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;">&lt;</button>
@@ -1043,8 +1059,8 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- Time Off Requests & Review History Table -->
             <div class="card" style="margin-top: 1.25rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
-                    <h3 style="font-size: 1.05rem;">Time Off Requests History</h3>
-                    <span class="badge badge-purple">HR Governance</span>
+                    <h3 style="font-size: 1.05rem;" id="leave-table-title">Time Off Requests History</h3>
+                    <span class="badge badge-purple" id="leave-table-tag">HR Governance</span>
                 </div>
                 <div class="table-wrap">
                     <table>
@@ -1068,7 +1084,6 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         <!-- ADMIN PROFILE TAB -->
         <div id="panel-profile" class="tab-panel">
-            <!-- Profile Hero Header -->
             <div class="profile-hero">
                 <div class="profile-hero-left">
                     <div class="profile-avatar-lg" id="prof-hero-avatar">JS</div>
@@ -1093,7 +1108,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- Profile Subtabs -->
             <div class="profile-subtabs">
                 <div class="profile-subtab active" id="psubtab-btn-private" onclick="openProfileSection('private')">🔒 Private Information</div>
                 <div class="profile-subtab" id="psubtab-btn-salary" onclick="openProfileSection('salary')">💰 Salary & Compensation</div>
@@ -1106,38 +1120,14 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="card">
                     <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Personal Details & Identification</h3>
                     <div class="info-grid">
-                        <div class="info-item">
-                            <div class="lbl">Date of Birth</div>
-                            <div class="val" id="prof-dob">1990-06-15</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Gender</div>
-                            <div class="val" id="prof-gender">Female</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Nationality</div>
-                            <div class="val" id="prof-nationality">Indian</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Marital Status</div>
-                            <div class="val" id="prof-marital">Married</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Aadhaar Number (UID)</div>
-                            <div class="val" id="prof-aadhar">4589-2314-7890</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">PAN Number</div>
-                            <div class="val" id="prof-pan">ABCPJ4589K</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Passport Number</div>
-                            <div class="val" id="prof-passport">Z9876543</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Personal Mobile</div>
-                            <div class="val" id="prof-personal-phone">+91 98765 11223</div>
-                        </div>
+                        <div class="info-item"><div class="lbl">Date of Birth</div><div class="val" id="prof-dob">1990-06-15</div></div>
+                        <div class="info-item"><div class="lbl">Gender</div><div class="val" id="prof-gender">Female</div></div>
+                        <div class="info-item"><div class="lbl">Nationality</div><div class="val" id="prof-nationality">Indian</div></div>
+                        <div class="info-item"><div class="lbl">Marital Status</div><div class="val" id="prof-marital">Married</div></div>
+                        <div class="info-item"><div class="lbl">Aadhaar Number (UID)</div><div class="val" id="prof-aadhar">4589-2314-7890</div></div>
+                        <div class="info-item"><div class="lbl">PAN Number</div><div class="val" id="prof-pan">ABCPJ4589K</div></div>
+                        <div class="info-item"><div class="lbl">Passport Number</div><div class="val" id="prof-passport">Z9876543</div></div>
+                        <div class="info-item"><div class="lbl">Personal Mobile</div><div class="val" id="prof-personal-phone">+91 98765 11223</div></div>
                     </div>
                 </div>
 
@@ -1169,22 +1159,10 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- Section 2: Salary & Compensation Breakdown -->
             <div id="psec-salary" class="profile-section">
                 <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="metric-label">Monthly Base Wage</div>
-                        <div class="num" style="color: #60a5fa;" id="prof-sal-wage">₹55,000.00</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="metric-label">Annual CTC</div>
-                        <div class="num" style="color: #a78bfa;" id="prof-sal-ctc">₹6,60,000.00</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="metric-label">Net Take-Home Salary</div>
-                        <div class="num" style="color: #34d399;" id="prof-sal-net">₹59,500.00</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="metric-label">Active Structure</div>
-                        <div class="num" style="font-size:1.1rem; color: #fbbf24; margin-top:0.4rem;" id="prof-sal-struct">HR Specialist Base</div>
-                    </div>
+                    <div class="stat-box"><div class="metric-label">Monthly Base Wage</div><div class="num" style="color: #60a5fa;" id="prof-sal-wage">₹55,000.00</div></div>
+                    <div class="stat-box"><div class="metric-label">Annual CTC</div><div class="num" style="color: #a78bfa;" id="prof-sal-ctc">₹6,60,000.00</div></div>
+                    <div class="stat-box"><div class="metric-label">Net Take-Home Salary</div><div class="num" style="color: #34d399;" id="prof-sal-net">₹59,500.00</div></div>
+                    <div class="stat-box"><div class="metric-label">Active Structure</div><div class="num" style="font-size:1.1rem; color: #fbbf24; margin-top:0.4rem;" id="prof-sal-struct">HR Specialist Base</div></div>
                 </div>
 
                 <div class="card">
@@ -1195,38 +1173,14 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="table-wrap">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Salary Component</th>
-                                    <th>Computation Rule</th>
-                                    <th style="text-align: right;">Monthly Amount</th>
-                                </tr>
+                                <tr><th>Salary Component</th><th>Computation Rule</th><th style="text-align: right;">Monthly Amount</th></tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><strong>Basic Salary</strong></td>
-                                    <td>50.00% of Monthly Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-basic">₹27,500.00</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>House Rent Allowance (HRA)</strong></td>
-                                    <td>50.00% of Basic Salary</td>
-                                    <td style="text-align: right;" id="prof-comp-hra">₹13,750.00</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Executive Standard Allowance</strong></td>
-                                    <td>16.67% of Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-std">₹9,168.50</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Performance Bonus</strong></td>
-                                    <td>8.33% of Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-bonus">₹4,581.50</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Leave Travel Allowance (LTA)</strong></td>
-                                    <td>8.33% of Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-lta">₹4,581.50</td>
-                                </tr>
+                                <tr><td><strong>Basic Salary</strong></td><td>50.00% of Monthly Wage</td><td style="text-align: right;" id="prof-comp-basic">₹27,500.00</td></tr>
+                                <tr><td><strong>House Rent Allowance (HRA)</strong></td><td>50.00% of Basic Salary</td><td style="text-align: right;" id="prof-comp-hra">₹13,750.00</td></tr>
+                                <tr><td><strong>Executive Standard Allowance</strong></td><td>16.67% of Wage</td><td style="text-align: right;" id="prof-comp-std">₹9,168.50</td></tr>
+                                <tr><td><strong>Performance Bonus</strong></td><td>8.33% of Wage</td><td style="text-align: right;" id="prof-comp-bonus">₹4,581.50</td></tr>
+                                <tr><td><strong>Leave Travel Allowance (LTA)</strong></td><td>8.33% of Wage</td><td style="text-align: right;" id="prof-comp-lta">₹4,581.50</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1240,33 +1194,13 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="table-wrap">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Deduction Item</th>
-                                    <th>Statutory Rate</th>
-                                    <th style="text-align: right;">Monthly Amount</th>
-                                </tr>
+                                <tr><th>Deduction Item</th><th>Statutory Rate</th><th style="text-align: right;">Monthly Amount</th></tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><strong>Provident Fund (PF) Employee Share</strong></td>
-                                    <td>12.00% of Basic Salary</td>
-                                    <td style="text-align: right; color:#f87171;" id="prof-comp-pf">- ₹3,300.00</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Professional Tax (PT)</strong></td>
-                                    <td>State Fixed Bracket</td>
-                                    <td style="text-align: right; color:#f87171;">- ₹200.00</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Health & Group Insurance</strong></td>
-                                    <td>Corporate ESI / Health Plan</td>
-                                    <td style="text-align: right; color:#f87171;">- ₹1,000.00</td>
-                                </tr>
-                                <tr style="background: rgba(255,255,255,0.03); font-weight: bold;">
-                                    <td>Total Deductions</td>
-                                    <td>PF + PT + Insurance</td>
-                                    <td style="text-align: right; color:#f87171;" id="prof-comp-deduct-total">- ₹4,500.00</td>
-                                </tr>
+                                <tr><td><strong>Provident Fund (PF) Employee Share</strong></td><td>12.00% of Basic Salary</td><td style="text-align: right; color:#f87171;" id="prof-comp-pf">- ₹3,300.00</td></tr>
+                                <tr><td><strong>Professional Tax (PT)</strong></td><td>State Fixed Bracket</td><td style="text-align: right; color:#f87171;">- ₹200.00</td></tr>
+                                <tr><td><strong>Health & Group Insurance</strong></td><td>Corporate ESI / Health Plan</td><td style="text-align: right; color:#f87171;">- ₹1,000.00</td></tr>
+                                <tr style="background: rgba(255,255,255,0.03); font-weight: bold;"><td>Total Deductions</td><td>PF + PT + Insurance</td><td style="text-align: right; color:#f87171;" id="prof-comp-deduct-total">- ₹4,500.00</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1278,30 +1212,12 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="card">
                     <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Organizational Role & Security</h3>
                     <div class="info-grid">
-                        <div class="info-item">
-                            <div class="lbl">Job Title</div>
-                            <div class="val">Head of Human Resources</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Department</div>
-                            <div class="val">Human Resources & Talent</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Reports To</div>
-                            <div class="val">Board of Directors / CEO</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Work Location</div>
-                            <div class="val">Bangalore Headquarters (HQ)</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Working Schedule</div>
-                            <div class="val">40 Hours / Week (Mon-Fri)</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="lbl">Security Group</div>
-                            <div class="val"><span class="badge badge-purple">dayflow.group_dayflow_admin</span></div>
-                        </div>
+                        <div class="info-item"><div class="lbl">Job Title</div><div class="val">Head of Human Resources</div></div>
+                        <div class="info-item"><div class="lbl">Department</div><div class="val">Human Resources & Talent</div></div>
+                        <div class="info-item"><div class="lbl">Reports To</div><div class="val">Board of Directors / CEO</div></div>
+                        <div class="info-item"><div class="lbl">Work Location</div><div class="val">Bangalore Headquarters (HQ)</div></div>
+                        <div class="info-item"><div class="lbl">Working Schedule</div><div class="val">40 Hours / Week (Mon-Fri)</div></div>
+                        <div class="info-item"><div class="lbl">Security Group</div><div class="val"><span class="badge badge-purple">dayflow.group_dayflow_admin</span></div></div>
                     </div>
                 </div>
             </div>
@@ -1313,36 +1229,12 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="table-wrap">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Document Title</th>
-                                    <th>Type</th>
-                                    <th>File Name</th>
-                                    <th>Verified Date</th>
-                                    <th>Status</th>
-                                </tr>
+                                <tr><th>Document Title</th><th>Type</th><th>File Name</th><th>Verified Date</th><th>Status</th></tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><strong>Employment Contract 2026</strong></td>
-                                    <td><span class="badge badge-purple">Contract</span></td>
-                                    <td><code>jane_contract_2026.pdf</code></td>
-                                    <td>2026-08-01</td>
-                                    <td><span class="badge badge-green">VERIFIED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Master Degree in HR Management</strong></td>
-                                    <td><span class="badge badge-purple">Certificate</span></td>
-                                    <td><code>jane_degree_mba.pdf</code></td>
-                                    <td>2023-01-10</td>
-                                    <td><span class="badge badge-green">VERIFIED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Aadhaar Card Copy</strong></td>
-                                    <td><span class="badge badge-purple">ID Proof</span></td>
-                                    <td><code>jane_aadhaar.pdf</code></td>
-                                    <td>2023-01-10</td>
-                                    <td><span class="badge badge-green">VERIFIED</span></td>
-                                </tr>
+                                <tr><td><strong>Employment Contract 2026</strong></td><td><span class="badge badge-purple">Contract</span></td><td><code>jane_contract_2026.pdf</code></td><td>2026-08-01</td><td><span class="badge badge-green">VERIFIED</span></td></tr>
+                                <tr><td><strong>Master Degree in HR Management</strong></td><td><span class="badge badge-purple">Certificate</span></td><td><code>jane_degree_mba.pdf</code></td><td>2023-01-10</td><td><span class="badge badge-green">VERIFIED</span></td></tr>
+                                <tr><td><strong>Aadhaar Card Copy</strong></td><td><span class="badge badge-purple">ID Proof</span></td><td><code>jane_aadhaar.pdf</code></td><td>2023-01-10</td><td><span class="badge badge-green">VERIFIED</span></td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1353,29 +1245,15 @@ HTML_CONTENT = """<!DOCTYPE html>
         <!-- ATTENDANCE TAB -->
         <div id="panel-attendance" class="tab-panel">
             <div class="header-row">
-                <div>
-                    <h1 class="header-title">Attendance Tracking</h1>
-                </div>
+                <div><h1 class="header-title">Attendance Tracking</h1></div>
                 <button class="btn btn-secondary" onclick="resetData()">Reset Data</button>
             </div>
 
             <div class="banner">
                 <div class="banner-metrics">
-                    <div class="metric">
-                        <span class="metric-label">Status</span>
-                        <div class="metric-val">
-                            <span id="dot-status" class="dot red"></span>
-                            <span id="txt-status">Not Checked In</span>
-                        </div>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Check-In</span>
-                        <span class="metric-val" id="txt-checkin-time">--:--</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Working Hours</span>
-                        <span class="metric-val" id="txt-worked-hours" style="color: var(--accent-purple-hover);">0h 00m</span>
-                    </div>
+                    <div class="metric"><span class="metric-label">Status</span><div class="metric-val"><span id="dot-status" class="dot red"></span><span id="txt-status">Not Checked In</span></div></div>
+                    <div class="metric"><span class="metric-label">Check-In</span><span class="metric-val" id="txt-checkin-time">--:--</span></div>
+                    <div class="metric"><span class="metric-label">Working Hours</span><span class="metric-val" id="txt-worked-hours" style="color: var(--accent-purple-hover);">0h 00m</span></div>
                 </div>
                 <div>
                     <button id="btn-in" class="btn btn-success" onclick="handleCheckIn()">Check In</button>
@@ -1387,16 +1265,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Employee</th>
-                                <th>Check In</th>
-                                <th>Check Out</th>
-                                <th>Status</th>
-                                <th>Worked Hours</th>
-                                <th>Effective Hours</th>
-                                <th>Extra Hours</th>
-                            </tr>
+                            <tr><th>Date</th><th>Employee</th><th>Check In</th><th>Check Out</th><th>Status</th><th>Worked Hours</th><th>Effective Hours</th><th>Extra Hours</th></tr>
                         </thead>
                         <tbody id="tbl-attendance"></tbody>
                     </table>
@@ -1415,33 +1284,12 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <h3 style="font-size: 1.05rem; margin-bottom: 1rem;">Create Employee Profile</h3>
                 <form onsubmit="handleAddEmp(event)">
                     <div class="form-row">
-                        <div class="field">
-                            <label>Full Name</label>
-                            <input type="text" id="emp-name" class="input" placeholder="Alice Johnson" required>
-                        </div>
-                        <div class="field">
-                            <label>Work Email</label>
-                            <input type="email" id="emp-email" class="input" placeholder="alice@company.com" required>
-                        </div>
-                        <div class="field">
-                            <label>Job Title</label>
-                            <input type="text" id="emp-job" class="input" placeholder="Software Engineer" required>
-                        </div>
-                        <div class="field">
-                            <label>Department</label>
-                            <input type="text" id="emp-dept" class="input" placeholder="Engineering" required>
-                        </div>
-                        <div class="field">
-                            <label>Role</label>
-                            <select id="emp-role" class="input" required>
-                                <option value="Employee">Employee</option>
-                                <option value="Admin / HR">Admin / HR</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Joining Date</label>
-                            <input type="date" id="emp-joining" class="input" required>
-                        </div>
+                        <div class="field"><label>Full Name</label><input type="text" id="emp-name" class="input" placeholder="Alice Johnson" required></div>
+                        <div class="field"><label>Work Email</label><input type="email" id="emp-email" class="input" placeholder="alice@company.com" required></div>
+                        <div class="field"><label>Job Title</label><input type="text" id="emp-job" class="input" placeholder="Software Engineer" required></div>
+                        <div class="field"><label>Department</label><input type="text" id="emp-dept" class="input" placeholder="Engineering" required></div>
+                        <div class="field"><label>Role</label><select id="emp-role" class="input" required><option value="Employee">Employee</option><option value="Admin / HR">Admin / HR</option></select></div>
+                        <div class="field"><label>Joining Date</label><input type="date" id="emp-joining" class="input" required></div>
                     </div>
                     <button type="submit" class="btn btn-success">Save Profile</button>
                 </form>
@@ -1452,58 +1300,22 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         <!-- DOCUMENTS TAB -->
         <div id="panel-documents" class="tab-panel">
-            <div class="header-row">
-                <h1 class="header-title">Employee Documents</h1>
-            </div>
-
+            <div class="header-row"><h1 class="header-title">Employee Documents</h1></div>
             <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="metric-label">ID Proofs</div>
-                    <div class="num" style="color: #60a5fa;" id="stat-id">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Contracts</div>
-                    <div class="num" style="color: #34d399;" id="stat-contract">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Certificates</div>
-                    <div class="num" style="color: #fbbf24;" id="stat-cert">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Verified Documents</div>
-                    <div class="num" style="color: var(--accent-purple-hover);" id="stat-verified">0</div>
-                </div>
+                <div class="stat-box"><div class="metric-label">ID Proofs</div><div class="num" style="color: #60a5fa;" id="stat-id">0</div></div>
+                <div class="stat-box"><div class="metric-label">Contracts</div><div class="num" style="color: #34d399;" id="stat-contract">0</div></div>
+                <div class="stat-box"><div class="metric-label">Certificates</div><div class="num" style="color: #fbbf24;" id="stat-cert">0</div></div>
+                <div class="stat-box"><div class="metric-label">Verified Documents</div><div class="num" style="color: var(--accent-purple-hover);" id="stat-verified">0</div></div>
             </div>
 
             <div class="card">
                 <h3 style="font-size: 1.05rem; margin-bottom: 1rem;">Upload Document</h3>
                 <form onsubmit="handleDocUpload(event)">
                     <div class="form-row">
-                        <div class="field">
-                            <label>Document Title</label>
-                            <input type="text" id="doc-title" class="input" placeholder="Passport Verification Copy" required>
-                        </div>
-                        <div class="field">
-                            <label>Employee</label>
-                            <select id="doc-employee" class="input" required>
-                                <option value="John Doe">John Doe</option>
-                                <option value="Jane Smith">Jane Smith</option>
-                                <option value="Robert Taylor">Robert Taylor</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Category</label>
-                            <select id="doc-type" class="input" required>
-                                <option value="id_proof">ID Proof</option>
-                                <option value="contract">Contract</option>
-                                <option value="certificate">Certificate</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Select File (PDF, Image, Doc)</label>
-                            <input type="file" id="real-file-input" class="input" accept="image/*,.pdf,.doc,.docx,.txt" required>
-                        </div>
+                        <div class="field"><label>Document Title</label><input type="text" id="doc-title" class="input" placeholder="Passport Verification Copy" required></div>
+                        <div class="field"><label>Employee</label><select id="doc-employee" class="input" required><option value="John Doe">John Doe</option><option value="Jane Smith">Jane Smith</option><option value="Robert Taylor">Robert Taylor</option></select></div>
+                        <div class="field"><label>Category</label><select id="doc-type" class="input" required><option value="id_proof">ID Proof</option><option value="contract">Contract</option><option value="certificate">Certificate</option><option value="other">Other</option></select></div>
+                        <div class="field"><label>Select File</label><input type="file" id="real-file-input" class="input" accept="image/*,.pdf,.doc,.docx,.txt" required></div>
                     </div>
                     <button type="submit" class="btn btn-primary">Upload & Attach File</button>
                 </form>
@@ -1523,16 +1335,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Employee</th>
-                                <th>Category</th>
-                                <th>File Info</th>
-                                <th>Uploaded</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                                <th>HR Review</th>
-                            </tr>
+                            <tr><th>Title</th><th>Employee</th><th>Category</th><th>File Info</th><th>Uploaded</th><th>Status</th><th>Action</th><th>HR Review</th></tr>
                         </thead>
                         <tbody id="tbl-documents"></tbody>
                     </table>
@@ -1553,22 +1356,10 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="metric-label">Total Monthly Payroll</div>
-                    <div class="num" style="color: #60a5fa;" id="stat-payroll-total">₹0.00</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Approved Records</div>
-                    <div class="num" style="color: #34d399;" id="stat-payroll-approved">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Paid Records</div>
-                    <div class="num" style="color: #a78bfa;" id="stat-payroll-paid">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="metric-label">Pending Drafts</div>
-                    <div class="num" style="color: #fbbf24;" id="stat-payroll-draft">0</div>
-                </div>
+                <div class="stat-box"><div class="metric-label">Total Monthly Payroll</div><div class="num" style="color: #60a5fa;" id="stat-payroll-total">₹0.00</div></div>
+                <div class="stat-box"><div class="metric-label">Approved Records</div><div class="num" style="color: #34d399;" id="stat-payroll-approved">0</div></div>
+                <div class="stat-box"><div class="metric-label">Paid Records</div><div class="num" style="color: #a78bfa;" id="stat-payroll-paid">0</div></div>
+                <div class="stat-box"><div class="metric-label">Pending Drafts</div><div class="num" style="color: #fbbf24;" id="stat-payroll-draft">0</div></div>
             </div>
 
             <div class="card">
@@ -1579,18 +1370,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Reference</th>
-                                <th>Employee</th>
-                                <th>Structure</th>
-                                <th>Period</th>
-                                <th style="text-align: right;">Base Salary</th>
-                                <th style="text-align: right;">Allowances</th>
-                                <th style="text-align: right;">Deductions</th>
-                                <th style="text-align: right;">Net Salary</th>
-                                <th style="text-align: center;">Status</th>
-                                <th style="text-align: right;">Actions</th>
-                            </tr>
+                            <tr><th>Reference</th><th>Employee</th><th>Structure</th><th>Period</th><th style="text-align: right;">Base Salary</th><th style="text-align: right;">Allowances</th><th style="text-align: right;">Deductions</th><th style="text-align: right;">Net Salary</th><th style="text-align: center;">Status</th><th style="text-align: right;">Actions</th></tr>
                         </thead>
                         <tbody id="tbl-payroll"></tbody>
                     </table>
@@ -1600,7 +1380,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
     </div>
 
-    <!-- LEAVE APPLICATION POP-UP MODAL (Excalidraw Design) -->
+    <!-- LEAVE APPLICATION POP-UP MODAL -->
     <div id="modal-leave-app" class="modal" style="display: none;">
         <div class="modal-card" style="max-width: 560px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
@@ -1693,28 +1473,13 @@ HTML_CONTENT = """<!DOCTYPE html>
             <form onsubmit="handleSaveSalary(event)">
                 <input type="hidden" id="modal-pay-id">
                 <div class="form-row">
-                    <div class="field">
-                        <label>Employee Name</label>
-                        <input type="text" id="modal-pay-emp" class="input" readonly>
-                    </div>
-                    <div class="field">
-                        <label>Salary Structure Title</label>
-                        <input type="text" id="modal-pay-struct" class="input" placeholder="e.g. Executive Management Base">
-                    </div>
+                    <div class="field"><label>Employee Name</label><input type="text" id="modal-pay-emp" class="input" readonly></div>
+                    <div class="field"><label>Salary Structure Title</label><input type="text" id="modal-pay-struct" class="input" placeholder="e.g. Executive Management Base"></div>
                 </div>
                 <div class="form-row">
-                    <div class="field">
-                        <label>Base Salary (₹)</label>
-                        <input type="number" id="modal-pay-base" class="input" oninput="calcModalNetSalary()" required>
-                    </div>
-                    <div class="field">
-                        <label>Allowances (₹)</label>
-                        <input type="number" id="modal-pay-allow" class="input" oninput="calcModalNetSalary()" required>
-                    </div>
-                    <div class="field">
-                        <label>Deductions (₹)</label>
-                        <input type="number" id="modal-pay-deduct" class="input" oninput="calcModalNetSalary()" required>
-                    </div>
+                    <div class="field"><label>Base Salary (₹)</label><input type="number" id="modal-pay-base" class="input" oninput="calcModalNetSalary()" required></div>
+                    <div class="field"><label>Allowances (₹)</label><input type="number" id="modal-pay-allow" class="input" oninput="calcModalNetSalary()" required></div>
+                    <div class="field"><label>Deductions (₹)</label><input type="number" id="modal-pay-deduct" class="input" oninput="calcModalNetSalary()" required></div>
                 </div>
                 <div class="stat-box" style="background: var(--bg-card); margin-bottom: 1rem;">
                     <div class="metric-label">Calculated Net Salary (Base + Allowances - Deductions)</div>
@@ -1803,8 +1568,8 @@ HTML_CONTENT = """<!DOCTYPE html>
         };
 
         let state = {
-            role: 'admin',
-            currentEmployee: 'Jane Smith',
+            role: 'employee',
+            currentEmployee: 'John Doe',
             isCheckedIn: false,
             activeCheckInTime: null,
             checkInTimestamp: null,
@@ -1899,7 +1664,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (tabId === 'profile') {
                 renderAdminProfile();
             } else if (tabId === 'leave') {
-                renderCalendar();
+                renderLeaves();
             }
         }
 
@@ -2055,7 +1820,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             saveState();
             closeLeaveModal();
             renderLeaves();
-            renderCalendar();
             renderDashboard();
             alert('🎉 Time off request submitted successfully! Pending HR approval.');
         }
@@ -2084,14 +1848,11 @@ HTML_CONTENT = """<!DOCTYPE html>
             }
         }
 
-        /* Calendar Render (August 2026) */
+        /* Calendar Render (August 2026 - Role Protected for Employees) */
         function renderCalendar() {
             const container = document.getElementById('cal-grid-tiles');
             if (!container) return;
 
-            // August 2026 starts on Saturday (Aug 1).
-            // In Mon-Sun grid: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6.
-            // Empty leading padding cells = 5.
             let html = '';
             for (let pad = 0; pad < 5; pad++) {
                 html += `<div class="cal-cell weekend" style="opacity: 0.25; cursor: default;"></div>`;
@@ -2101,18 +1862,16 @@ HTML_CONTENT = """<!DOCTYPE html>
                 const dayStr = day < 10 ? `0${day}` : `${day}`;
                 const dateStr = `2026-08-${dayStr}`;
 
-                // Calculate day of week
                 const dObj = new Date(2026, 7, day);
-                const dayOfWeek = dObj.getDay(); // 0 is Sun, 6 is Sat
+                const dayOfWeek = dObj.getDay();
                 const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
                 const holidayName = HOLIDAYS_AUG_2026[day];
 
-                // Check leaves
                 const matchedLeave = state.leaves.find(l => {
                     const s = l.startDate;
                     const e = l.endDate;
-                    return dateStr >= s && dateStr <= e;
+                    return dateStr >= s && dateStr <= e && (state.role === 'admin' || l.employee === state.currentEmployee);
                 });
 
                 let cellClasses = 'cal-cell';
@@ -2125,7 +1884,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     tagHtml = `<span class="cal-tag tag-holiday" title="${holidayName}">${holidayName}</span>`;
                 } else if (matchedLeave) {
                     const tagStyle = matchedLeave.status === 'approved' ? 'tag-leave' : 'tag-holiday';
-                    tagHtml = `<span class="cal-tag ${tagStyle}" title="${matchedLeave.employee} (${matchedLeave.type})">✈️ ${matchedLeave.employee.split(' ')[0]} - ${matchedLeave.type.toUpperCase()}</span>`;
+                    tagHtml = `<span class="cal-tag ${tagStyle}" title="${matchedLeave.employee} (${matchedLeave.type})">✈️ ${matchedLeave.type.toUpperCase()}</span>`;
                 }
 
                 html += `
@@ -2581,9 +2340,73 @@ HTML_CONTENT = """<!DOCTYPE html>
             `).join('');
         }
 
+        /* Render Leaves with Strict Role-Based RBAC for Calendar */
         function renderLeaves() {
+            const calContainer = document.getElementById('leave-cal-container');
+            const adminBanner = document.getElementById('leave-admin-banner');
+            const btnNew = document.getElementById('btn-leave-new');
+            const headerSub = document.getElementById('leave-header-sub');
+            const tblTitle = document.getElementById('leave-table-title');
+            const tblTag = document.getElementById('leave-table-tag');
+
+            const lbl1 = document.getElementById('leave-lbl-p1');
+            const val1 = document.getElementById('leave-val-p1');
+            const lbl2 = document.getElementById('leave-lbl-p2');
+            const val2 = document.getElementById('leave-val-p2');
+            const lbl3 = document.getElementById('leave-lbl-p3');
+            const val3 = document.getElementById('leave-val-p3');
+            const lbl4 = document.getElementById('leave-lbl-p4');
+            const val4 = document.getElementById('leave-val-p4');
+
+            if (state.role === 'employee') {
+                // EMPLOYEE VIEW: Calendar & Holidays VISIBLE!
+                if (calContainer) calContainer.style.display = 'grid';
+                if (adminBanner) adminBanner.style.display = 'none';
+                if (btnNew) btnNew.style.display = 'inline-flex';
+                if (headerSub) headerSub.innerText = 'Plan time off, view official national holidays, and track your leave balance';
+                if (tblTitle) tblTitle.innerText = 'My Time Off Requests';
+                if (tblTag) tblTag.innerText = 'Showing your personal leave records';
+
+                if (lbl1) lbl1.innerText = 'Paid Time Off (PTO)';
+                if (val1) val1.innerText = '14 Days Available';
+                if (lbl2) lbl2.innerText = 'Sick Leave';
+                if (val2) val2.innerText = '07 Days Available';
+                if (lbl3) lbl3.innerText = 'Unpaid Leave';
+                if (val3) val3.innerText = 'Unlimited';
+                if (lbl4) lbl4.innerText = 'Upcoming National Holidays';
+                if (val4) val4.innerText = '4 This Year';
+
+                renderCalendar();
+            } else {
+                // ADMIN / HR VIEW: Calendar HIDDEN! Admin Decision Hub Shown.
+                if (calContainer) calContainer.style.display = 'none';
+                if (adminBanner) adminBanner.style.display = 'block';
+                if (btnNew) btnNew.style.display = 'inline-flex';
+                if (headerSub) headerSub.innerText = 'Review, approve, or reject employee time off applications across the organization';
+                if (tblTitle) tblTitle.innerText = 'All Employee Time Off Applications (HR Decision Hub)';
+                if (tblTag) tblTag.innerText = 'Showing organization-wide leave requests (Admin / HR Review)';
+
+                const totalPending = state.leaves.filter(l => l.status === 'pending').length;
+                const totalApproved = state.leaves.filter(l => l.status === 'approved').length;
+                const totalLeaves = state.leaves.length;
+
+                if (lbl1) lbl1.innerText = 'Total Pending Requests';
+                if (val1) { val1.innerText = `${totalPending} Pending`; val1.style.color = '#f87171'; }
+                if (lbl2) lbl2.innerText = 'Approved Applications';
+                if (val2) { val2.innerText = `${totalApproved} Approved`; val2.style.color = '#34d399'; }
+                if (lbl3) lbl3.innerText = 'Total Applications';
+                if (val3) { val3.innerText = `${totalLeaves} Total`; val3.style.color = '#60a5fa'; }
+                if (lbl4) lbl4.innerText = 'Active on Leave Today';
+                if (val4) { val4.innerText = '1 Employee'; val4.style.color = '#fbbf24'; }
+            }
+
             const tbody = document.getElementById('tbl-leave');
             let data = state.role === 'employee' ? state.leaves.filter(l => l.employee === state.currentEmployee) : state.leaves;
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No leave requests found.</td></tr>`;
+                return;
+            }
 
             tbody.innerHTML = data.map(l => {
                 const badge = l.status === 'approved' ? 'badge-green' : l.status === 'rejected' ? 'badge-red' : 'badge-amber';
@@ -2592,7 +2415,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 if (state.role === 'admin' && l.status === 'pending') {
                     action = `
                         <div style="display:flex; gap:0.3rem;">
-                            <input type="text" id="hr-leave-comment-${l.id}" class="input" style="font-size:0.75rem; padding:0.25rem 0.5rem;" placeholder="Comment...">
+                            <input type="text" id="hr-leave-comment-${l.id}" class="input" style="font-size:0.75rem; padding:0.25rem 0.5rem;" placeholder="Remarks...">
                             <button class="btn btn-success" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleApproveLeave(${l.id})">Approve</button>
                             <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleRejectLeave(${l.id})">Reject</button>
                         </div>
@@ -2744,7 +2567,6 @@ HTML_CONTENT = """<!DOCTYPE html>
         function renderAll() {
             renderDashboard();
             renderAdminProfile();
-            renderCalendar();
             renderAttendance();
             renderLeaves();
             renderEmployees();
