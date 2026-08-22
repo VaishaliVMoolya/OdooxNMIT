@@ -2140,8 +2140,12 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function sanitizeLegacySeedData() {
             const LEGACY_NAMES = ['john doe', 'robert taylor', 'damodar nayak'];
-            const LEGACY_EMAILS = ['john.doe@dayflow.org', 'robert.taylor@dayflow.org', 'damodar.nayak@dayflow.org', 'john@dayflow.org', 'robert@dayflow.org', 'damodar@dayflow.org'];
-            const LEGACY_LOGINS = ['john', 'robert', 'damodar'];
+            const LEGACY_EMAILS = [
+                'john.doe@dayflow.org', 'robert.taylor@dayflow.org', 'damodar.nayak@dayflow.org',
+                'john@dayflow.org', 'robert@dayflow.org', 'damodar@dayflow.org',
+                'jane.smith@dayflow.org'
+            ];
+            const LEGACY_LOGINS = ['john', 'robert', 'damodar', 'oijasm20230002'];
 
             const isLegacy = (obj) => {
                 if (!obj) return false;
@@ -2153,8 +2157,18 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             let modified = false;
 
+            // state.employees must ONLY contain Admin-created employees (never Jane Smith or legacy demo records)
             if (Array.isArray(state.employees)) {
-                const cleaned = state.employees.filter(e => !isLegacy(e));
+                const cleaned = state.employees.filter(e => {
+                    if (isLegacy(e)) return false;
+                    const name = (e.name || '').trim().toLowerCase();
+                    const email = (e.email || '').trim().toLowerCase();
+                    const code = (e.code || e.loginId || '').trim().toLowerCase();
+                    if (name === 'jane smith') return false;
+                    if (email === 'jane.smith@dayflow.org' || email === 'admin@dayflow.org') return false;
+                    if (code === 'oijasm20230002' || code === 'admin') return false;
+                    return true;
+                });
                 if (cleaned.length !== state.employees.length) {
                     state.employees = cleaned;
                     modified = true;
@@ -2162,7 +2176,15 @@ HTML_CONTENT = """<!DOCTYPE html>
             }
 
             if (Array.isArray(state.users)) {
-                const cleaned = state.users.filter(u => u.loginId === 'admin' || !isLegacy(u));
+                const cleaned = state.users.filter(u => {
+                    if (u.loginId === 'admin') return true;
+                    if (isLegacy(u)) return false;
+                    const login = (u.loginId || '').trim().toLowerCase();
+                    const email = (u.email || '').trim().toLowerCase();
+                    if (login === 'oijasm20230002') return false;
+                    if (email === 'jane.smith@dayflow.org') return false;
+                    return true;
+                });
                 if (cleaned.length !== state.users.length) {
                     state.users = cleaned;
                     modified = true;
