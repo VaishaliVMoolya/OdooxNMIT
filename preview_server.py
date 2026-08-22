@@ -98,23 +98,21 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         .nav-tab:hover {
             color: var(--text-main);
-            background-color: rgba(255, 255, 255, 0.04);
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .nav-tab.active {
             color: #fff;
             background-color: var(--accent-purple);
-            font-weight: 600;
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 0.85rem;
+            gap: 1rem;
         }
 
         .nav-btn-icon {
-            position: relative;
             background: var(--bg-card);
             border: 1px solid var(--border-line);
             color: var(--text-main);
@@ -125,13 +123,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            position: relative;
             font-size: 1.1rem;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .nav-btn-icon:hover {
-            background: var(--border-line);
             border-color: var(--accent-purple-hover);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .notif-badge-count {
@@ -142,28 +141,15 @@ HTML_CONTENT = """<!DOCTYPE html>
             color: #fff;
             font-size: 0.65rem;
             font-weight: 800;
+            padding: 1px 5px;
             border-radius: 9999px;
-            padding: 2px 5px;
             border: 2px solid var(--bg-surface);
-        }
-
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ec4899, var(--accent-purple));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #fff;
         }
 
         .nav-user-info {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             font-size: 0.85rem;
             color: var(--text-main);
         }
@@ -172,31 +158,43 @@ HTML_CONTENT = """<!DOCTYPE html>
             background: transparent;
             border: 1px solid var(--border-line);
             color: var(--text-muted);
-            padding: 0.3rem 0.65rem;
+            padding: 0.35rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.15s ease;
         }
 
         .nav-signout-btn:hover {
             border-color: var(--accent-red);
-            color: #f87171;
-            background: rgba(239, 68, 68, 0.08);
+            color: var(--accent-red);
         }
 
-        /* Container & Grid */
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background-color: var(--accent-purple);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Layout Container */
         .container {
-            max-width: 1240px;
+            max-width: 1280px;
+            width: 100%;
             margin: 0 auto;
             padding: 1.5rem;
-            width: 100%;
             flex: 1;
         }
 
         .tab-panel {
             display: none;
-            animation: fadeIn 0.15s ease;
+            animation: fadeIn 0.2s ease-in-out;
         }
 
         .tab-panel.active {
@@ -208,15 +206,16 @@ HTML_CONTENT = """<!DOCTYPE html>
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Cards & Components */
         .header-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
         }
 
         .header-title {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: #fff;
         }
@@ -227,17 +226,139 @@ HTML_CONTENT = """<!DOCTYPE html>
             margin-top: 0.25rem;
         }
 
-        /* Buttons & Forms */
+        .card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            border-color: var(--accent-purple-hover);
+            transform: translateY(-2px);
+        }
+
+        .kpi-icon-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        .kpi-blue .kpi-icon-box { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .kpi-green .kpi-icon-box { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .kpi-amber .kpi-icon-box { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .kpi-red .kpi-icon-box { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        .kpi-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+        .kpi-val { font-size: 1.5rem; font-weight: 800; color: #fff; margin: 2px 0; }
+        .kpi-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .stat-box {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .stat-box .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-box .num { font-size: 1.35rem; font-weight: 700; color: #fff; margin-top: 0.25rem; }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-card);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-line);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-line);
+            color: var(--text-main);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges & Buttons */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-green { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge-amber { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-red { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .badge-purple { background-color: rgba(113, 75, 103, 0.35); color: #d8b4e2; }
+        .badge-blue { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.5rem 1rem;
+            padding: 0.45rem 1rem;
             border-radius: 6px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            border: none;
+            border: 1px solid transparent;
             transition: all 0.15s ease;
             text-decoration: none;
         }
@@ -253,158 +374,39 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         .btn-secondary {
             background-color: var(--bg-card);
+            border-color: var(--border-line);
             color: var(--text-main);
-            border: 1px solid var(--border-line);
         }
 
         .btn-secondary:hover {
-            background-color: var(--border-line);
+            background-color: var(--bg-input);
+            border-color: var(--text-muted);
         }
 
-        .btn-success { background-color: var(--accent-green); color: #fff; }
-        .btn-danger { background-color: var(--accent-red); color: #fff; }
-        .btn-warning { background-color: var(--accent-amber); color: #000; }
-
-        .btn:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-        }
-
-        .card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-line);
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-box {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-line);
-            border-radius: 8px;
-            padding: 1rem 1.25rem;
-        }
-
-        .stat-box .metric-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-
-        .stat-box .num {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-top: 0.35rem;
+        .btn-success {
+            background-color: var(--accent-green);
             color: #fff;
         }
 
-        /* KPI Grid Cards */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+        .btn-success:hover {
+            opacity: 0.9;
         }
 
-        .kpi-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-line);
-            border-radius: 8px;
-            padding: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: #fff;
         }
 
-        .kpi-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-purple-hover);
+        .btn-danger:hover {
+            opacity: 0.9;
         }
 
-        .kpi-icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .kpi-blue .kpi-icon-box { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-        .kpi-green .kpi-icon-box { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-        .kpi-amber .kpi-icon-box { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-        .kpi-red .kpi-icon-box { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-
-        .kpi-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
-        .kpi-val { font-size: 1.45rem; font-weight: 700; color: #fff; margin: 2px 0; }
-        .kpi-sub { font-size: 0.75rem; color: var(--text-muted); }
-
-        /* Tables */
-        .table-wrap {
-            overflow-x: auto;
-            border-radius: 6px;
-            border: 1px solid var(--border-line);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: left;
-        }
-
-        th {
-            background-color: var(--bg-card);
-            color: var(--text-muted);
-            font-weight: 600;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border-line);
-        }
-
-        td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border-line);
-            color: var(--text-main);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.2rem 0.55rem;
-            border-radius: 9999px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .badge-green { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
-        .badge-amber { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-        .badge-red { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
-        .badge-blue { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-        .badge-purple { background-color: rgba(113, 75, 103, 0.25); color: #d8b4e2; }
-
-        /* Input Controls */
+        /* Forms & Inputs */
         .form-row {
             display: flex;
             gap: 1rem;
@@ -414,14 +416,14 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         .field {
             flex: 1;
-            min-width: 180px;
+            min-width: 200px;
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
         }
 
         .field label {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
             font-weight: 500;
         }
@@ -429,12 +431,13 @@ HTML_CONTENT = """<!DOCTYPE html>
         .input {
             background-color: var(--bg-input);
             border: 1px solid var(--border-line);
-            color: var(--text-main);
-            padding: 0.5rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.85rem;
+            padding: 0.55rem 0.85rem;
+            color: #fff;
+            font-size: 0.875rem;
             outline: none;
             transition: border-color 0.15s ease;
+            width: 100%;
         }
 
         .input:focus {
@@ -448,34 +451,41 @@ HTML_CONTENT = """<!DOCTYPE html>
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 100;
-            backdrop-filter: blur(4px);
+            padding: 1.5rem;
         }
 
         .modal-card {
             background-color: var(--bg-surface);
             border: 1px solid var(--border-line);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 580px;
-            padding: 1.5rem;
+            border-radius: 10px;
+            padding: 1.75rem;
+            width: 100%;
+            max-width: 520px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: modalPop 0.2s ease-out;
         }
 
-        /* Banner & Ticker */
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Live Attendance Banner */
         .banner {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-surface));
+            background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
             border: 1px solid var(--border-line);
             border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 1.25rem;
+            padding: 1.25rem 1.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
         }
 
         .banner-metrics {
@@ -484,20 +494,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             align-items: center;
         }
 
-        .banner-metrics .metric {
+        .metric {
             display: flex;
             flex-direction: column;
             gap: 0.2rem;
         }
 
-        .banner-metrics .metric-val {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
+        .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .metric-val { font-size: 1.15rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.4rem; }
 
         .dot {
             width: 10px;
@@ -547,7 +551,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         .emp-name { font-weight: 700; color: #fff; font-size: 0.95rem; }
         .emp-job { font-size: 0.8rem; color: var(--text-muted); }
 
-        /* Profile Excalidraw Style */
+        /* Profile Styles */
         .profile-hero {
             background: linear-gradient(135deg, var(--bg-surface), var(--bg-card));
             border: 1px solid var(--border-line);
@@ -858,13 +862,13 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
 
             <div id="auth-error" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 0.6rem 0.9rem; border-radius: 6px; font-size: 0.82rem; margin-bottom: 1.25rem; text-align: center;">
-                Invalid credentials. Please verify username and password.
+                Invalid credentials. Please verify username/email and password.
             </div>
 
             <form id="auth-login-form" onsubmit="handleLogin(event)">
                 <div class="field" style="margin-bottom: 1rem;">
-                    <label>Username / Login ID</label>
-                    <input type="text" id="auth-login-id" class="input" placeholder="e.g. admin or employee username" required autocomplete="username">
+                    <label>Employee ID / Work Email / Login ID</label>
+                    <input type="text" id="auth-login-id" class="input" placeholder="e.g. admin or EMP001 or employee@company.com" required autocomplete="username">
                 </div>
                 <div class="field" style="margin-bottom: 1.25rem;">
                     <label>Password</label>
@@ -876,9 +880,9 @@ HTML_CONTENT = """<!DOCTYPE html>
             </form>
 
             <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-line); font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">
-                <div style="font-weight: 600; color: #fff; margin-bottom: 0.35rem;">Demo Credentials:</div>
+                <div style="font-weight: 600; color: #fff; margin-bottom: 0.35rem;">Default Admin Credentials:</div>
                 <div>🛡️ <strong>Admin / HR:</strong> <code>admin</code> / <code>admin123</code></div>
-                <div>👤 <strong>Employee:</strong> <code>john</code> / <code>john123</code></div>
+                <div style="margin-top: 0.3rem; color: var(--text-muted);">👤 <em>Employees log in using Employee ID / Email + password once created by Admin.</em></div>
             </div>
         </div>
     </div>
@@ -926,7 +930,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
                 <div style="display:flex; gap:0.5rem;">
                     <button class="btn btn-primary" onclick="toggleNotificationModal()">🔔 Notification Center</button>
-                    <button class="btn btn-secondary" onclick="resetData()">↺ Refresh</button>
+                    <button class="btn btn-secondary" onclick="resetData()">↺ Reset State</button>
                 </div>
             </div>
 
@@ -1060,7 +1064,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         <div id="panel-emp-dashboard" class="tab-panel">
             <div class="header-row">
                 <div>
-                    <h1 class="header-title" id="emp-dash-greeting">Welcome, John Doe</h1>
+                    <h1 class="header-title" id="emp-dash-greeting">Welcome, Employee</h1>
                     <p class="header-sub" id="emp-dash-sub">Your personal HR summary for today</p>
                 </div>
                 <button class="btn btn-secondary" onclick="openTab('attendance')">📋 View Full Attendance</button>
@@ -1109,7 +1113,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <button class="btn btn-primary" onclick="openTab('attendance')">🕐 Check In / Check Out</button>
                     <button class="btn btn-secondary" onclick="openTab('leave')">📅 Apply for Leave</button>
                     <button class="btn btn-secondary" onclick="openTab('documents')">📎 Upload Document</button>
-                    <button class="btn btn-secondary" onclick="openTab('profile')">👤 My Profile</button>
+                    <button class="btn btn-secondary" onclick="state.viewingEmployeeId = null; openTab('profile')">👤 My Profile</button>
                 </div>
             </div>
 
@@ -1128,7 +1132,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             <!-- Recent Attendance -->
             <div class="card">
-                <h3 style="font-size:1rem;margin-bottom:1rem;">📆 Recent Attendance (Last 5 Days)</h3>
+                <h3 style="font-size:1rem;margin-bottom:1rem;">📆 Recent Attendance</h3>
                 <div class="table-wrap">
                     <table>
                         <thead>
@@ -1146,10 +1150,10 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="profile-hero-left">
                     <div class="profile-avatar-lg" id="prof-hero-avatar">--</div>
                     <div>
-                        <div style="display:flex; align-items:center; gap:0.6rem;">
+                        <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
                             <h1 style="font-size: 1.45rem; font-weight: 800;" id="prof-hero-name">--</h1>
                             <span class="badge badge-purple" id="prof-hero-badge">--</span>
-                            <span class="badge badge-green">Active</span>
+                            <span class="badge badge-green" id="prof-hero-status">Active</span>
                         </div>
                         <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 2px;" id="prof-hero-title">--</p>
                         <div class="profile-chips">
@@ -1160,9 +1164,10 @@ HTML_CONTENT = """<!DOCTYPE html>
                         </div>
                     </div>
                 </div>
-                <div style="display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;">
-                    <button class="btn btn-primary" onclick="openEditPrivateModal()">✎ Edit Personal Info</button>
+                <div style="display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;" id="prof-hero-actions">
+                    <button class="btn btn-primary" onclick="openEditPrivateModal()">✎ Edit Profile Info</button>
                     <button class="btn btn-secondary prof-admin-edit-btn" onclick="openSalaryModal(null)">💰 Update Salary Structure</button>
+                    <div id="prof-suspension-container"></div>
                 </div>
             </div>
 
@@ -1395,7 +1400,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         <div id="panel-attendance" class="tab-panel">
             <div class="header-row">
                 <div><h1 class="header-title">Attendance Tracking</h1></div>
-                <button class="btn btn-secondary" onclick="resetData()">Reset Data</button>
+                <button class="btn btn-secondary" onclick="resetData()">Reset State</button>
             </div>
 
             <div class="banner">
@@ -1587,73 +1592,26 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             <div class="card" id="form-emp-card" style="display: none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.05rem;">Create Employee Profile &amp; Login Account</h3>
+                    <h3 style="font-size: 1.05rem;">Create Real Employee Profile &amp; Login Account</h3>
                     <button type="button" class="btn btn-secondary" style="padding:0.2rem 0.6rem;" onclick="toggleEmpForm()">✕</button>
                 </div>
                 <div id="emp-create-error" style="display:none; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#f87171; padding:0.6rem 0.9rem; border-radius:6px; font-size:0.85rem; margin-bottom:1rem;"></div>
 
                 <form onsubmit="handleAddEmp(event)">
                     <!-- Basic Information -->
-                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-bottom:0.5rem;">1. Basic Details</div>
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-bottom:0.5rem;">1. Basic Account &amp; Identity</div>
                     <div class="form-row">
                         <div class="field">
                             <label>Full Name *</label>
-                            <input type="text" id="emp-name" class="input" placeholder="e.g. Rahul Sharma" required>
+                            <input type="text" id="emp-name" class="input" placeholder="e.g. Test Employee" required>
                         </div>
                         <div class="field">
-                            <label>Employee Code</label>
-                            <input type="text" id="emp-code" class="input" placeholder="e.g. EMP004 (Auto-generated if blank)">
+                            <label>Employee ID / Code *</label>
+                            <input type="text" id="emp-code" class="input" placeholder="e.g. EMP001" required>
                         </div>
                         <div class="field">
                             <label>Work Email *</label>
-                            <input type="email" id="emp-email" class="input" placeholder="rahul@company.com" required>
-                        </div>
-                        <div class="field">
-                            <label>Mobile Number</label>
-                            <input type="text" id="emp-phone" class="input" placeholder="+91 98765 00000">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="field">
-                            <label>Date of Birth</label>
-                            <input type="date" id="emp-dob" class="input" value="1995-05-15">
-                        </div>
-                        <div class="field">
-                            <label>City / Location</label>
-                            <input type="text" id="emp-city" class="input" placeholder="Bangalore, Karnataka">
-                        </div>
-                    </div>
-
-                    <!-- Work Details -->
-                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">2. Work Details</div>
-                    <div class="form-row">
-                        <div class="field">
-                            <label>Job Title *</label>
-                            <input type="text" id="emp-job" class="input" placeholder="e.g. QA Automation Engineer" required>
-                        </div>
-                        <div class="field">
-                            <label>Department *</label>
-                            <input type="text" id="emp-dept" class="input" placeholder="e.g. Engineering" required>
-                        </div>
-                        <div class="field">
-                            <label>Role *</label>
-                            <select id="emp-role" class="input" required>
-                                <option value="Employee">Employee</option>
-                                <option value="Admin / HR">Admin / HR</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Joining Date *</label>
-                            <input type="date" id="emp-joining" class="input" required>
-                        </div>
-                    </div>
-
-                    <!-- Login Credentials -->
-                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">3. Login Credentials</div>
-                    <div class="form-row">
-                        <div class="field">
-                            <label>Login ID / Username *</label>
-                            <input type="text" id="emp-login-id" class="input" placeholder="e.g. rahul123 or testemployee" required autocomplete="off">
+                            <input type="email" id="emp-email" class="input" placeholder="test@example.com" required>
                         </div>
                         <div class="field">
                             <label>Password *</label>
@@ -1665,21 +1623,62 @@ HTML_CONTENT = """<!DOCTYPE html>
                         </div>
                     </div>
 
-                    <!-- Compensation -->
-                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">4. Compensation Structure</div>
+                    <!-- Work Details -->
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">2. Work Details &amp; Governance</div>
                     <div class="form-row">
                         <div class="field">
-                            <label>Monthly Salary / Wage (₹) *</label>
-                            <input type="number" id="emp-wage" class="input" value="50000" min="5000" step="1000" required>
+                            <label>Job Title</label>
+                            <input type="text" id="emp-job" class="input" placeholder="e.g. Software Engineer">
                         </div>
                         <div class="field">
-                            <label>Salary Structure</label>
-                            <input type="text" id="emp-struct" class="input" value="Standard Base" placeholder="e.g. Senior Technical Base">
+                            <label>Department</label>
+                            <input type="text" id="emp-dept" class="input" placeholder="e.g. Engineering">
+                        </div>
+                        <div class="field">
+                            <label>Role</label>
+                            <select id="emp-role" class="input">
+                                <option value="Employee" selected>Employee</option>
+                                <option value="Admin / HR">Admin / HR</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Joining Date</label>
+                            <input type="date" id="emp-joining" class="input" value="2026-08-01">
+                        </div>
+                        <div class="field">
+                            <label>Employment Status</label>
+                            <select id="emp-status" class="input">
+                                <option value="active" selected>Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>Work Location</label>
+                            <input type="text" id="emp-location" class="input" placeholder="e.g. Bangalore Headquarters (HQ)">
+                        </div>
+                        <div class="field">
+                            <label>Reporting Manager</label>
+                            <input type="text" id="emp-manager" class="input" placeholder="e.g. Jane Smith (HR Head)">
+                        </div>
+                    </div>
+
+                    <!-- Compensation -->
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">3. Compensation Structure (Optional)</div>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>Monthly Salary / Wage (₹)</label>
+                            <input type="number" id="emp-wage" class="input" placeholder="e.g. 60000" min="0" step="500">
+                        </div>
+                        <div class="field">
+                            <label>Salary Structure Title</label>
+                            <input type="text" id="emp-struct" class="input" placeholder="e.g. Standard Technical Base">
                         </div>
                     </div>
 
                     <div style="margin-top:1.25rem; display:flex; gap:0.75rem;">
-                        <button type="submit" class="btn btn-success">✓ Create Employee &amp; Account</button>
+                        <button type="submit" class="btn btn-success">✓ Save Real Employee</button>
                         <button type="button" class="btn btn-secondary" onclick="toggleEmpForm()">Cancel</button>
                     </div>
                 </form>
@@ -1703,7 +1702,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <form onsubmit="handleDocUpload(event)">
                     <div class="form-row">
                         <div class="field">
-                            <label>Document Title</label>
+                            <label>Document Title *</label>
                             <input type="text" id="doc-title" class="input" placeholder="Passport Verification Copy" required>
                         </div>
                         <div class="field">
@@ -1720,7 +1719,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                             </select>
                         </div>
                         <div class="field">
-                            <label>Select File (PDF, Image, Doc)</label>
+                            <label>Select File (PDF, Image, Doc) *</label>
                             <input type="file" id="real-file-input" class="input" accept="image/*,.pdf,.doc,.docx,.txt" required>
                         </div>
                     </div>
@@ -1758,7 +1757,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <p class="header-sub">Manage base compensation, allowances, deductions, and salary disbursement</p>
                 </div>
                 <div id="admin-payroll-actions">
-                    <button class="btn btn-primary" onclick="openSalaryModal(null)">+ Add Salary Record</button>
+                    <button class="btn btn-primary" onclick="openSalaryModal(null)">+ Add / Update Salary Record</button>
                 </div>
             </div>
 
@@ -1889,7 +1888,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             <div class="info-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
                 <div class="info-item">
                     <div class="lbl">Employee</div>
-                    <div class="val" id="ld-emp">John Doe</div>
+                    <div class="val" id="ld-emp">--</div>
                 </div>
                 <div class="info-item">
                     <div class="lbl">Time Off Type</div>
@@ -1897,17 +1896,17 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
                 <div class="info-item">
                     <div class="lbl">Validity Period</div>
-                    <div class="val" id="ld-dates">25 Aug 2026 → 27 Aug 2026</div>
+                    <div class="val" id="ld-dates">-- → --</div>
                 </div>
                 <div class="info-item">
                     <div class="lbl">Allocation / Duration</div>
-                    <div class="val" id="ld-days">3 Days</div>
+                    <div class="val" id="ld-days">1 Day</div>
                 </div>
             </div>
 
             <div class="card" style="background: var(--bg-card); margin-bottom: 1rem;">
                 <div class="lbl" style="margin-bottom: 0.25rem;">Employee Remarks</div>
-                <div style="font-size: 0.9rem; color: #fff;" id="ld-remarks">Fever and rest recommended</div>
+                <div style="font-size: 0.9rem; color: #fff;" id="ld-remarks">--</div>
                 <div style="margin-top: 0.6rem; font-size: 0.8rem; color: #34d399;" id="ld-attachment">📄 Attachment Attached</div>
             </div>
 
@@ -1951,7 +1950,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             <form onsubmit="handleSaveSalary(event)">
                 <input type="hidden" id="modal-pay-id">
                 <div class="form-row">
-                    <div class="field"><label>Employee Name</label><input type="text" id="modal-pay-emp" class="input" readonly></div>
+                    <div class="field"><label>Employee</label><select id="modal-pay-emp" class="input" onchange="onSalaryEmployeeChange()" required></select></div>
                     <div class="field"><label>Salary Structure Title</label><input type="text" id="modal-pay-struct" class="input" placeholder="e.g. Executive Management Base"></div>
                 </div>
                 <div class="form-row">
@@ -1981,14 +1980,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             <form onsubmit="handleSavePrivateInfo(event)">
                 <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-bottom:0.5rem;">1. Personal &amp; Identity Details</div>
                 <div class="form-row">
-                    <div class="field"><label>Date of Birth</label><input type="date" id="m-dob" class="input" required></div>
+                    <div class="field"><label>Date of Birth</label><input type="date" id="m-dob" class="input"></div>
                     <div class="field"><label>Gender</label><select id="m-gender" class="input"><option value="Female">Female</option><option value="Male">Male</option><option value="Other">Other</option></select></div>
                     <div class="field"><label>Nationality</label><input type="text" id="m-nationality" class="input" placeholder="e.g. Indian"></div>
                     <div class="field"><label>Marital Status</label><select id="m-marital" class="input"><option value="Single">Single</option><option value="Married">Married</option></select></div>
                 </div>
                 <div class="form-row">
-                    <div class="field"><label>Personal Mobile</label><input type="text" id="m-phone" class="input" placeholder="+91 98765 00000" required></div>
-                    <div class="field"><label>Aadhaar Number</label><input type="text" id="m-aadhar" class="input" placeholder="4589-2314-7890"></div>
+                    <div class="field"><label>Personal Mobile</label><input type="text" id="m-phone" class="input" placeholder="+91 98765 00000"></div>
+                    <div class="field"><label>Aadhaar Number (UID)</label><input type="text" id="m-aadhar" class="input" placeholder="4589-2314-7890"></div>
                     <div class="field"><label>PAN Number</label><input type="text" id="m-pan" class="input" placeholder="ABCPJ4589K"></div>
                     <div class="field"><label>Passport Number</label><input type="text" id="m-passport" class="input" placeholder="Z9876543"></div>
                 </div>
@@ -2036,133 +2035,14 @@ HTML_CONTENT = """<!DOCTYPE html>
     </div>
 
     <script>
-        const DEFAULT_ATTENDANCE = [
-            { id: 1, employeeId: 1, date: '2026-08-21', employee: 'John Doe', checkIn: '09:00 AM', checkOut: '05:30 PM', checkInTimestamp: 1787302800000, checkOutTimestamp: 1787333400000, status: 'present', workedHours: 8.5, effectiveHours: 8.5, extraHours: 0.5, isActive: false },
-            { id: 2, employeeId: 1, date: '2026-08-20', employee: 'John Doe', checkIn: '08:50 AM', checkOut: '06:10 PM', checkInTimestamp: 1787215800000, checkOutTimestamp: 1787249400000, status: 'present', workedHours: 9.3, effectiveHours: 9.3, extraHours: 1.3, isActive: false },
-            { id: 3, employeeId: 1, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', checkInTimestamp: 1787130900000, checkOutTimestamp: 1787144400000, status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0, isActive: false },
-            { id: 4, employeeId: 2, date: '2026-08-22', employee: 'Jane Smith', checkIn: '09:05 AM', checkOut: '--', checkInTimestamp: 1787389500000, checkOutTimestamp: null, status: 'present', workedHours: 2.5, effectiveHours: 2.5, extraHours: 0.0, isActive: false },
-            { id: 5, employeeId: 3, date: '2026-08-22', employee: 'Robert Taylor', checkIn: '08:45 AM', checkOut: '--', checkInTimestamp: 1787388300000, checkOutTimestamp: null, status: 'present', workedHours: 2.8, effectiveHours: 2.8, extraHours: 0.0, isActive: false }
-        ];
-
-        const DEFAULT_LEAVE = [
-            { id: 101, employeeId: 1, employee: 'John Doe', type: 'sick', startDate: '2026-08-25', endDate: '2026-08-27', days: 3, remarks: 'High fever and doctor prescribed rest', hasAttachment: true, status: 'pending', adminComments: '' },
-            { id: 102, employeeId: 2, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', hasAttachment: false, status: 'approved', adminComments: 'Approved by HR Director' },
-            { id: 103, employeeId: 3, employee: 'Robert Taylor', type: 'paid', startDate: '2026-08-23', endDate: '2026-08-24', days: 2, remarks: 'Attending Odoo Developers Conference', hasAttachment: false, status: 'pending', adminComments: '' },
-            { id: 104, employeeId: 1, employee: 'John Doe', type: 'paid', startDate: '2026-08-10', endDate: '2026-08-10', days: 1, remarks: 'Personal domestic work', hasAttachment: false, status: 'approved', adminComments: 'Approved' }
-        ];
-
-        const DEFAULT_EMPLOYEES = [
-            {
-                id: 1,
-                name: 'John Doe',
-                email: 'john.doe@company.com',
-                job: 'Senior Software Engineer',
-                dept: 'Engineering',
-                role: 'Employee',
-                joining: '2024-03-15',
-                loginId: 'OIJODO20240001',
-                phone: '+91 98765 11111',
-                personalPhone: '+91 98765 11111',
-                dob: '1992-08-20',
-                gender: 'Male',
-                nationality: 'Indian',
-                marital: 'Single',
-                aadhar: '1234-5678-9012',
-                pan: 'ABCDE1234F',
-                passport: 'A1234567',
-                street: 'Flat 302, Green Glen Layout, Bellandur',
-                city: 'Bangalore, Karnataka',
-                pin: '560103',
-                country: 'India',
-                emgName: 'Mary Doe (Sister)',
-                emgPhone: '+91 98765 22222',
-                bankName: 'ICICI Bank (Salary Account)',
-                bankAcc: '001105001234',
-                bankIfsc: 'ICIC0000011',
-                monthlyWage: 65000,
-                struct: 'Senior Technical',
-                provisioned: true
-            },
-            {
-                id: 2,
-                name: 'Jane Smith',
-                email: 'jane.smith@dayflow.org',
-                job: 'Head of Human Resources',
-                dept: 'Human Resources',
-                role: 'Admin / HR',
-                joining: '2023-01-10',
-                loginId: 'OIJASM20230002',
-                phone: '+91 98765 43212',
-                personalPhone: '+91 98765 11223',
-                dob: '1990-06-15',
-                gender: 'Female',
-                nationality: 'Indian',
-                marital: 'Married',
-                aadhar: '4589-2314-7890',
-                pan: 'ABCPJ4589K',
-                passport: 'Z9876543',
-                street: 'No. 42, 8th Main, 4th Cross, Indiranagar',
-                city: 'Bangalore, Karnataka',
-                pin: '560038',
-                country: 'India',
-                emgName: 'Rajesh Smith (Spouse)',
-                emgPhone: '+91 98765 99887',
-                bankName: 'HDFC Bank (Salary Account)',
-                bankAcc: '50100234567890',
-                bankIfsc: 'HDFC0001234',
-                monthlyWage: 55000,
-                struct: 'HR Specialist Base',
-                provisioned: true
-            },
-            {
-                id: 3,
-                name: 'Robert Taylor',
-                email: 'robert.t@company.com',
-                job: 'Product Manager',
-                dept: 'Product',
-                role: 'Employee',
-                joining: '2025-06-01',
-                loginId: 'OIROTA20250003',
-                phone: '+91 98765 44444',
-                personalPhone: '+91 98765 44444',
-                dob: '1989-11-05',
-                gender: 'Male',
-                nationality: 'Indian',
-                marital: 'Married',
-                aadhar: '9876-5432-1098',
-                pan: 'XYZAB9876L',
-                passport: 'B9876543',
-                street: 'Villa 14, Palm Meadows, Whitefield',
-                city: 'Bangalore, Karnataka',
-                pin: '560066',
-                country: 'India',
-                emgName: 'Sarah Taylor (Spouse)',
-                emgPhone: '+91 98765 55555',
-                bankName: 'Axis Bank (Salary Account)',
-                bankAcc: '912010045678901',
-                bankIfsc: 'UTIB0000123',
-                monthlyWage: 58000,
-                struct: 'Product Lead',
-                provisioned: false
-            }
-        ];
-
-        const DEFAULT_DOCUMENTS = [
-            { id: 1, employeeId: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', size: '1.2 MB', date: '2026-08-10', status: 'verified', adminComments: 'Verified by HR', fileData: '' },
-            { id: 2, employeeId: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', size: '450 KB', date: '2026-08-01', status: 'verified', adminComments: 'Signed contract on file', fileData: '' }
-        ];
-
-        const DEFAULT_PAYROLL = [
-            { id: 1, employeeId: 1, ref: 'PAY/2026/001', employee: 'John Doe', structure: 'Senior Technical', period: 'August 2026', base: 65000, allow: 12000, deduct: 4500, status: 'approved' },
-            { id: 2, employeeId: 2, ref: 'PAY/2026/002', employee: 'Jane Smith', structure: 'HR Specialist Base', period: 'August 2026', base: 55000, allow: 8000, deduct: 3500, status: 'paid' },
-            { id: 3, employeeId: 3, ref: 'PAY/2026/003', employee: 'Robert Taylor', structure: 'Product Lead', period: 'August 2026', base: 58000, allow: 9000, deduct: 3800, status: 'draft' }
-        ];
-
-        const DEFAULT_NOTIFICATIONS = [
-            { id: 1, title: 'Security: New Login Alert', recipient: 'jane.smith@dayflow.org', type: 'login', time: '2 mins ago', body: 'Security notification: Successful login from IP 192.168.1.10. No action required.' },
-            { id: 2, title: 'Welcome: Account Created', recipient: 'john.doe@company.com', type: 'account', time: '1 hour ago', body: 'Your Dayflow account (OIJODO20240001) has been created. Login access granted.' },
-            { id: 3, title: 'Time Off: Application Approved', recipient: 'john.doe@company.com', type: 'leave_approved', time: 'Yesterday', body: 'Your Paid Time Off request for 10 Aug 2026 has been approved by HR.' }
-        ];
+        // STRICTLY 1 DEFAULT SEEDED ACCOUNT: JANE SMITH (ADMIN)
+        // ZERO FAKE EMPLOYEES / BUSINESS RECORDS
+        const DEFAULT_ATTENDANCE = [];
+        const DEFAULT_LEAVE = [];
+        const DEFAULT_EMPLOYEES = [];
+        const DEFAULT_DOCUMENTS = [];
+        const DEFAULT_PAYROLL = [];
+        const DEFAULT_NOTIFICATIONS = [];
 
         const DEFAULT_USERS = [
             {
@@ -2170,47 +2050,18 @@ HTML_CONTENT = """<!DOCTYPE html>
                 loginId: 'admin',
                 password: 'admin123',
                 role: 'admin',
-                employeeId: 2,
+                employeeId: null,
                 name: 'Jane Smith',
                 initials: 'JS',
-                email: 'admin@dayflow.org'
-            },
-            {
-                userId: 'u_1',
-                loginId: 'john',
-                password: 'john123',
-                role: 'employee',
-                employeeId: 1,
-                name: 'John Doe',
-                initials: 'JD',
-                email: 'john.doe@company.com'
-            },
-            {
-                userId: 'u_2',
-                loginId: 'jane',
-                password: 'jane123',
-                role: 'admin',
-                employeeId: 2,
-                name: 'Jane Smith',
-                initials: 'JS',
-                email: 'jane.smith@dayflow.org'
-            },
-            {
-                userId: 'u_3',
-                loginId: 'robert',
-                password: 'robert123',
-                role: 'employee',
-                employeeId: 3,
-                name: 'Robert Taylor',
-                initials: 'RT',
-                email: 'robert.t@company.com'
+                email: 'admin@dayflow.org',
+                status: 'active'
             }
         ];
 
         const DEFAULT_ADMIN_PROFILE = {
             name: 'Jane Smith',
             title: 'Head of Human Resources',
-            dept: 'Human Resources & Talent',
+            dept: 'Human Resources',
             reportsTo: 'Board of Directors / CEO',
             workLocation: 'Bangalore Headquarters (HQ)',
             workSchedule: '40 Hours / Week (Mon-Fri)',
@@ -2226,7 +2077,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             aadhar: '4589-2314-7890',
             pan: 'ABCPJ4589K',
             passport: 'Z9876543',
-            street: 'No. 42, 8th Main, 4th Cross, Indiranagar',
+            street: 'No. 42, 8th Main, Indiranagar',
             city: 'Bangalore, Karnataka',
             pin: '560038',
             country: 'India',
@@ -2236,7 +2087,8 @@ HTML_CONTENT = """<!DOCTYPE html>
             bankAcc: '50100234567890',
             bankIfsc: 'HDFC0001234',
             monthlyWage: 55000,
-            struct: 'HR Specialist Base'
+            struct: 'HR Specialist Base',
+            status: 'active'
         };
 
         const HOLIDAYS_AUG_2026 = {
@@ -2249,7 +2101,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             role: 'admin',
             currentEmployee: 'Jane Smith',
             currentUserId: 'u_admin',
-            currentEmployeeId: 2,
+            currentEmployeeId: null,
             viewingEmployeeId: null,
             isCheckedIn: false,
             activeCheckInTime: null,
@@ -2301,9 +2153,10 @@ HTML_CONTENT = """<!DOCTYPE html>
             state.isCheckedIn = false;
             state.activeCheckInTime = null;
             state.checkInTimestamp = null;
+            state.viewingEmployeeId = null;
             if (state.tickerInterval) { clearInterval(state.tickerInterval); state.tickerInterval = null; }
 
-            // Re-apply the current session so role/nav stay correct
+            // Re-apply the current session or render
             const session = getSession();
             if (session) {
                 applySession(session);
@@ -2329,7 +2182,8 @@ HTML_CONTENT = """<!DOCTYPE html>
                 employeeId: user.employeeId,
                 name: user.name,
                 initials: user.initials,
-                email: user.email
+                email: user.email,
+                status: user.status || 'active'
             };
             localStorage.setItem('df_session', JSON.stringify(sessionObj));
         }
@@ -2340,19 +2194,32 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function handleLogin(e) {
             e.preventDefault();
-            const loginId = (document.getElementById('auth-login-id').value || '').trim();
+            const inputId = (document.getElementById('auth-login-id').value || '').trim();
             const password = document.getElementById('auth-password').value;
             const errEl = document.getElementById('auth-error');
 
             const userList = (state && state.users && state.users.length) ? state.users : (JSON.parse(localStorage.getItem('df_users')) || DEFAULT_USERS);
+            
+            // Match by loginId (code/username) OR email (case-insensitive)
             const user = userList.find(u =>
-                u.loginId.toLowerCase() === loginId.toLowerCase() && u.password === password
+                (u.loginId.toLowerCase() === inputId.toLowerCase() || (u.email && u.email.toLowerCase() === inputId.toLowerCase())) &&
+                u.password === password
             );
 
             if (!user) {
+                errEl.innerText = 'Invalid credentials. Please verify Employee ID / Email and password.';
                 errEl.style.display = 'block';
                 return;
             }
+
+            // Check if user or linked employee is suspended
+            const emp = state.employees.find(empObj => empObj.id === user.employeeId || empObj.code === user.loginId || empObj.email === user.email);
+            if (user.status === 'suspended' || (emp && emp.status === 'suspended')) {
+                errEl.innerText = '⛔ Account Suspended. Please contact HR Administrator.';
+                errEl.style.display = 'block';
+                return;
+            }
+
             errEl.style.display = 'none';
             setSession(user);
             applySession(user);
@@ -2367,9 +2234,11 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function handleSignOut() {
             clearSession();
-            // Reset transient state (but NOT data)
+            // Reset transient session state (NEVER destroy persistent business records)
             state.role = 'admin';
             state.currentEmployee = 'Jane Smith';
+            state.currentEmployeeId = null;
+            state.viewingEmployeeId = null;
             state.isCheckedIn = false;
             state.activeCheckInTime = null;
             state.checkInTimestamp = null;
@@ -2380,21 +2249,30 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function applySession(user) {
-            // Find the employee record
-            const emp = state.employees.find(e => e.id === user.employeeId || (e.loginId && e.loginId.toLowerCase() === user.loginId.toLowerCase()) || e.name === user.name) || state.employees[0];
+            let emp = null;
+            if (user.role === 'admin') {
+                emp = state.adminProfile;
+                state.role = 'admin';
+                state.currentEmployee = 'Jane Smith';
+                state.currentUserId = user.userId || 'u_admin';
+                state.currentEmployeeId = null;
+            } else {
+                emp = state.employees.find(e => e.id === user.employeeId || (e.code && e.code.toLowerCase() === user.loginId.toLowerCase()) || (e.loginId && e.loginId.toLowerCase() === user.loginId.toLowerCase()) || (e.email && e.email.toLowerCase() === (user.email||'').toLowerCase())) || state.employees[0];
+                state.role = 'employee';
+                state.currentEmployee = emp ? emp.name : user.name;
+                state.currentUserId = user.userId;
+                state.currentEmployeeId = emp ? emp.id : user.employeeId;
+            }
 
-            // Update in-memory state
-            state.role = user.role;
-            state.currentEmployee = emp ? emp.name : user.name;
-            state.currentUserId = user.userId;
-            state.currentEmployeeId = emp ? emp.id : user.employeeId;
+            state.viewingEmployeeId = null;
 
             // Restore active check-in for this employee
             if (state.tickerInterval) { clearInterval(state.tickerInterval); state.tickerInterval = null; }
             state.isCheckedIn = false;
             state.activeCheckInTime = null;
             state.checkInTimestamp = null;
-            const activeRec = state.attendances.find(a => a.isActive && ((a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
+            
+            const activeRec = state.attendances.find(a => a.isActive && ((state.currentEmployeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
             if (activeRec) {
                 state.isCheckedIn = true;
                 state.activeCheckInTime = activeRec.checkIn;
@@ -2562,13 +2440,38 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (tabId === 'payroll') renderPayroll();
         }
 
+        // CRITICAL: Robust Profile Routing using Persistent Employee ID
         function viewEmployeeProfile(empId) {
-            state.viewingEmployeeId = empId;
+            state.viewingEmployeeId = Number(empId);
             openTab('profile');
         }
 
-        // onRoleChange is now replaced by login — kept as no-op for safety
-        function onRoleChange(role) { /* deprecated: use handleLogin */ }
+        function toggleEmployeeSuspension(empId) {
+            const emp = state.employees.find(e => e.id === Number(empId));
+            if (!emp) return;
+            const newStatus = (emp.status === 'suspended') ? 'active' : 'suspended';
+            emp.status = newStatus;
+
+            // Synchronize linked user status
+            const user = state.users.find(u => u.employeeId === emp.id || (emp.code && u.loginId.toLowerCase() === emp.code.toLowerCase()) || (emp.loginId && u.loginId.toLowerCase() === emp.loginId.toLowerCase()) || u.email.toLowerCase() === emp.email.toLowerCase());
+            if (user) {
+                user.status = newStatus;
+            }
+
+            saveState();
+            renderAdminProfile();
+            renderEmployees();
+            renderDashboard();
+
+            triggerNotification(
+                `Governance: Employee ${newStatus === 'suspended' ? 'Suspended' : 'Activated'}`,
+                'admin@dayflow.org',
+                'system',
+                `Employee ${emp.name} (${emp.code || emp.id}) status set to ${newStatus.toUpperCase()}.`
+            );
+
+            alert(`Employee "${emp.name}" is now ${newStatus.toUpperCase()}.`);
+        }
 
         function openProfileSection(secId) {
             document.querySelectorAll('.profile-subtab').forEach(el => el.classList.remove('active'));
@@ -2590,7 +2493,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             state.tickerInterval = setInterval(updateLiveTicker, 1000);
 
-            // Add or update active record in attendances
+            // Add active record in attendances
             const todayStr = formatDate(now);
             const activeRec = {
                 id: now.getTime(),
@@ -2630,7 +2533,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 ? parseFloat(((checkOutTimestamp - state.checkInTimestamp) / (1000 * 60 * 60)).toFixed(2))
                 : 0.0;
 
-            const activeRec = state.attendances.find(a => a.isActive && ((a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
+            const activeRec = state.attendances.find(a => a.isActive && ((state.currentEmployeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
             if (activeRec) {
                 activeRec.checkOut = checkOutStr;
                 activeRec.checkOutTimestamp = checkOutTimestamp;
@@ -2773,7 +2676,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 renderAll();
 
                 // Trigger Outgoing Decision Email Notification to Employee
-                const empObj = state.employees.find(e => e.name === leave.employee);
+                const empObj = state.employees.find(e => e.id === leave.employeeId || e.name === leave.employee);
                 const recipientEmail = empObj ? empObj.email : 'employee@company.com';
                 const notifTitle = newStatus === 'approved' ? 'Time Off: Request Approved' : 'Time Off: Request Rejected';
                 const notifBody = newStatus === 'approved' ? 
@@ -2797,7 +2700,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 saveState();
                 renderAll();
 
-                const empObj = state.employees.find(e => e.name === leave.employee);
+                const empObj = state.employees.find(e => e.id === leave.employeeId || e.name === leave.employee);
                 triggerNotification(
                     'Time Off: Request Approved',
                     empObj ? empObj.email : 'employee@company.com',
@@ -2815,7 +2718,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 saveState();
                 renderAll();
 
-                const empObj = state.employees.find(e => e.name === leave.employee);
+                const empObj = state.employees.find(e => e.id === leave.employeeId || e.name === leave.employee);
                 triggerNotification(
                     'Time Off: Request Rejected',
                     empObj ? empObj.email : 'employee@company.com',
@@ -2823,18 +2726,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                     `Your leave request for ${leave.startDate} to ${leave.endDate} has been rejected by HR.`
                 );
             }
-        }
-
-        function handleLeaveSubmit(e) {
-            handleLeaveModalSubmit(e);
-        }
-
-        function handleApproveLeave(id) {
-            handleQuickApprove(id);
-        }
-
-        function handleRejectLeave(id) {
-            handleQuickReject(id);
         }
 
         /* Calendar Render */
@@ -2860,7 +2751,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 const matchedLeave = state.leaves.find(l => {
                     const s = l.startDate;
                     const e = l.endDate;
-                    return dateStr >= s && dateStr <= e && ((l.employeeId && l.employeeId === state.currentEmployeeId) || l.employee === state.currentEmployee);
+                    return dateStr >= s && dateStr <= e && ((state.currentEmployeeId && l.employeeId === state.currentEmployeeId) || l.employee === state.currentEmployee);
                 });
 
                 let cellClasses = 'cal-cell';
@@ -2914,44 +2805,34 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (errEl) { errEl.style.display = 'none'; errEl.innerText = ''; }
 
             const name = (document.getElementById('emp-name')?.value || '').trim();
-            const email = (document.getElementById('emp-email')?.value || '').trim();
-            const phone = (document.getElementById('emp-phone')?.value || '').trim();
             const empCode = (document.getElementById('emp-code')?.value || '').trim();
-            const dob = document.getElementById('emp-dob')?.value || '1996-05-15';
-            const city = (document.getElementById('emp-city')?.value || '').trim();
-            const job = (document.getElementById('emp-job')?.value || '').trim();
-            const dept = (document.getElementById('emp-dept')?.value || '').trim();
-            const role = document.getElementById('emp-role')?.value || 'Employee';
-            const joining = document.getElementById('emp-joining')?.value;
-            const loginId = (document.getElementById('emp-login-id')?.value || '').trim();
+            const email = (document.getElementById('emp-email')?.value || '').trim();
             const password = document.getElementById('emp-password')?.value;
             const confirmPassword = document.getElementById('emp-confirm-password')?.value;
-            const wage = Number(document.getElementById('emp-wage')?.value) || 50000;
-            const struct = (document.getElementById('emp-struct')?.value || '').trim() || 'Standard Base';
+
+            const job = (document.getElementById('emp-job')?.value || '').trim() || 'Staff';
+            const dept = (document.getElementById('emp-dept')?.value || '').trim() || 'General';
+            const role = document.getElementById('emp-role')?.value || 'Employee';
+            const joining = document.getElementById('emp-joining')?.value || '2026-08-01';
+            const empStatus = document.getElementById('emp-status')?.value || 'active';
+            const workLocation = (document.getElementById('emp-location')?.value || '').trim() || 'Bangalore Headquarters (HQ)';
+            const reportingManager = (document.getElementById('emp-manager')?.value || '').trim() || 'Jane Smith (HR Head)';
+
+            const wageVal = document.getElementById('emp-wage')?.value;
+            const wage = wageVal !== '' ? Number(wageVal) : 0;
+            const struct = (document.getElementById('emp-struct')?.value || '').trim() || (wage > 0 ? 'Standard Base' : 'Unconfigured');
 
             // Validation 1: Required fields
             if (!name) {
                 showCreateEmpError('Validation Error: Full Name is required.');
                 return;
             }
+            if (!empCode) {
+                showCreateEmpError('Validation Error: Employee ID / Code is required.');
+                return;
+            }
             if (!email) {
                 showCreateEmpError('Validation Error: Work Email is required.');
-                return;
-            }
-            if (!job) {
-                showCreateEmpError('Validation Error: Job Title is required.');
-                return;
-            }
-            if (!dept) {
-                showCreateEmpError('Validation Error: Department is required.');
-                return;
-            }
-            if (!joining) {
-                showCreateEmpError('Validation Error: Joining Date is required.');
-                return;
-            }
-            if (!loginId) {
-                showCreateEmpError('Validation Error: Login ID / Username is required.');
                 return;
             }
             if (!password) {
@@ -2965,77 +2846,91 @@ HTML_CONTENT = """<!DOCTYPE html>
                 return;
             }
 
-            // Validation 3: Duplicate Login ID
-            const loginLower = loginId.toLowerCase();
+            // Validation 3: Unique Employee ID (Code)
+            const codeLower = empCode.toLowerCase();
             const userList = (state && state.users) ? state.users : DEFAULT_USERS;
-            if (userList.some(u => (u.loginId || '').toLowerCase() === loginLower) ||
-                state.employees.some(emp => (emp.loginId || '').toLowerCase() === loginLower)) {
-                showCreateEmpError(`Validation Error: Login ID "${loginId}" is already in use. Please choose another username.`);
+            if (state.employees.some(emp => (emp.code || emp.loginId || '').toLowerCase() === codeLower) ||
+                userList.some(u => (u.loginId || '').toLowerCase() === codeLower)) {
+                showCreateEmpError(`Validation Error: Employee ID "${empCode}" is already in use. Must be unique.`);
                 return;
             }
 
-            // Generate unique employee ID
+            // Validation 4: Unique Work Email
+            const emailLower = email.toLowerCase();
+            if (state.employees.some(emp => (emp.email || '').toLowerCase() === emailLower) ||
+                userList.some(u => (u.email || '').toLowerCase() === emailLower)) {
+                showCreateEmpError(`Validation Error: Email "${email}" is already registered. Must be unique.`);
+                return;
+            }
+
+            // Generate unique numerical employee ID
             const newId = state.employees.reduce((max, emp) => Math.max(max, Number(emp.id) || 0), 0) + 1;
 
             const newEmp = {
                 id: newId,
-                code: empCode || `EMP${String(newId).padStart(3, '0')}`,
+                code: empCode,
+                loginId: empCode,
                 name: name,
                 email: email,
-                phone: phone || '+91 98765 00000',
-                personalPhone: phone || '+91 98765 00000',
+                phone: '',
+                personalPhone: '',
                 job: job,
                 dept: dept,
                 role: role,
                 joining: joining,
-                dob: dob || '1995-01-01',
-                gender: 'Male',
-                nationality: 'Indian',
-                marital: 'Single',
-                aadhar: '--',
-                pan: '--',
-                passport: '--',
-                street: '--',
-                city: city || 'Bangalore, Karnataka',
-                pin: '--',
-                country: 'India',
-                emgName: '--',
-                emgPhone: '--',
-                bankName: 'HDFC Bank (Salary Account)',
-                bankAcc: '--',
-                bankIfsc: '--',
-                loginId: loginId,
+                status: empStatus,
+                workLocation: workLocation,
+                reportsTo: reportingManager,
+                workSchedule: '40 Hours / Week (Mon-Fri)',
+                dob: '',
+                gender: '',
+                nationality: '',
+                marital: '',
+                aadhar: '',
+                pan: '',
+                passport: '',
+                street: '',
+                city: '',
+                pin: '',
+                country: '',
+                emgName: '',
+                emgPhone: '',
+                bankName: '',
+                bankAcc: '',
+                bankIfsc: '',
                 monthlyWage: wage,
-                struct: struct,
-                provisioned: true
+                struct: struct
             };
 
             const newUser = {
                 userId: `u_${newId}`,
-                loginId: loginId,
+                loginId: empCode,
+                email: email,
                 password: password,
                 role: role === 'Admin / HR' ? 'admin' : 'employee',
                 employeeId: newId,
                 name: name,
                 initials: name.split(' ').map(n=>n[0]).join('').toUpperCase() || 'U',
-                email: email
+                status: empStatus
             };
 
             state.employees.push(newEmp);
             state.users.push(newUser);
 
-            state.payrolls.push({
-                id: Date.now(),
-                employeeId: newId,
-                ref: `PAY/2026/00${state.payrolls.length + 1}`,
-                employee: newEmp.name,
-                structure: newEmp.struct,
-                period: 'August 2026',
-                base: Math.round(wage * 0.8),
-                allow: Math.round(wage * 0.2),
-                deduct: Math.round(wage * 0.08),
-                status: 'draft'
-            });
+            if (wage > 0) {
+                state.payrolls.push({
+                    id: Date.now(),
+                    employeeId: newId,
+                    ref: `PAY/2026/${String(state.payrolls.length + 1).padStart(3, '0')}`,
+                    employee: newEmp.name,
+                    structure: newEmp.struct,
+                    period: 'August 2026',
+                    base: Math.round(wage * 0.8),
+                    allow: Math.round(wage * 0.2),
+                    deduct: Math.round(wage * 0.08),
+                    status: 'draft'
+                });
+            }
 
             saveState();
             renderAll();
@@ -3047,43 +2942,13 @@ HTML_CONTENT = """<!DOCTYPE html>
                 'Welcome: Dayflow Account Created',
                 newEmp.email,
                 'account_created',
-                `Hello ${newEmp.name}, your Dayflow account (${newEmp.loginId}) has been created. Login access granted.`
+                `Hello ${newEmp.name}, your Dayflow account (${newEmp.code}) has been created. Login access granted.`
             );
 
             alert(`✅ Employee "${name}" created successfully!
-Login ID: ${loginId}
+Employee ID: ${empCode}
+Email: ${email}
 Role: ${newUser.role.toUpperCase()}`);
-        }
-
-        function handleProvision(id) {
-            const emp = state.employees.find(e => e.id === id);
-            if (emp) {
-                const year = emp.joining ? emp.joining.split('-')[0] : '2026';
-                emp.provisioned = true;
-                emp.loginId = `DAYFLOW-${emp.name.replace(/[^A-Z]/gi, '').toUpperCase()}-${year}-000${Math.floor(Math.random() * 90 + 10)}`;
-                const userList = (state && state.users) ? state.users : DEFAULT_USERS;
-                if (!userList.some(u => u.loginId === emp.loginId)) {
-                    state.users.push({
-                        userId: `u_${emp.id}`,
-                        loginId: emp.loginId,
-                        password: 'emp123',
-                        role: emp.role === 'Admin / HR' ? 'admin' : 'employee',
-                        employeeId: emp.id,
-                        name: emp.name,
-                        initials: emp.name.split(' ').map(n=>n[0]).join('').toUpperCase() || 'U'
-                    });
-                }
-                saveState();
-                renderEmployees();
-                renderDashboard();
-
-                triggerNotification(
-                    'Welcome: Account Provisioned',
-                    emp.email,
-                    'account_created',
-                    `Hello ${emp.name}, your Dayflow credentials have been provisioned (${emp.loginId}).`
-                );
-            }
         }
 
         /* Document actions */
@@ -3140,6 +3005,7 @@ Role: ${newUser.role.toUpperCase()}`);
                 doc.adminComments = comment;
                 saveState();
                 renderDocuments();
+                renderAdminProfile();
             }
         }
 
@@ -3151,6 +3017,7 @@ Role: ${newUser.role.toUpperCase()}`);
                 doc.adminComments = comment;
                 saveState();
                 renderDocuments();
+                renderAdminProfile();
             }
         }
 
@@ -3182,6 +3049,14 @@ Role: ${newUser.role.toUpperCase()}`);
 
         /* Payroll Modal & Actions */
         function openSalaryModal(payId) {
+            const empSelect = document.getElementById('modal-pay-emp');
+            if (state.employees.length === 0) {
+                empSelect.innerHTML = `<option value="Jane Smith">Jane Smith (Admin / HR)</option>`;
+            } else {
+                empSelect.innerHTML = state.employees.map(e => `<option value="${e.name}">${e.name} (${e.code || e.job})</option>`).join('') +
+                    `<option value="Jane Smith">Jane Smith (Admin / HR)</option>`;
+            }
+
             let targetEmp;
             if (payId) {
                 const pay = state.payrolls.find(p => p.id === payId);
@@ -3191,22 +3066,35 @@ Role: ${newUser.role.toUpperCase()}`);
             }
             if (!targetEmp) {
                 const targetId = (state.role === 'admin' && state.viewingEmployeeId) ? state.viewingEmployeeId : state.currentEmployeeId;
-                targetEmp = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || state.employees[0];
+                targetEmp = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || state.employees[0] || state.adminProfile;
             }
 
-            const wage = Number(targetEmp.monthlyWage) || 50000;
+            empSelect.value = targetEmp.name;
+            const wage = Number(targetEmp.monthlyWage) || 0;
             const struct = targetEmp.struct || 'Standard Base';
             const payRec = state.payrolls.find(p => (targetEmp.id && p.employeeId === targetEmp.id) || p.employee === targetEmp.name);
 
             document.getElementById('modal-pay-id').value = payRec ? payRec.id : (payId || '');
-            document.getElementById('modal-pay-emp').value = targetEmp.name;
             document.getElementById('modal-pay-struct').value = struct;
-            document.getElementById('modal-pay-base').value = wage;
-            document.getElementById('modal-pay-allow').value = payRec ? payRec.allow : Math.round(wage * 0.2);
-            document.getElementById('modal-pay-deduct').value = payRec ? payRec.deduct : Math.round(wage * 0.08);
+            document.getElementById('modal-pay-base').value = wage > 0 ? wage : '';
+            document.getElementById('modal-pay-allow').value = payRec ? payRec.allow : (wage > 0 ? Math.round(wage * 0.2) : '');
+            document.getElementById('modal-pay-deduct').value = payRec ? payRec.deduct : (wage > 0 ? Math.round(wage * 0.08) : '');
 
             calcModalNetSalary();
             document.getElementById('salary-modal').style.display = 'flex';
+        }
+
+        function onSalaryEmployeeChange() {
+            const empName = document.getElementById('modal-pay-emp').value;
+            const emp = state.employees.find(e => e.name === empName) || (empName === 'Jane Smith' ? state.adminProfile : null);
+            if (emp) {
+                const wage = Number(emp.monthlyWage) || 0;
+                document.getElementById('modal-pay-struct').value = emp.struct || 'Standard Base';
+                document.getElementById('modal-pay-base').value = wage > 0 ? wage : '';
+                document.getElementById('modal-pay-allow').value = wage > 0 ? Math.round(wage * 0.2) : '';
+                document.getElementById('modal-pay-deduct').value = wage > 0 ? Math.round(wage * 0.08) : '';
+                calcModalNetSalary();
+            }
         }
 
         function closeSalaryModal() {
@@ -3224,9 +3112,9 @@ Role: ${newUser.role.toUpperCase()}`);
         function handleSaveSalary(e) {
             e.preventDefault();
             const idVal = document.getElementById('modal-pay-id').value;
-            const base = parseFloat(document.getElementById('modal-pay-base').value) || 50000;
-            const allow = parseFloat(document.getElementById('modal-pay-allow').value) || Math.round(base * 0.2);
-            const deduct = parseFloat(document.getElementById('modal-pay-deduct').value) || Math.round(base * 0.08);
+            const base = parseFloat(document.getElementById('modal-pay-base').value) || 0;
+            const allow = parseFloat(document.getElementById('modal-pay-allow').value) || 0;
+            const deduct = parseFloat(document.getElementById('modal-pay-deduct').value) || 0;
             const struct = document.getElementById('modal-pay-struct').value || 'Standard Base';
             const empName = document.getElementById('modal-pay-emp').value;
 
@@ -3251,7 +3139,7 @@ Role: ${newUser.role.toUpperCase()}`);
                 state.payrolls.push({
                     id: Date.now(),
                     employeeId: emp ? emp.id : state.currentEmployeeId,
-                    ref: `PAY/2026/00${state.payrolls.length + 1}`,
+                    ref: `PAY/2026/${String(state.payrolls.length + 1).padStart(3, '0')}`,
                     employee: empName,
                     structure: struct,
                     period: 'August 2026',
@@ -3262,7 +3150,7 @@ Role: ${newUser.role.toUpperCase()}`);
                 });
             }
 
-            if (emp && (emp.name === 'Jane Smith' || emp.id === 2)) {
+            if (empName === 'Jane Smith' || (emp && emp.name === 'Jane Smith')) {
                 state.adminProfile.monthlyWage = base;
                 state.adminProfile.struct = struct;
             }
@@ -3297,24 +3185,29 @@ Role: ${newUser.role.toUpperCase()}`);
 
         /* Edit Private Info Modal Actions */
         function openEditPrivateModal() {
-            const targetId = (state.role === 'admin' && state.viewingEmployeeId) ? state.viewingEmployeeId : state.currentEmployeeId;
+            const isEmployeeRole = (state.role === 'employee');
+            const targetId = isEmployeeRole ? state.currentEmployeeId : state.viewingEmployeeId;
             let p;
-            if (state.role === 'employee') {
-                p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || state.employees[0];
+
+            if (isEmployeeRole) {
+                p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || {};
                 const workSec = document.getElementById('m-work-sec');
                 if (workSec) workSec.style.display = 'none';
             } else {
-                const empRec = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
-                p = Object.assign({}, (targetId === 2 ? state.adminProfile : {}), empRec || {});
+                if (targetId) {
+                    p = state.employees.find(e => e.id === targetId) || {};
+                } else {
+                    p = state.adminProfile;
+                }
                 const workSec = document.getElementById('m-work-sec');
                 if (workSec) {
                     workSec.style.display = 'block';
-                    document.getElementById('m-job').value = (p.job && p.job !== '--') ? p.job : ((p.title && p.title !== '--') ? p.title : '');
-                    document.getElementById('m-dept').value = (p.dept && p.dept !== '--') ? p.dept : '';
+                    document.getElementById('m-job').value = p.job || p.title || '';
+                    document.getElementById('m-dept').value = p.dept || '';
                     document.getElementById('m-manager').value = p.reportsTo || (p.role === 'Admin / HR' ? 'Board of Directors / CEO' : 'Jane Smith (HR Head)');
                     document.getElementById('m-location').value = p.workLocation || (p.city ? `${p.city} Office` : 'Bangalore Headquarters (HQ)');
                     document.getElementById('m-schedule').value = p.workSchedule || '40 Hours / Week (Mon-Fri)';
-                    document.getElementById('m-role').value = p.role || 'Admin / HR';
+                    document.getElementById('m-role').value = p.role || (targetId ? 'Employee' : 'Admin / HR');
                 }
             }
 
@@ -3322,7 +3215,7 @@ Role: ${newUser.role.toUpperCase()}`);
             document.getElementById('m-gender').value = (p.gender && p.gender !== '--') ? p.gender : 'Male';
             document.getElementById('m-nationality').value = (p.nationality && p.nationality !== '--') ? p.nationality : 'Indian';
             document.getElementById('m-marital').value = (p.marital && p.marital !== '--') ? p.marital : 'Single';
-            document.getElementById('m-phone').value = (p.personalPhone && p.personalPhone !== '--') ? p.personalPhone : (p.phone && p.phone !== '--' ? p.phone : '');
+            document.getElementById('m-phone').value = (p.personalPhone && p.personalPhone !== '--') ? p.personalPhone : ((p.phone && p.phone !== '--') ? p.phone : '');
             document.getElementById('m-aadhar').value = (p.aadhar && p.aadhar !== '--') ? p.aadhar : '';
             document.getElementById('m-pan').value = (p.pan && p.pan !== '--') ? p.pan : '';
             document.getElementById('m-passport').value = (p.passport && p.passport !== '--') ? p.passport : '';
@@ -3347,7 +3240,8 @@ Role: ${newUser.role.toUpperCase()}`);
 
         function handleSavePrivateInfo(e) {
             e.preventDefault();
-            const targetId = (state.role === 'admin' && state.viewingEmployeeId) ? state.viewingEmployeeId : state.currentEmployeeId;
+            const isEmployeeRole = (state.role === 'employee');
+            const targetId = isEmployeeRole ? state.currentEmployeeId : state.viewingEmployeeId;
 
             const dob = document.getElementById('m-dob').value;
             const gender = document.getElementById('m-gender').value;
@@ -3369,45 +3263,46 @@ Role: ${newUser.role.toUpperCase()}`);
             const bankAcc = document.getElementById('m-bank-acc').value;
             const bankIfsc = document.getElementById('m-bank-ifsc').value;
 
-            let emp = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
-            if (emp) {
-                emp.dob = dob;
-                emp.gender = gender;
-                emp.nationality = nationality;
-                emp.marital = marital;
-                emp.personalPhone = phone;
-                emp.phone = phone || emp.phone;
-                emp.aadhar = aadhar;
-                emp.pan = pan;
-                emp.passport = passport;
-                emp.street = street;
-                emp.city = city;
-                emp.pin = pin;
-                emp.country = country;
-                emp.emgName = emgName;
-                emp.emgPhone = emgPhone;
-                emp.bankName = bankName;
-                emp.bankAcc = bankAcc;
-                emp.bankIfsc = bankIfsc;
+            if (isEmployeeRole || targetId) {
+                const emp = state.employees.find(empObj => (targetId && empObj.id === targetId) || (state.currentEmployeeId && empObj.id === state.currentEmployeeId) || empObj.name === state.currentEmployee);
+                if (emp) {
+                    emp.dob = dob;
+                    emp.gender = gender;
+                    emp.nationality = nationality;
+                    emp.marital = marital;
+                    emp.personalPhone = phone;
+                    emp.phone = phone || emp.phone;
+                    emp.aadhar = aadhar;
+                    emp.pan = pan;
+                    emp.passport = passport;
+                    emp.street = street;
+                    emp.city = city;
+                    emp.pin = pin;
+                    emp.country = country;
+                    emp.emgName = emgName;
+                    emp.emgPhone = emgPhone;
+                    emp.bankName = bankName;
+                    emp.bankAcc = bankAcc;
+                    emp.bankIfsc = bankIfsc;
 
-                if (state.role === 'admin') {
-                    const job = document.getElementById('m-job')?.value;
-                    const dept = document.getElementById('m-dept')?.value;
-                    const manager = document.getElementById('m-manager')?.value;
-                    const loc = document.getElementById('m-location')?.value;
-                    const sched = document.getElementById('m-schedule')?.value;
-                    const role = document.getElementById('m-role')?.value;
+                    if (state.role === 'admin') {
+                        const job = document.getElementById('m-job')?.value;
+                        const dept = document.getElementById('m-dept')?.value;
+                        const manager = document.getElementById('m-manager')?.value;
+                        const loc = document.getElementById('m-location')?.value;
+                        const sched = document.getElementById('m-schedule')?.value;
+                        const role = document.getElementById('m-role')?.value;
 
-                    if (job) emp.job = job;
-                    if (dept) emp.dept = dept;
-                    if (manager) emp.reportsTo = manager;
-                    if (loc) emp.workLocation = loc;
-                    if (sched) emp.workSchedule = sched;
-                    if (role) emp.role = role;
+                        if (job) emp.job = job;
+                        if (dept) emp.dept = dept;
+                        if (manager) emp.reportsTo = manager;
+                        if (loc) emp.workLocation = loc;
+                        if (sched) emp.workSchedule = sched;
+                        if (role) emp.role = role;
+                    }
                 }
-            }
-
-            if (state.role === 'admin' && (targetId === 2 || !state.viewingEmployeeId)) {
+            } else {
+                // Admin editing her own profile
                 Object.assign(state.adminProfile, {
                     dob, gender, nationality, marital, personalPhone: phone, phone,
                     aadhar, pan, passport, street, city, pin, country,
@@ -3437,42 +3332,75 @@ Role: ${newUser.role.toUpperCase()}`);
 
         /* Render Admin / Employee Profile */
         function renderAdminProfile() {
-            const targetId = (state.role === 'admin' && state.viewingEmployeeId) ? state.viewingEmployeeId : state.currentEmployeeId;
             let p;
+            let isViewingSelf = false;
+
             if (state.role === 'employee') {
-                p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
-                if (!p) p = state.employees[0];
+                // Employee viewing their own profile
+                p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || { name: state.currentEmployee, role: 'Employee' };
+                isViewingSelf = true;
             } else {
-                const empRec = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
-                p = Object.assign({}, (targetId === 2 ? state.adminProfile : {}), empRec || {});
+                // Admin role
+                if (state.viewingEmployeeId) {
+                    // Admin viewing selected employee
+                    p = state.employees.find(e => e.id === state.viewingEmployeeId);
+                    if (!p) p = state.employees[0] || state.adminProfile;
+                    isViewingSelf = false;
+                } else {
+                    // Admin viewing her own profile
+                    p = state.adminProfile;
+                    isViewingSelf = true;
+                }
             }
 
-            const wage = Number(p.monthlyWage) || 50000;
+            const wage = Number(p.monthlyWage) || 0;
+            const hasSalary = wage > 0;
             const basic = Math.round(wage * 0.50);
             const hra = Math.round(basic * 0.50);
             const stdAllow = Math.round(wage * 0.1667);
             const bonus = Math.round(wage * 0.0833);
             const lta = Math.round(wage * 0.0833);
             const pf = Math.round(basic * 0.12);
-            const pt = 200;
-            const insurance = 1000;
+            const pt = hasSalary ? 200 : 0;
+            const insurance = hasSalary ? 1000 : 0;
             const totalEarnings = basic + hra + stdAllow + bonus + lta;
             const totalDeduct = pf + pt + insurance;
-            const netSalary = totalEarnings - totalDeduct;
+            const netSalary = hasSalary ? (totalEarnings - totalDeduct) : 0;
 
-            // Hero
+            // Hero details
             document.getElementById('prof-hero-name').innerText = p.name || '--';
             document.getElementById('prof-hero-avatar').innerText = (p.name || 'U').split(' ').map(n=>n[0]).join('').toUpperCase();
             document.getElementById('prof-hero-title').innerText = `${p.job || p.title || '--'} • ${p.dept || '--'}`;
-            document.getElementById('prof-hero-login').innerText = `🔑 ${p.loginId || '--'}`;
+            document.getElementById('prof-hero-login').innerText = `🔑 ${p.code || p.loginId || '--'}`;
             document.getElementById('prof-hero-email').innerText = `✉️ ${p.email || '--'}`;
             document.getElementById('prof-hero-phone').innerText = `📞 ${p.phone || p.personalPhone || '--'}`;
             const joinDate = p.joining ? new Date(p.joining).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '--';
             document.getElementById('prof-hero-joined').innerText = `📅 Joined ${joinDate}`;
 
-            // Update role badge
+            // Hero badges
             const badge = document.getElementById('prof-hero-badge');
             if (badge) { badge.innerText = p.role || 'Employee'; }
+            const statusBadge = document.getElementById('prof-hero-status');
+            if (statusBadge) {
+                const isSuspended = (p.status === 'suspended');
+                statusBadge.innerText = isSuspended ? 'Suspended' : 'Active';
+                statusBadge.className = isSuspended ? 'badge badge-red' : 'badge badge-green';
+            }
+
+            // Suspension button (Admin viewing employee)
+            const suspContainer = document.getElementById('prof-suspension-container');
+            if (suspContainer) {
+                if (state.role === 'admin' && state.viewingEmployeeId && p.id === state.viewingEmployeeId) {
+                    const isSuspended = (p.status === 'suspended');
+                    suspContainer.innerHTML = `
+                        <button class="btn ${isSuspended ? 'btn-success' : 'btn-danger'}" style="font-size:0.8rem; padding:0.35rem 0.8rem;" onclick="toggleEmployeeSuspension(${p.id})">
+                            ${isSuspended ? '✓ Activate Employee' : '⛔ Suspend Employee'}
+                        </button>
+                    `;
+                } else {
+                    suspContainer.innerHTML = '';
+                }
+            }
 
             // Hide admin-only edit buttons for employees
             document.querySelectorAll('.prof-admin-edit-btn').forEach(b => {
@@ -3482,7 +3410,7 @@ Role: ${newUser.role.toUpperCase()}`);
             // Section 1: Private Info
             document.getElementById('prof-dob').innerText = p.dob || '--';
             document.getElementById('prof-gender').innerText = p.gender || '--';
-            document.getElementById('prof-nationality').innerText = p.nationality || 'Indian';
+            document.getElementById('prof-nationality').innerText = p.nationality || '--';
             document.getElementById('prof-marital').innerText = p.marital || '--';
             document.getElementById('prof-aadhar').innerText = p.aadhar || '--';
             document.getElementById('prof-pan').innerText = p.pan || '--';
@@ -3491,7 +3419,7 @@ Role: ${newUser.role.toUpperCase()}`);
             document.getElementById('prof-addr-street').innerText = p.street || '--';
             document.getElementById('prof-addr-city').innerText = p.city || '--';
             document.getElementById('prof-addr-pin').innerText = p.pin || '--';
-            document.getElementById('prof-addr-country').innerText = p.country || 'India';
+            document.getElementById('prof-addr-country').innerText = p.country || '--';
             document.getElementById('prof-emg-name').innerText = p.emgName || '--';
             document.getElementById('prof-emg-phone').innerText = p.emgPhone || '--';
             document.getElementById('prof-bank-name').innerText = p.bankName || '--';
@@ -3499,17 +3427,17 @@ Role: ${newUser.role.toUpperCase()}`);
             document.getElementById('prof-bank-ifsc').innerText = p.bankIfsc || '--';
 
             // Section 2: Salary Breakdown
-            document.getElementById('prof-sal-wage').innerText = formatCurrency(wage);
-            document.getElementById('prof-sal-ctc').innerText = formatCurrency(wage * 12);
-            document.getElementById('prof-sal-net').innerText = formatCurrency(netSalary);
-            document.getElementById('prof-sal-struct').innerText = p.struct || 'Standard Base';
-            document.getElementById('prof-comp-basic').innerText = formatCurrency(basic);
-            document.getElementById('prof-comp-hra').innerText = formatCurrency(hra);
-            document.getElementById('prof-comp-std').innerText = formatCurrency(stdAllow);
-            document.getElementById('prof-comp-bonus').innerText = formatCurrency(bonus);
-            document.getElementById('prof-comp-lta').innerText = formatCurrency(lta);
-            document.getElementById('prof-comp-pf').innerText = `- ${formatCurrency(pf)}`;
-            document.getElementById('prof-comp-deduct-total').innerText = `- ${formatCurrency(totalDeduct)}`;
+            document.getElementById('prof-sal-wage').innerText = hasSalary ? formatCurrency(wage) : 'Unconfigured';
+            document.getElementById('prof-sal-ctc').innerText = hasSalary ? formatCurrency(wage * 12) : 'Unconfigured';
+            document.getElementById('prof-sal-net').innerText = hasSalary ? formatCurrency(netSalary) : 'Unconfigured';
+            document.getElementById('prof-sal-struct').innerText = p.struct || 'Unconfigured';
+            document.getElementById('prof-comp-basic').innerText = hasSalary ? formatCurrency(basic) : '₹0.00';
+            document.getElementById('prof-comp-hra').innerText = hasSalary ? formatCurrency(hra) : '₹0.00';
+            document.getElementById('prof-comp-std').innerText = hasSalary ? formatCurrency(stdAllow) : '₹0.00';
+            document.getElementById('prof-comp-bonus').innerText = hasSalary ? formatCurrency(bonus) : '₹0.00';
+            document.getElementById('prof-comp-lta').innerText = hasSalary ? formatCurrency(lta) : '₹0.00';
+            document.getElementById('prof-comp-pf').innerText = hasSalary ? `- ${formatCurrency(pf)}` : '- ₹0.00';
+            document.getElementById('prof-comp-deduct-total').innerText = hasSalary ? `- ${formatCurrency(totalDeduct)}` : '- ₹0.00';
 
             // Section 3: Work & Privileges
             const jobEl = document.getElementById('prof-work-job');
@@ -3517,11 +3445,11 @@ Role: ${newUser.role.toUpperCase()}`);
             const deptEl = document.getElementById('prof-work-dept');
             if (deptEl) deptEl.innerText = p.dept || '--';
             const mgrEl = document.getElementById('prof-work-manager');
-            if (mgrEl) mgrEl.innerText = p.role === 'Admin / HR' ? 'Board of Directors / CEO' : 'Jane Smith (HR Head)';
+            if (mgrEl) mgrEl.innerText = p.reportsTo || (p.role === 'Admin / HR' ? 'Board of Directors / CEO' : 'Jane Smith (HR Head)');
             const locEl = document.getElementById('prof-work-location');
-            if (locEl) locEl.innerText = p.city ? `${p.city} Office` : 'Bangalore Headquarters (HQ)';
+            if (locEl) locEl.innerText = p.workLocation || (p.city ? `${p.city} Office` : 'Bangalore Headquarters (HQ)');
             const schedEl = document.getElementById('prof-work-schedule');
-            if (schedEl) schedEl.innerText = '40 Hours / Week (Mon-Fri)';
+            if (schedEl) schedEl.innerText = p.workSchedule || '40 Hours / Week (Mon-Fri)';
             const secEl = document.getElementById('prof-work-sec-group');
             if (secEl) secEl.innerText = p.role === 'Admin / HR' ? 'dayflow.group_dayflow_admin' : 'dayflow.group_dayflow_user';
             const privNote = document.getElementById('prof-work-privileges-note');
@@ -3536,7 +3464,7 @@ Role: ${newUser.role.toUpperCase()}`);
             // Section 4: Verified Documents
             const docTbl = document.getElementById('prof-tbl-docs');
             if (docTbl) {
-                const myVerifiedDocs = state.documents.filter(d => (d.employeeId === p.id || d.employee === p.name) && d.status === 'verified');
+                const myVerifiedDocs = state.documents.filter(d => ((p.id && d.employeeId === p.id) || d.employee === p.name) && d.status === 'verified');
                 if (myVerifiedDocs.length === 0) {
                     docTbl.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1rem;">No verified compliance documents on file.</td></tr>';
                 } else {
@@ -3589,14 +3517,18 @@ Role: ${newUser.role.toUpperCase()}`);
             }
 
             const tbodyAtt = document.getElementById('dash-tbl-today-attendance');
-            tbodyAtt.innerHTML = state.attendances.slice(0, 5).map(a => `
-                <tr onclick="openTab('attendance')" style="cursor:pointer;" title="Click to view Attendance">
-                    <td><strong>${a.employee}</strong></td>
-                    <td>${a.checkIn}</td>
-                    <td>${a.checkOut}</td>
-                    <td><span class="badge ${a.status==='present'?'badge-green':a.status==='half_day'?'badge-amber':'badge-red'}">${a.status.toUpperCase()}</span></td>
-                </tr>
-            `).join('');
+            if (state.attendances.length === 0) {
+                tbodyAtt.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:1rem;">No attendance records today.</td></tr>`;
+            } else {
+                tbodyAtt.innerHTML = state.attendances.slice(0, 5).map(a => `
+                    <tr onclick="openTab('attendance')" style="cursor:pointer;" title="Click to view Attendance">
+                        <td><strong>${a.employee}</strong></td>
+                        <td>${a.checkIn}</td>
+                        <td>${a.checkOut}</td>
+                        <td><span class="badge ${a.status==='present'?'badge-green':a.status==='half_day'?'badge-amber':'badge-red'}">${a.status.toUpperCase()}</span></td>
+                    </tr>
+                `).join('');
+            }
 
             filterDashboardEmployees();
         }
@@ -3604,18 +3536,22 @@ Role: ${newUser.role.toUpperCase()}`);
         function filterDashboardEmployees() {
             const query = (document.getElementById('dash-search-emp')?.value || '').toLowerCase();
             const tbodyEmp = document.getElementById('dash-tbl-employees');
-            const filtered = state.employees.filter(e => e.name.toLowerCase().includes(query) || e.job.toLowerCase().includes(query) || e.dept.toLowerCase().includes(query));
+            const filtered = state.employees.filter(e => e.name.toLowerCase().includes(query) || (e.job && e.job.toLowerCase().includes(query)) || (e.dept && e.dept.toLowerCase().includes(query)));
 
-            tbodyEmp.innerHTML = filtered.map(e => `
-                <tr onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer;" title="Click to view profile">
-                    <td>
-                        <strong>${e.name}</strong>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">${e.job}</div>
-                    </td>
-                    <td><span class="badge badge-purple">${e.role}</span></td>
-                    <td style="font-size:0.8rem; color:var(--text-muted);">${e.joining || '--'}</td>
-                </tr>
-            `).join('');
+            if (filtered.length === 0) {
+                tbodyEmp.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:1rem;">No employees registered.</td></tr>`;
+            } else {
+                tbodyEmp.innerHTML = filtered.map(e => `
+                    <tr onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer;" title="Click to view profile">
+                        <td>
+                            <strong>${e.name}</strong>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">${e.job || 'Staff'}</div>
+                        </td>
+                        <td><span class="badge badge-purple">${e.role || 'Employee'}</span></td>
+                        <td style="font-size:0.8rem; color:var(--text-muted);">${e.joining || '--'}</td>
+                    </tr>
+                `).join('');
+            }
         }
 
         function renderAttendance() {
@@ -3644,7 +3580,12 @@ Role: ${newUser.role.toUpperCase()}`);
 
         function renderAttendanceTbl() {
             const tbody = document.getElementById('tbl-attendance');
-            let data = state.role === 'employee' ? state.attendances.filter(a => (a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee) : state.attendances;
+            let data = state.role === 'employee' ? state.attendances.filter(a => (state.currentEmployeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee) : state.attendances;
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No attendance records found. Click <strong>Check In</strong> to start your workday.</td></tr>`;
+                return;
+            }
 
             tbody.innerHTML = data.map(a => `
                 <tr>
@@ -3681,7 +3622,7 @@ Role: ${newUser.role.toUpperCase()}`);
 
             if (state.role === 'employee') {
                 // EMPLOYEE VIEW: Dynamic balance calculation
-                const myLeaves = state.leaves.filter(l => (l.employeeId && l.employeeId === state.currentEmployeeId) || l.employee === state.currentEmployee);
+                const myLeaves = state.leaves.filter(l => (state.currentEmployeeId && l.employeeId === state.currentEmployeeId) || l.employee === state.currentEmployee);
                 const usedPaid = myLeaves.filter(l => l.type === 'paid' && l.status === 'approved').reduce((sum, l) => sum + (l.days || 0), 0);
                 const usedSick = myLeaves.filter(l => l.type === 'sick' && l.status === 'approved').reduce((sum, l) => sum + (l.days || 0), 0);
                 const remPaid = Math.max(0, 24 - usedPaid);
@@ -3768,7 +3709,7 @@ Role: ${newUser.role.toUpperCase()}`);
                 `;
 
                 if (state.leaves.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No leave requests found.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No leave requests in queue.</td></tr>`;
                 } else {
                     tbody.innerHTML = state.leaves.map(l => {
                         const badge = l.status === 'approved' ? 'badge-green' : l.status === 'rejected' ? 'badge-red' : 'badge-amber';
@@ -3810,23 +3751,40 @@ Role: ${newUser.role.toUpperCase()}`);
         function renderEmployees() {
             const grid = document.getElementById('grid-employees');
             if (!grid) return;
-            grid.innerHTML = state.employees.map(e => `
-                <div class="emp-card" onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer;" title="Click to view full profile">
-                    <div class="emp-head">
-                        <div class="avatar">${e.name.split(' ').map(n=>n[0]).join('')}</div>
-                        <div>
-                            <div class="emp-name">${e.name}</div>
-                            <div class="emp-job">${e.job} • ${e.dept}</div>
+            if (state.employees.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align:center; padding:3rem; color:var(--text-muted); background:var(--bg-surface); border:1px dashed var(--border-line); border-radius:8px;">
+                        <div style="font-size:2rem; margin-bottom:0.5rem;">👥</div>
+                        <strong style="font-size:1rem; color:#fff;">No employees registered yet.</strong>
+                        <p style="font-size:0.85rem; margin-top:0.35rem;">Click <strong>+ Add Employee</strong> above to create a real employee account.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = state.employees.map(e => {
+                const initials = (e.name || 'U').split(' ').map(n=>n[0]).join('').toUpperCase();
+                const isSuspended = (e.status === 'suspended');
+                return `
+                    <div class="emp-card" onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer; opacity:${isSuspended ? '0.75' : '1'}; border-color:${isSuspended ? 'var(--accent-red)' : 'var(--border-line)'};" title="Click to view full profile">
+                        <div class="emp-head">
+                            <div class="avatar">${initials}</div>
+                            <div>
+                                <div class="emp-name">${e.name}</div>
+                                <div class="emp-job">${e.job || 'Staff'} • ${e.dept || 'General'}</div>
+                            </div>
+                        </div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; gap:0.25rem;">
+                            <div><strong>ID:</strong> <code>${e.code || e.loginId || ('EMP' + e.id)}</code></div>
+                            <div><strong>Email:</strong> ${e.email}</div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.25rem;">
+                                <span>Role: <span class="badge badge-purple">${e.role || 'Employee'}</span></span>
+                                <span class="badge ${isSuspended ? 'badge-red' : 'badge-green'}">${isSuspended ? 'SUSPENDED' : 'ACTIVE'}</span>
+                            </div>
                         </div>
                     </div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; gap:0.25rem;">
-                        <div>Email: ${e.email}</div>
-                        <div>Role: <span class="badge badge-purple">${e.role}</span></div>
-                        ${e.provisioned ? `<div style="color:#34d399; font-size:0.75rem; margin-top:0.25rem;">🔒 Account: <code>${e.loginId}</code></div>` :
-                        `<button class="btn btn-secondary" style="font-size:0.75rem; padding:0.25rem 0.5rem; margin-top:0.35rem;" onclick="event.stopPropagation(); handleProvision(${e.id})">Provision Account</button>`}
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderDocuments() {
@@ -3842,18 +3800,27 @@ Role: ${newUser.role.toUpperCase()}`);
                     docEmpSelect.disabled = true;
                 } else {
                     docEmpSelect.disabled = false;
-                    docEmpSelect.innerHTML = state.employees.map(e => `
-                        <option value="${e.name}" ${e.name === state.currentEmployee ? 'selected' : ''}>${e.name} (${e.dept || e.job})</option>
-                    `).join('');
+                    if (state.employees.length === 0) {
+                        docEmpSelect.innerHTML = `<option value="Jane Smith">Jane Smith (Admin / HR)</option>`;
+                    } else {
+                        docEmpSelect.innerHTML = state.employees.map(e => `
+                            <option value="${e.name}" ${e.name === state.currentEmployee ? 'selected' : ''}>${e.name} (${e.code || e.job})</option>
+                        `).join('') + `<option value="Jane Smith">Jane Smith (Admin / HR)</option>`;
+                    }
                 }
             }
 
             const tbody = document.getElementById('tbl-documents');
             let data = state.documents;
-            if (state.role === 'employee') data = data.filter(d => (d.employeeId && d.employeeId === state.currentEmployeeId) || d.employee === state.currentEmployee);
+            if (state.role === 'employee') data = data.filter(d => (state.currentEmployeeId && d.employeeId === state.currentEmployeeId) || d.employee === state.currentEmployee);
 
             if (state.currentDocFilter !== 'all') {
                 data = state.currentDocFilter === 'verified' ? data.filter(d => d.status === 'verified') : data.filter(d => d.type === state.currentDocFilter);
+            }
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No documents found.</td></tr>`;
+                return;
             }
 
             tbody.innerHTML = data.map(d => {
@@ -3893,7 +3860,7 @@ Role: ${newUser.role.toUpperCase()}`);
             const adminActions = document.getElementById('admin-payroll-actions');
 
             if (state.role === 'employee') {
-                data = data.filter(p => (p.employeeId && p.employeeId === state.currentEmployeeId) || p.employee === state.currentEmployee);
+                data = data.filter(p => (state.currentEmployeeId && p.employeeId === state.currentEmployeeId) || p.employee === state.currentEmployee);
                 if (tag) tag.innerText = 'Showing your personal salary structure (Record Rule Protected)';
                 if (adminActions) adminActions.style.display = 'none';
             } else {
@@ -3912,6 +3879,11 @@ Role: ${newUser.role.toUpperCase()}`);
             document.getElementById('stat-payroll-draft').innerText = draft;
 
             const tbody = document.getElementById('tbl-payroll');
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No salary records configured.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = data.map(p => {
                 const net = p.base + p.allow - p.deduct;
                 const badgeClass = p.status === 'paid' ? 'badge-green' : p.status === 'approved' ? 'badge-blue' : 'badge-amber';
@@ -3958,7 +3930,7 @@ Role: ${newUser.role.toUpperCase()}`);
             if (sub) sub.innerText = `Your personal HR summary — ${today}`;
 
             // Today's attendance status
-            const todayAtt = state.attendances.find(a => ((a.employeeId && a.employeeId === empId) || a.employee === empName) && a.date === today);
+            const todayAtt = state.attendances.find(a => ((empId && a.employeeId === empId) || a.employee === empName) && a.date === today);
             const statusEl = document.getElementById('emp-dash-status');
             const timeEl = document.getElementById('emp-dash-checkin-time');
             if (statusEl) {
@@ -3975,7 +3947,7 @@ Role: ${newUser.role.toUpperCase()}`);
             }
 
             // Leave balances
-            const approvedLeaves = state.leaves.filter(l => ((l.employeeId && l.employeeId === empId) || l.employee === empName) && l.status === 'approved');
+            const approvedLeaves = state.leaves.filter(l => ((empId && l.employeeId === empId) || l.employee === empName) && l.status === 'approved');
             const usedPaid = approvedLeaves.filter(l => l.type === 'paid').reduce((s, l) => s + (l.days || 0), 0);
             const usedSick = approvedLeaves.filter(l => l.type === 'sick').reduce((s, l) => s + (l.days || 0), 0);
             const paidEl = document.getElementById('emp-dash-paid-bal');
@@ -3984,14 +3956,14 @@ Role: ${newUser.role.toUpperCase()}`);
             if (sickEl) sickEl.innerText = Math.max(0, 7 - usedSick);
 
             // Pending count
-            const myPending = state.leaves.filter(l => ((l.employeeId && l.employeeId === empId) || l.employee === empName) && l.status === 'pending').length;
+            const myPending = state.leaves.filter(l => ((empId && l.employeeId === empId) || l.employee === empName) && l.status === 'pending').length;
             const pendEl = document.getElementById('emp-dash-pending');
             if (pendEl) pendEl.innerText = myPending;
 
             // Recent leave requests table
             const leaveTbl = document.getElementById('emp-dash-leave-tbl');
             if (leaveTbl) {
-                const myLeaves = state.leaves.filter(l => (l.employeeId && l.employeeId === empId) || l.employee === empName).slice(-5).reverse();
+                const myLeaves = state.leaves.filter(l => (empId && l.employeeId === empId) || l.employee === empName).slice(-5).reverse();
                 if (myLeaves.length === 0) {
                     leaveTbl.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1rem;">No leave requests yet.</td></tr>`;
                 } else {
@@ -4008,7 +3980,7 @@ Role: ${newUser.role.toUpperCase()}`);
             // Recent attendance table (last 5)
             const attTbl = document.getElementById('emp-dash-att-tbl');
             if (attTbl) {
-                const myAtt = state.attendances.filter(a => (a.employeeId && a.employeeId === empId) || a.employee === empName).slice(-5).reverse();
+                const myAtt = state.attendances.filter(a => (empId && a.employeeId === empId) || a.employee === empName).slice(-5).reverse();
                 if (myAtt.length === 0) {
                     attTbl.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">No attendance records yet.</td></tr>`;
                 } else {
