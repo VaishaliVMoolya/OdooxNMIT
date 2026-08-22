@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="dayflow.AccountProvisionSuccess" owl="1">
+        <main class="o_dayflow_account_success" aria-labelledby="dayflow-account-success-title">
+            <section class="o_dayflow_account_success_card">
+                <div class="o_dayflow_success_icon" aria-hidden="true">✓</div>
+                <p class="o_dayflow_success_eyebrow">Dayflow HRMS</p>
+                <h1 id="dayflow-account-success-title">Account Created Successfully</h1>
+                <p class="o_dayflow_success_intro">Share these temporary credentials securely. The employee can change the password after signing in for the first time.</p>
+                <div class="o_dayflow_credential">
+                    <span>Login ID</span>
+                    <div>
+                        <code><t t-esc="props.action.params.login"/></code>
+                        <button type="button" t-on-click="() => this.copyCredential(props.action.params.login, 'Login ID')">Copy</button>
+                    </div>
+                </div>
+                <div class="o_dayflow_credential">
+                    <span>Temporary Password</span>
+                    <div>
+                        <code aria-label="Temporary password is hidden">••••••••••••••••</code>
+                        <button type="button" t-on-click="() => this.copyCredential(props.action.params.temporary_password, 'Temporary password')">Copy</button>
+                    </div>
+                </div>
+                <button type="button" class="o_dayflow_done_button" t-on-click="close">Done</button>
+            </section>
+        </main>
+    </t>
+</templates>

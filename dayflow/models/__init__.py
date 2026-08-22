@@ -6,4 +6,4 @@ from . import payroll
 from . import document
 from . import dashboard
 from . import auth
-
+from . import account_provision_wizard

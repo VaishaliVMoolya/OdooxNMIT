@@ -11,3 +11,4 @@ access_hr_leave_dayflow_employee,hr.leave.dayflow.employee,hr_holidays.model_hr_
 access_hr_leave_dayflow_admin,hr.leave.dayflow.admin,hr_holidays.model_hr_leave,group_dayflow_admin,1,1,1,1
 access_dayflow_dashboard_admin,dayflow.dashboard.admin,model_dayflow_dashboard,group_dayflow_admin,1,1,1,1
 access_dayflow_dashboard_employee,dayflow.dashboard.employee,model_dayflow_dashboard,group_dayflow_employee,0,0,0,0
+access_dayflow_account_provision_wizard_admin,dayflow.account.provision.wizard.admin,model_dayflow_account_provision_wizard,group_dayflow_admin,1,1,1,1

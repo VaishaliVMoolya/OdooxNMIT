@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dayflow_account_provision_wizard_form" model="ir.ui.view">
+        <field name="name">dayflow.account.provision.wizard.form</field>
+        <field name="model">dayflow.account.provision.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Employee Account" class="o_dayflow_account_provision_form">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Create Employee Account</h1>
+                        <p class="text-muted">Credentials are generated securely after you create the account.</p>
+                    </div>
+                    <group>
+                        <group string="Employee Details">
+                            <field name="company_id"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="work_email"/>
+                        </group>
+                        <group string="Account Details">
+                            <field name="work_phone"/>
+                            <field name="joining_date"/>
+                            <field name="dayflow_role" widget="radio"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_create_account" string="Create Account" type="object" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dayflow_account_provision" model="ir.actions.act_window">
+        <field name="name">Create Employee Account</field>
+        <field name="res_model">dayflow.account.provision.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_dayflow_account_provision_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

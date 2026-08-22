@@ -1,33 +1,27 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Dayflow',
-    'summary': 'Human Resource Management System (HRMS) - Odoo × NMIT Hackathon',
-    'description': """
-Dayflow HRMS Module
-===================
-Streamlined Human Resource Management System supporting:
-- Authentication & Role-based Access Control (Employee vs Admin/HR)
-- Employee Profile & Document Management
-- Attendance Check-in / Check-out & Tracking
-- Leave Application & Approval Workflow
-- Payroll & Salary Structure Management
-    """,
-    'author': 'Odoo × NMIT Hackathon Team',
+    'name': 'Dayflow HRMS',
+    'version': '1.0',
     'category': 'Human Resources',
-    'version': '1.0.0',
+    'summary': 'Dayflow Human Resource Management System for Odoo',
+    'author': 'OdooxNMIT Team',
+    'website': 'https://github.com/VaishaliVMoolya/OdooxNMIT',
     'depends': [
         'base',
         'hr',
         'hr_attendance',
         'hr_holidays',
+        'web',
     ],
     'data': [
         'security/dayflow_security.xml',
         'security/ir.model.access.csv',
         'data/dayflow_sequence.xml',
         'data/leave_data.xml',
-        'views/dashboard_views.xml',
         'views/menu_views.xml',
+        'views/auth_login_templates.xml',
+        'views/account_provision_wizard_views.xml',
+        'views/dashboard_views.xml',
         'views/employee_views.xml',
         'views/attendance_views.xml',
         'views/leave_views.xml',
@@ -39,6 +33,13 @@ Streamlined Human Resource Management System supporting:
             'dayflow/static/src/dashboard/dayflow_dashboard.scss',
             'dayflow/static/src/dashboard/dayflow_dashboard.xml',
             'dayflow/static/src/dashboard/dayflow_dashboard.js',
+            'dayflow/static/src/scss/dayflow_auth.scss',
+            'dayflow/static/src/js/dayflow_account_success.js',
+            'dayflow/static/src/xml/dayflow_account_success.xml',
+        ],
+        'web.assets_frontend': [
+            'dayflow/static/src/scss/dayflow_auth.scss',
+            'dayflow/static/src/js/dayflow_login.js',
         ],
     },
     'installable': True,

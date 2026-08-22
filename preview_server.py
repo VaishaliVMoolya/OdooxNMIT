@@ -377,8 +377,6 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         .emp-name { font-size: 1rem; font-weight: 700; }
-        .emp-job { font-size: 0.78rem; color: var(--text-muted); }
-
         /* Tables */
         .table-wrap {
             width: 100%;
