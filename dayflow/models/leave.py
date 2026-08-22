@@ -14,7 +14,7 @@ class HrLeave(models.Model):
         ('sick', 'Sick Leave'),
         ('unpaid', 'Unpaid Leaves'),
     ], string='Dayflow Leave Type', default='paid',
-       help='Category of time off: Paid Time Off, Sick Leave, or Unpaid Leaves')
+       help='Category of time off: Paid Time Off (Annual/Casual), Sick Leave, or Unpaid Leaves')
 
     dayflow_status = fields.Selection([
         ('pending', 'Pending'),
@@ -158,10 +158,13 @@ class HrLeave(models.Model):
         attendance_obj = self.env['hr.attendance']
 
         while current_date <= end_date:
+            # Skip Saturday (5) and Sunday (6) for regular business days
             if current_date.weekday() < 5:
+                # Target start and end of day timestamp
                 check_in_dt = datetime.combine(current_date, time(9, 0, 0))
                 check_out_dt = datetime.combine(current_date, time(17, 0, 0))
 
+                # Check if an attendance record already exists for this employee and date
                 existing_attendance = attendance_obj.search([
                     ('employee_id', '=', self.employee_id.id),
                     ('check_in', '>=', datetime.combine(current_date, time(0, 0, 0))),
