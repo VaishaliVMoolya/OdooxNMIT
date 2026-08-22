@@ -17,6 +17,8 @@ Streamlined Human Resource Management System supporting:
     'version': '1.0.0',
     'depends': [
         'base',
+        'web',
+        'auth_signup',
         'hr',
         'hr_attendance',
         'hr_holidays',
@@ -27,6 +29,8 @@ Streamlined Human Resource Management System supporting:
         'data/dayflow_sequence.xml',
         'data/leave_data.xml',
         'views/dashboard_views.xml',
+        'views/auth_login_templates.xml',
+        'views/account_provision_wizard_views.xml',
         'views/menu_views.xml',
         'views/employee_views.xml',
         'views/attendance_views.xml',
@@ -35,10 +39,23 @@ Streamlined Human Resource Management System supporting:
         'views/document_views.xml',
     ],
     'assets': {
+
         'web.assets_backend': [
             'dayflow/static/src/dashboard/dayflow_dashboard.scss',
             'dayflow/static/src/dashboard/dayflow_dashboard.xml',
             'dayflow/static/src/dashboard/dayflow_dashboard.js',
+
+        'web.assets_frontend': [
+            'dayflow/static/src/scss/dayflow_auth.scss',
+        ],
+        'web.assets_frontend_minimal': [
+            'dayflow/static/src/js/dayflow_login.js',
+        ],
+        'web.assets_backend': [
+            'dayflow/static/src/scss/dayflow_auth.scss',
+            'dayflow/static/src/js/dayflow_account_success.js',
+            'dayflow/static/src/xml/dayflow_account_success.xml',
+
         ],
     },
     'installable': True,

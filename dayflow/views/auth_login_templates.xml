@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="dayflow_login_layout" inherit_id="web.login_layout" name="Dayflow Login Layout">
+        <xpath expr="//div[contains(@class, 'container py-5')]" position="attributes">
+            <attribute name="class" add="o_dayflow_login_container" separator=" "/>
+        </xpath>
+        <xpath expr="//div[contains(@class, 'o_database_list')]" position="before">
+            <section class="o_dayflow_login_brand" aria-label="Dayflow HRMS">
+                <span class="o_dayflow_login_mark" aria-hidden="true">DF</span>
+                <span>Dayflow HRMS</span>
+            </section>
+        </xpath>
+        <xpath expr="//div[contains(@class, 'o_database_list')]" position="attributes">
+            <attribute name="class" add="o_dayflow_login_card" separator=" "/>
+        </xpath>
+        <xpath expr="//img[@alt='Logo']" position="replace">
+            <div class="o_dayflow_login_heading">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your Dayflow account</p>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="dayflow_login_form" inherit_id="web.login" name="Dayflow Login Form">
+        <xpath expr="//label[@for='login']" position="replace">
+            <label for="login" class="form-label">Login ID / Email</label>
+        </xpath>
+        <xpath expr="//input[@id='login']" position="attributes">
+            <attribute name="placeholder">Enter your Login ID or email</attribute>
+        </xpath>
+        <xpath expr="//input[@id='password']/.." position="replace">
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="o_dayflow_password_input">
+                    <input type="password" placeholder="Enter your password" name="password" id="password"
+                           t-attf-class="form-control #{'form-control-sm' if form_small else ''}"
+                           required="required" autocomplete="current-password"
+                           t-att-autofocus="'autofocus' if login else None" maxlength="4096"/>
+                    <button type="button" class="o_dayflow_password_toggle" aria-label="Show password"
+                            aria-controls="password" aria-pressed="false">
+                        <i class="fa fa-eye" aria-hidden="true"/>
+                    </button>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//button[@type='submit' and contains(@class, 'btn-primary')]" position="attributes">
+            <attribute name="class" add="o_dayflow_login_submit" separator=" "/>
+            <attribute name="data-loading-label">Signing in…</attribute>
+        </xpath>
+        <xpath expr="//div[contains(@class, 'oe_login_buttons')]" position="after">
+            <div class="o_dayflow_login_help text-center">
+                <a href="/web/reset_password">Forgot Password?</a>
+                <p>Don't have an account?<br/><span>Contact HR/Admin</span></p>
+            </div>
+        </xpath>
+    </template>
+</odoo>
