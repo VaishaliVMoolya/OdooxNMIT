@@ -5,7 +5,7 @@ Renders an interactive, dynamic Dayflow HRMS interface covering:
 - Attendance Tracking & Live Ticker
 - Time Off / Leave Requests & HR Approvals
 - Employee Profile Directory & Account Provisioning (Person 2)
-- Employee Verification Documents Upload & Library (Person 2)
+- Employee Verification Documents & Verification Workflow (Person 2)
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -424,6 +424,31 @@ HTML_CONTENT = """<!DOCTYPE html>
             border-color: var(--accent-purple);
         }
 
+        .filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent-purple);
+            color: white;
+            border-color: var(--accent-purple);
+        }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
     </style>
@@ -467,7 +492,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- Attendance Banner -->
             <div class="action-banner">
                 <div class="banner-metrics">
                     <div class="metric-group">
@@ -541,7 +565,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- Apply Leave Form -->
             <div class="card" id="apply-leave-card">
                 <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Apply for Time Off</h3>
                 <form onsubmit="handleLeaveSubmit(event)">
@@ -571,7 +594,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </form>
             </div>
 
-            <!-- Leave Applications Table -->
             <div class="card">
                 <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Leave Applications & Approval Workflow</h3>
                 <div class="table-responsive">
@@ -604,7 +626,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <button class="btn btn-primary" onclick="toggleAddEmpForm()">+ Add Employee</button>
             </div>
 
-            <!-- Add Employee Form -->
             <div class="card" id="add-emp-card" style="display: none;">
                 <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Create New Employee Profile</h3>
                 <form onsubmit="handleAddEmployee(event)">
@@ -644,22 +665,43 @@ HTML_CONTENT = """<!DOCTYPE html>
             <div class="employee-grid" id="employee-grid"></div>
         </div>
 
-        <!-- DOCUMENTS TAB (Person 2) -->
+        <!-- DOCUMENTS TAB (Person 2 - Enhanced) -->
         <div id="tab-documents" class="tab-content">
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Employee Verification Documents</h1>
-                    <p class="page-subtitle">Upload, classify, and verify contracts, ID proofs, and certificates</p>
+                    <p class="page-subtitle">Upload, classify, verify, and track expiry dates for contracts, ID proofs, and certificates</p>
                 </div>
             </div>
 
+            <!-- Document Category Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="metric-label">ID Proofs</div>
+                    <div class="val" style="color: #60a5fa;" id="stat-id-proofs">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="metric-label">Contracts</div>
+                    <div class="val" style="color: #34d399;" id="stat-contracts">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="metric-label">Certificates</div>
+                    <div class="val" style="color: #fbbf24;" id="stat-certificates">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="metric-label">Verified Documents</div>
+                    <div class="val" style="color: var(--accent-purple-hover);" id="stat-verified">0</div>
+                </div>
+            </div>
+
+            <!-- Document Upload Form -->
             <div class="card">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Upload Employee Document</h3>
+                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Upload & Attach Employee Verification Document</h3>
                 <form onsubmit="handleDocUpload(event)">
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Document Title</label>
-                            <input type="text" id="doc-title" class="form-control" placeholder="e.g. Passport ID Copy" required>
+                            <input type="text" id="doc-title" class="form-control" placeholder="e.g. Passport ID Verification Copy" required>
                         </div>
                         <div class="form-group">
                             <label>Employee</label>
@@ -682,23 +724,47 @@ HTML_CONTENT = """<!DOCTYPE html>
                             <label>Attachment File Name</label>
                             <input type="text" id="doc-filename" class="form-control" placeholder="e.g. passport_scan.pdf" required>
                         </div>
+                        <div class="form-group">
+                            <label>Issue Date (Optional)</label>
+                            <input type="date" id="doc-issue-date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Expiry Date (Optional)</label>
+                            <input type="date" id="doc-expiry-date" class="form-control">
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Upload Verification Document</button>
+                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                        <label>Verification Notes / Remarks</label>
+                        <textarea id="doc-notes" class="form-control" rows="2" placeholder="Enter document remarks or verification notes..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload & Attach Document</button>
                 </form>
             </div>
 
+            <!-- Document Attachment Library Table -->
             <div class="card">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Document Attachment Library</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h3 style="font-size: 1.1rem;">Document Attachment Library</h3>
+                    <div class="filter-bar">
+                        <button class="filter-btn active" id="filter-doc-all" onclick="filterDocCategory('all')">All</button>
+                        <button class="filter-btn" id="filter-doc-id_proof" onclick="filterDocCategory('id_proof')">ID Proofs</button>
+                        <button class="filter-btn" id="filter-doc-contract" onclick="filterDocCategory('contract')">Contracts</button>
+                        <button class="filter-btn" id="filter-doc-certificate" onclick="filterDocCategory('certificate')">Certificates</button>
+                        <button class="filter-btn" id="filter-doc-verified" onclick="filterDocCategory('verified')">Verified</button>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
                             <tr>
                                 <th>Document Title</th>
                                 <th>Employee</th>
-                                <th>Classification</th>
+                                <th>Category</th>
                                 <th>File Name</th>
                                 <th>Upload Date</th>
+                                <th>Expiry Date</th>
                                 <th>Status</th>
+                                <th>HR Verification Action</th>
                             </tr>
                         </thead>
                         <tbody id="document-table-body"></tbody>
@@ -737,8 +803,9 @@ HTML_CONTENT = """<!DOCTYPE html>
         ];
 
         const DEFAULT_DOCUMENTS = [
-            { id: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', date: '2026-08-10' },
-            { id: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', date: '2026-08-01' }
+            { id: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', date: '2026-08-10', expiry: '2030-08-10', status: 'verified', notes: 'Verified by HR' },
+            { id: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', date: '2026-08-01', expiry: '2027-08-01', status: 'verified', notes: 'Signed 2026 contract' },
+            { id: 3, title: 'B.Tech Degree Certificate', employee: 'John Doe', type: 'certificate', filename: 'john_degree.pdf', date: '2026-08-15', expiry: '--', status: 'draft', notes: 'Pending HR review' }
         ];
 
         let state = {
@@ -748,6 +815,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             activeCheckInTime: null,
             checkInTimestamp: null,
             tickerInterval: null,
+            currentDocFilter: 'all',
             attendances: JSON.parse(localStorage.getItem('df_attendances')) || DEFAULT_ATTENDANCE,
             leaves: JSON.parse(localStorage.getItem('df_leaves')) || DEFAULT_LEAVE,
             employees: JSON.parse(localStorage.getItem('df_employees')) || DEFAULT_EMPLOYEES,
@@ -1011,12 +1079,22 @@ HTML_CONTENT = """<!DOCTYPE html>
             }
         }
 
+        function filterDocCategory(category) {
+            state.currentDocFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('filter-doc-' + category);
+            if (activeBtn) activeBtn.classList.add('active');
+            renderDocuments();
+        }
+
         function handleDocUpload(e) {
             e.preventDefault();
             const title = document.getElementById('doc-title').value;
             const employee = document.getElementById('doc-employee').value;
             const type = document.getElementById('doc-type').value;
             const filename = document.getElementById('doc-filename').value;
+            const expiry = document.getElementById('doc-expiry-date').value || '--';
+            const notes = document.getElementById('doc-notes').value || 'Uploaded file attachment';
 
             state.documents.unshift({
                 id: Date.now(),
@@ -1024,13 +1102,27 @@ HTML_CONTENT = """<!DOCTYPE html>
                 employee: employee,
                 type: type,
                 filename: filename,
-                date: formatDate(new Date())
+                date: formatDate(new Date()),
+                expiry: expiry,
+                status: 'draft',
+                notes: notes
             });
 
             saveState();
             renderDocuments();
             e.target.reset();
-            alert('Employee verification document uploaded successfully!');
+            alert('Employee verification document uploaded successfully! Pending HR Verification.');
+        }
+
+        function handleVerifyDoc(docId) {
+            const doc = state.documents.find(d => d.id === docId);
+            if (doc) {
+                doc.status = 'verified';
+                doc.notes = 'Verified by HR Manager';
+                saveState();
+                renderDocuments();
+                alert(`Document "${doc.title}" verified successfully!`);
+            }
         }
 
         function renderAttendanceBanner() {
@@ -1163,17 +1255,53 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function renderDocuments() {
+            // Stats
+            document.getElementById('stat-id-proofs').innerText = state.documents.filter(d => d.type === 'id_proof').length;
+            document.getElementById('stat-contracts').innerText = state.documents.filter(d => d.type === 'contract').length;
+            document.getElementById('stat-certificates').innerText = state.documents.filter(d => d.type === 'certificate').length;
+            document.getElementById('stat-verified').innerText = state.documents.filter(d => d.status === 'verified').length;
+
             const tbody = document.getElementById('document-table-body');
-            tbody.innerHTML = state.documents.map(d => `
-                <tr>
-                    <td><strong>${d.title}</strong></td>
-                    <td>${d.employee}</td>
-                    <td><span class="badge badge-role">${d.type.toUpperCase().replace('_', ' ')}</span></td>
-                    <td><code>${d.filename}</code></td>
-                    <td>${d.date}</td>
-                    <td><span class="badge badge-present">VERIFIED</span></td>
-                </tr>
-            `).join('');
+            let filtered = state.documents;
+
+            if (state.role === 'employee') {
+                filtered = filtered.filter(d => d.employee === state.currentEmployee);
+            }
+
+            if (state.currentDocFilter !== 'all') {
+                if (state.currentDocFilter === 'verified') {
+                    filtered = filtered.filter(d => d.status === 'verified');
+                } else {
+                    filtered = filtered.filter(d => d.type === state.currentDocFilter);
+                }
+            }
+
+            tbody.innerHTML = filtered.map(d => {
+                const badgeClass = d.status === 'verified' ? 'badge-present' :
+                                   d.status === 'expired' ? 'badge-absent' : 'badge-pending';
+                const statusLabel = d.status === 'verified' ? 'VERIFIED' :
+                                    d.status === 'expired' ? 'EXPIRED' : 'PENDING';
+
+                let actionBtn = '';
+                if (state.role === 'admin' && d.status !== 'verified') {
+                    actionBtn = `<button class="btn btn-success" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="handleVerifyDoc(${d.id})">Verify Document</button>`;
+                } else {
+                    actionBtn = `<span style="font-size:0.8rem; color:var(--text-secondary);">${d.notes || 'Verified'}</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${d.title}</strong></td>
+                        <td>${d.employee}</td>
+                        <td><span class="badge badge-role">${d.type.toUpperCase().replace('_', ' ')}</span></td>
+                        <td><code>${d.filename}</code></td>
+                        <td>${d.date}</td>
+                        <td>${d.expiry || '--'}</td>
+                        <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
+                        <td>${actionBtn}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderAll() {
