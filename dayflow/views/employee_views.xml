@@ -6,19 +6,28 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_provision_dayflow_user" string="Provision User Account" type="object" class="oe_highlight" groups="dayflow.group_dayflow_admin" attrs="{'invisible': [('user_id', '!=', False)]}"/>
+                </header>
+            </xpath>
             <xpath expr="//field[@name='category_ids']" position="after">
                 <field name="dayflow_role" widget="radio"/>
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Dayflow HRMS" name="dayflow_hrms">
                     <group>
-                        <group string="Dayflow Information">
+                        <group string="Dayflow Profile Metadata">
                             <field name="dayflow_role"/>
-                            <field name="notes"/>
+                            <field name="dayflow_joining_date"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        <group string="Notes &amp; Remarks">
+                            <field name="notes" placeholder="Enter general employee profile notes..."/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Documents" name="dayflow_documents">
+                        <page string="Verification Documents" name="dayflow_documents">
                             <field name="document_ids">
                                 <tree editable="bottom">
                                     <field name="name"/>
@@ -55,6 +64,7 @@
                 <field name="dayflow_role" widget="badge"
                        decoration-info="dayflow_role == 'employee'"
                        decoration-success="dayflow_role == 'hr'"/>
+                <field name="dayflow_joining_date"/>
             </xpath>
         </field>
     </record>
