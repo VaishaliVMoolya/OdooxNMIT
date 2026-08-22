@@ -957,19 +957,19 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- Profile Hero Header -->
             <div class="profile-hero">
                 <div class="profile-hero-left">
-                    <div class="profile-avatar-lg" id="prof-hero-avatar">JS</div>
+                    <div class="profile-avatar-lg" id="prof-hero-avatar">--</div>
                     <div>
                         <div style="display:flex; align-items:center; gap:0.6rem;">
-                            <h1 style="font-size: 1.45rem; font-weight: 800;" id="prof-hero-name">Jane Smith</h1>
-                            <span class="badge badge-purple" id="prof-hero-badge">Admin / HR</span>
+                            <h1 style="font-size: 1.45rem; font-weight: 800;" id="prof-hero-name">--</h1>
+                            <span class="badge badge-purple" id="prof-hero-badge">--</span>
                             <span class="badge badge-green">Active</span>
                         </div>
-                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 2px;" id="prof-hero-title">Head of Human Resources & Administration • Human Resources</p>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 2px;" id="prof-hero-title">--</p>
                         <div class="profile-chips">
-                            <span class="chip" id="prof-hero-login">🔑 OIJASM20230002</span>
-                            <span class="chip" id="prof-hero-email">✉️ jane.smith@dayflow.org</span>
-                            <span class="chip" id="prof-hero-phone">📞 +91 98765 43212</span>
-                            <span class="chip" id="prof-hero-joined">📅 Joined Jan 10, 2023</span>
+                            <span class="chip" id="prof-hero-login">🔑 --</span>
+                            <span class="chip" id="prof-hero-email">✉️ --</span>
+                            <span class="chip" id="prof-hero-phone">📞 --</span>
+                            <span class="chip" id="prof-hero-joined">📅 --</span>
                         </div>
                     </div>
                 </div>
@@ -994,35 +994,35 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="lbl">Date of Birth</div>
-                            <div class="val" id="prof-dob">1990-06-15</div>
+                            <div class="val" id="prof-dob">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Gender</div>
-                            <div class="val" id="prof-gender">Female</div>
+                            <div class="val" id="prof-gender">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Nationality</div>
-                            <div class="val" id="prof-nationality">Indian</div>
+                            <div class="val" id="prof-nationality">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Marital Status</div>
-                            <div class="val" id="prof-marital">Married</div>
+                            <div class="val" id="prof-marital">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Aadhaar Number (UID)</div>
-                            <div class="val" id="prof-aadhar">4589-2314-7890</div>
+                            <div class="val" id="prof-aadhar">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">PAN Number</div>
-                            <div class="val" id="prof-pan">ABCPJ4589K</div>
+                            <div class="val" id="prof-pan">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Passport Number</div>
-                            <div class="val" id="prof-passport">Z9876543</div>
+                            <div class="val" id="prof-passport">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Personal Mobile</div>
-                            <div class="val" id="prof-personal-phone">+91 98765 11223</div>
+                            <div class="val" id="prof-personal-phone">--</div>
                         </div>
                     </div>
                 </div>
@@ -1031,22 +1031,22 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="card">
                         <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Home / Residential Address</h3>
                         <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.9rem;">
-                            <div><strong style="color:var(--text-muted);">Street:</strong> <span id="prof-addr-street">No. 42, 8th Main, 4th Cross, Indiranagar</span></div>
-                            <div><strong style="color:var(--text-muted);">City / State:</strong> <span id="prof-addr-city">Bangalore, Karnataka</span></div>
-                            <div><strong style="color:var(--text-muted);">PIN / Postal Code:</strong> <span id="prof-addr-pin">560038</span></div>
-                            <div><strong style="color:var(--text-muted);">Country:</strong> <span id="prof-addr-country">India</span></div>
+                            <div><strong style="color:var(--text-muted);">Street:</strong> <span id="prof-addr-street">--</span></div>
+                            <div><strong style="color:var(--text-muted);">City / State:</strong> <span id="prof-addr-city">--</span></div>
+                            <div><strong style="color:var(--text-muted);">PIN / Postal Code:</strong> <span id="prof-addr-pin">--</span></div>
+                            <div><strong style="color:var(--text-muted);">Country:</strong> <span id="prof-addr-country">--</span></div>
                         </div>
                     </div>
 
                     <div class="card">
                         <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Emergency Contact & Banking</h3>
                         <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.9rem;">
-                            <div><strong style="color:var(--text-muted);">Emergency Contact:</strong> <span id="prof-emg-name">Rajesh Smith (Spouse)</span></div>
-                            <div><strong style="color:var(--text-muted);">Emergency Phone:</strong> <span id="prof-emg-phone">+91 98765 99887</span></div>
+                            <div><strong style="color:var(--text-muted);">Emergency Contact:</strong> <span id="prof-emg-name">--</span></div>
+                            <div><strong style="color:var(--text-muted);">Emergency Phone:</strong> <span id="prof-emg-phone">--</span></div>
                             <hr style="border-color:var(--border-line); margin:0.3rem 0;">
-                            <div><strong style="color:var(--text-muted);">Bank Name:</strong> <span id="prof-bank-name">HDFC Bank (Salary Account)</span></div>
-                            <div><strong style="color:var(--text-muted);">Account Number:</strong> <code id="prof-bank-acc">50100234567890</code></div>
-                            <div><strong style="color:var(--text-muted);">IFSC Code:</strong> <code id="prof-bank-ifsc">HDFC0001234</code></div>
+                            <div><strong style="color:var(--text-muted);">Bank Name:</strong> <span id="prof-bank-name">--</span></div>
+                            <div><strong style="color:var(--text-muted);">Account Number:</strong> <code id="prof-bank-acc">--</code></div>
+                            <div><strong style="color:var(--text-muted);">IFSC Code:</strong> <code id="prof-bank-ifsc">--</code></div>
                         </div>
                     </div>
                 </div>
@@ -1058,19 +1058,19 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="stats-grid">
                     <div class="stat-box">
                         <div class="metric-label">Monthly Base Wage</div>
-                        <div class="num" style="color: #60a5fa;" id="prof-sal-wage">₹55,000.00</div>
+                        <div class="num" style="color: #60a5fa;" id="prof-sal-wage">₹0.00</div>
                     </div>
                     <div class="stat-box">
                         <div class="metric-label">Annual CTC</div>
-                        <div class="num" style="color: #a78bfa;" id="prof-sal-ctc">₹6,60,000.00</div>
+                        <div class="num" style="color: #a78bfa;" id="prof-sal-ctc">₹0.00</div>
                     </div>
                     <div class="stat-box">
                         <div class="metric-label">Net Take-Home Salary</div>
-                        <div class="num" style="color: #34d399;" id="prof-sal-net">₹59,500.00</div>
+                        <div class="num" style="color: #34d399;" id="prof-sal-net">₹0.00</div>
                     </div>
                     <div class="stat-box">
                         <div class="metric-label">Active Structure</div>
-                        <div class="num" style="font-size:1.1rem; color: #fbbf24; margin-top:0.4rem;" id="prof-sal-struct">HR Specialist Base</div>
+                        <div class="num" style="font-size:1.1rem; color: #fbbf24; margin-top:0.4rem;" id="prof-sal-struct">--</div>
                     </div>
                 </div>
 
@@ -1093,27 +1093,27 @@ HTML_CONTENT = """<!DOCTYPE html>
                                 <tr>
                                     <td><strong>Basic Salary</strong></td>
                                     <td>50.00% of Monthly Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-basic">₹27,500.00</td>
+                                    <td style="text-align: right;" id="prof-comp-basic">₹0.00</td>
                                 </tr>
                                 <tr>
                                     <td><strong>House Rent Allowance (HRA)</strong></td>
                                     <td>50.00% of Basic Salary</td>
-                                    <td style="text-align: right;" id="prof-comp-hra">₹13,750.00</td>
+                                    <td style="text-align: right;" id="prof-comp-hra">₹0.00</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Executive Standard Allowance</strong></td>
                                     <td>16.67% of Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-std">₹9,168.50</td>
+                                    <td style="text-align: right;" id="prof-comp-std">₹0.00</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Performance Bonus</strong></td>
                                     <td>8.33% of Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-bonus">₹4,581.50</td>
+                                    <td style="text-align: right;" id="prof-comp-bonus">₹0.00</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Leave Travel Allowance (LTA)</strong></td>
                                     <td>8.33% of Wage</td>
-                                    <td style="text-align: right;" id="prof-comp-lta">₹4,581.50</td>
+                                    <td style="text-align: right;" id="prof-comp-lta">₹0.00</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1139,7 +1139,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                                 <tr>
                                     <td><strong>Provident Fund (PF) Employee Share</strong></td>
                                     <td>12.00% of Basic Salary</td>
-                                    <td style="text-align: right; color:#f87171;" id="prof-comp-pf">- ₹3,300.00</td>
+                                    <td style="text-align: right; color:#f87171;" id="prof-comp-pf">- ₹0.00</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Professional Tax (PT)</strong></td>
@@ -1154,7 +1154,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                                 <tr style="background: rgba(255,255,255,0.03); font-weight: bold;">
                                     <td>Total Deductions</td>
                                     <td>PF + PT + Insurance</td>
-                                    <td style="text-align: right; color:#f87171;" id="prof-comp-deduct-total">- ₹4,500.00</td>
+                                    <td style="text-align: right; color:#f87171;" id="prof-comp-deduct-total">- ₹0.00</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1489,11 +1489,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                         </div>
                         <div class="field">
                             <label>Employee</label>
-                            <select id="doc-employee" class="input" required>
-                                <option value="John Doe">John Doe</option>
-                                <option value="Jane Smith">Jane Smith</option>
-                                <option value="Robert Taylor">Robert Taylor</option>
-                            </select>
+                            <select id="doc-employee" class="input" required></select>
                         </div>
                         <div class="field">
                             <label>Category</label>
@@ -1666,35 +1662,63 @@ HTML_CONTENT = """<!DOCTYPE html>
 
     <!-- Edit Private Info Modal -->
     <div id="private-info-modal" class="modal" style="display: none;">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 680px; max-height: 85vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 style="font-size: 1.1rem;">Edit Private Information</h3>
+                <h3 style="font-size: 1.1rem;">✎ Edit Profile &amp; Personal Details</h3>
                 <button class="btn btn-secondary" onclick="closeEditPrivateModal()">✕</button>
             </div>
             <form onsubmit="handleSavePrivateInfo(event)">
+                <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-bottom:0.5rem;">1. Personal &amp; Identity Details</div>
                 <div class="form-row">
-                    <div class="field"><label>Date of Birth</label><input type="date" id="m-dob" class="input" value="1990-06-15" required></div>
+                    <div class="field"><label>Date of Birth</label><input type="date" id="m-dob" class="input" required></div>
                     <div class="field"><label>Gender</label><select id="m-gender" class="input"><option value="Female">Female</option><option value="Male">Male</option><option value="Other">Other</option></select></div>
-                    <div class="field"><label>Marital Status</label><select id="m-marital" class="input"><option value="Married">Married</option><option value="Single">Single</option></select></div>
+                    <div class="field"><label>Nationality</label><input type="text" id="m-nationality" class="input" placeholder="e.g. Indian"></div>
+                    <div class="field"><label>Marital Status</label><select id="m-marital" class="input"><option value="Single">Single</option><option value="Married">Married</option></select></div>
                 </div>
                 <div class="form-row">
-                    <div class="field"><label>Personal Mobile</label><input type="text" id="m-phone" class="input" value="+91 98765 11223" required></div>
-                    <div class="field"><label>Aadhaar Number</label><input type="text" id="m-aadhar" class="input" value="4589-2314-7890" required></div>
-                    <div class="field"><label>PAN Number</label><input type="text" id="m-pan" class="input" value="ABCPJ4589K" required></div>
+                    <div class="field"><label>Personal Mobile</label><input type="text" id="m-phone" class="input" placeholder="+91 98765 00000" required></div>
+                    <div class="field"><label>Aadhaar Number</label><input type="text" id="m-aadhar" class="input" placeholder="4589-2314-7890"></div>
+                    <div class="field"><label>PAN Number</label><input type="text" id="m-pan" class="input" placeholder="ABCPJ4589K"></div>
+                    <div class="field"><label>Passport Number</label><input type="text" id="m-passport" class="input" placeholder="Z9876543"></div>
+                </div>
+
+                <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">2. Home / Residential Address</div>
+                <div class="form-row">
+                    <div class="field" style="flex:2;"><label>Street Address</label><input type="text" id="m-street" class="input" placeholder="No. 42, 8th Main, Indiranagar"></div>
+                    <div class="field"><label>City / State</label><input type="text" id="m-city" class="input" placeholder="Bangalore, Karnataka"></div>
+                    <div class="field"><label>PIN / Postal Code</label><input type="text" id="m-pin" class="input" placeholder="560038"></div>
+                    <div class="field"><label>Country</label><input type="text" id="m-country" class="input" placeholder="India"></div>
+                </div>
+
+                <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">3. Emergency Contact &amp; Banking</div>
+                <div class="form-row">
+                    <div class="field"><label>Emergency Contact (Name &amp; Rel)</label><input type="text" id="m-emg" class="input" placeholder="e.g. Spouse / Parent"></div>
+                    <div class="field"><label>Emergency Phone</label><input type="text" id="m-emg-phone" class="input" placeholder="+91 98765 00000"></div>
                 </div>
                 <div class="form-row">
-                    <div class="field"><label>Bank Name</label><input type="text" id="m-bank-name" class="input" value="HDFC Bank" required></div>
-                    <div class="field"><label>Bank Account Number</label><input type="text" id="m-bank-acc" class="input" value="50100234567890" required></div>
-                    <div class="field"><label>IFSC Code</label><input type="text" id="m-bank-ifsc" class="input" value="HDFC0001234" required></div>
+                    <div class="field"><label>Bank Name</label><input type="text" id="m-bank-name" class="input" placeholder="e.g. HDFC Bank"></div>
+                    <div class="field"><label>Bank Account Number</label><input type="text" id="m-bank-acc" class="input" placeholder="50100234567890"></div>
+                    <div class="field"><label>IFSC Code</label><input type="text" id="m-bank-ifsc" class="input" placeholder="HDFC0001234"></div>
                 </div>
-                <div class="form-row">
-                    <div class="field"><label>Residential Street Address</label><input type="text" id="m-street" class="input" value="No. 42, 8th Main, 4th Cross, Indiranagar" required></div>
-                    <div class="field"><label>Emergency Contact (Name & Relationship)</label><input type="text" id="m-emg" class="input" value="Rajesh Smith (Spouse)" required></div>
-                    <div class="field"><label>Emergency Phone</label><input type="text" id="m-emg-phone" class="input" value="+91 98765 99887" required></div>
+
+                <!-- Admin-Only Work Info -->
+                <div id="m-work-sec" style="display:none;">
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">4. Work &amp; Role Details (Admin Control)</div>
+                    <div class="form-row">
+                        <div class="field"><label>Job Title</label><input type="text" id="m-job" class="input"></div>
+                        <div class="field"><label>Department</label><input type="text" id="m-dept" class="input"></div>
+                        <div class="field"><label>Reports To</label><input type="text" id="m-manager" class="input"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="field"><label>Work Location</label><input type="text" id="m-location" class="input"></div>
+                        <div class="field"><label>Working Schedule</label><input type="text" id="m-schedule" class="input"></div>
+                        <div class="field"><label>Role / Security</label><select id="m-role" class="input"><option value="Employee">Employee</option><option value="Admin / HR">Admin / HR</option></select></div>
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+
+                <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.25rem;">
                     <button type="button" class="btn btn-secondary" onclick="closeEditPrivateModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary">✓ Save Details</button>
                 </div>
             </form>
         </div>
@@ -1937,11 +1961,11 @@ HTML_CONTENT = """<!DOCTYPE html>
             state.isCheckedIn = false;
             state.activeCheckInTime = null;
             state.checkInTimestamp = null;
-            const activeRec = state.attendances.find(a => a.isActive && a.employee === state.currentEmployee);
+            const activeRec = state.attendances.find(a => a.isActive && ((a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
             if (activeRec) {
                 state.isCheckedIn = true;
                 state.activeCheckInTime = activeRec.checkIn;
-                state.checkInTimestamp = activeRec.id;
+                state.checkInTimestamp = activeRec.checkInTimestamp || activeRec.id || Date.now();
                 state.tickerInterval = setInterval(updateLiveTicker, 1000);
             }
 
@@ -2153,12 +2177,19 @@ HTML_CONTENT = """<!DOCTYPE html>
             const panel = document.getElementById('panel-' + tabId);
             if (panel) panel.classList.add('active');
 
-            if (tabId === 'profile') {
-                renderAdminProfile();
-            }
-            if (tabId === 'emp-dashboard') {
-                renderEmployeeDashboard();
-            }
+            if (tabId === 'profile') renderAdminProfile();
+            if (tabId === 'emp-dashboard') renderEmployeeDashboard();
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'attendance') renderAttendance();
+            if (tabId === 'leave') renderLeaves();
+            if (tabId === 'employees') renderEmployees();
+            if (tabId === 'documents') renderDocuments();
+            if (tabId === 'payroll') renderPayroll();
+        }
+
+        function viewEmployeeProfile(empId) {
+            state.viewingEmployeeId = empId;
+            openTab('profile');
         }
 
         // onRoleChange is now replaced by login — kept as no-op for safety
@@ -2587,22 +2618,28 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         /* Payroll Modal & Actions */
         function openSalaryModal(payId) {
-            const pay = state.payrolls.find(p => p.id === payId);
-            if (pay) {
-                document.getElementById('modal-pay-id').value = pay.id;
-                document.getElementById('modal-pay-emp').value = pay.employee;
-                document.getElementById('modal-pay-struct').value = pay.structure;
-                document.getElementById('modal-pay-base').value = pay.base;
-                document.getElementById('modal-pay-allow').value = pay.allow;
-                document.getElementById('modal-pay-deduct').value = pay.deduct;
-            } else {
-                document.getElementById('modal-pay-id').value = '';
-                document.getElementById('modal-pay-emp').value = state.employees[0]?.name || 'John Doe';
-                document.getElementById('modal-pay-struct').value = 'Standard Base';
-                document.getElementById('modal-pay-base').value = 50000;
-                document.getElementById('modal-pay-allow').value = 7500;
-                document.getElementById('modal-pay-deduct').value = 3000;
+            let targetEmp;
+            if (payId) {
+                const pay = state.payrolls.find(p => p.id === payId);
+                if (pay) {
+                    targetEmp = state.employees.find(e => (pay.employeeId && e.id === pay.employeeId) || e.name === pay.employee) || { name: pay.employee, monthlyWage: pay.base, struct: pay.structure };
+                }
             }
+            if (!targetEmp) {
+                targetEmp = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || state.employees[0];
+            }
+
+            const wage = Number(targetEmp.monthlyWage) || 50000;
+            const struct = targetEmp.struct || 'Standard Base';
+            const payRec = state.payrolls.find(p => (targetEmp.id && p.employeeId === targetEmp.id) || p.employee === targetEmp.name);
+
+            document.getElementById('modal-pay-id').value = payRec ? payRec.id : (payId || '');
+            document.getElementById('modal-pay-emp').value = targetEmp.name;
+            document.getElementById('modal-pay-struct').value = struct;
+            document.getElementById('modal-pay-base').value = wage;
+            document.getElementById('modal-pay-allow').value = payRec ? payRec.allow : Math.round(wage * 0.2);
+            document.getElementById('modal-pay-deduct').value = payRec ? payRec.deduct : Math.round(wage * 0.08);
+
             calcModalNetSalary();
             document.getElementById('salary-modal').style.display = 'flex';
         }
@@ -2622,31 +2659,35 @@ HTML_CONTENT = """<!DOCTYPE html>
         function handleSaveSalary(e) {
             e.preventDefault();
             const idVal = document.getElementById('modal-pay-id').value;
-            const base = parseFloat(document.getElementById('modal-pay-base').value) || 0;
-            const allow = parseFloat(document.getElementById('modal-pay-allow').value) || 0;
-            const deduct = parseFloat(document.getElementById('modal-pay-deduct').value) || 0;
+            const base = parseFloat(document.getElementById('modal-pay-base').value) || 50000;
+            const allow = parseFloat(document.getElementById('modal-pay-allow').value) || Math.round(base * 0.2);
+            const deduct = parseFloat(document.getElementById('modal-pay-deduct').value) || Math.round(base * 0.08);
             const struct = document.getElementById('modal-pay-struct').value || 'Standard Base';
+            const empName = document.getElementById('modal-pay-emp').value;
 
-            if (idVal) {
-                const pay = state.payrolls.find(p => p.id === parseInt(idVal));
-                if (pay) {
-                    pay.base = base;
-                    pay.allow = allow;
-                    pay.deduct = deduct;
-                    pay.structure = struct;
+            const emp = state.employees.find(e => e.name === empName || (state.currentEmployeeId && e.id === state.currentEmployeeId));
+            if (emp) {
+                emp.monthlyWage = base;
+                emp.struct = struct;
+            }
 
-                    // If Jane Smith's salary was edited, update adminProfile as well
-                    if (pay.employee === 'Jane Smith') {
-                        state.adminProfile.monthlyWage = base;
-                        state.adminProfile.struct = struct;
-                    }
-                }
+            let pay = idVal ? state.payrolls.find(p => p.id === parseInt(idVal)) : null;
+            if (!pay) {
+                pay = state.payrolls.find(p => (emp && emp.id && p.employeeId === emp.id) || p.employee === empName);
+            }
+
+            if (pay) {
+                pay.base = base;
+                pay.allow = allow;
+                pay.deduct = deduct;
+                pay.structure = struct;
+                if (emp && emp.id) pay.employeeId = emp.id;
             } else {
-                const emp = document.getElementById('modal-pay-emp').value;
                 state.payrolls.push({
                     id: Date.now(),
+                    employeeId: emp ? emp.id : 1,
                     ref: `PAY/2026/00${state.payrolls.length + 1}`,
-                    employee: emp,
+                    employee: empName,
                     structure: struct,
                     period: 'August 2026',
                     base: base,
@@ -2656,9 +2697,15 @@ HTML_CONTENT = """<!DOCTYPE html>
                 });
             }
 
+            if (empName === 'Jane Smith' || state.role === 'admin') {
+                state.adminProfile.monthlyWage = base;
+                state.adminProfile.struct = struct;
+            }
+
             saveState();
             closeSalaryModal();
             renderAll();
+            alert(`Salary structure updated successfully for ${empName}!`);
         }
 
         function handleApprovePayroll(id) {
@@ -2683,26 +2730,46 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         /* Edit Private Info Modal Actions */
         function openEditPrivateModal() {
+            const targetId = (state.role === 'admin' && state.viewingEmployeeId) ? state.viewingEmployeeId : state.currentEmployeeId;
             let p;
             if (state.role === 'employee') {
                 p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || state.employees[0];
+                const workSec = document.getElementById('m-work-sec');
+                if (workSec) workSec.style.display = 'none';
             } else {
-                const empRec = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
-                p = Object.assign({}, state.adminProfile, empRec || {});
+                const empRec = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
+                p = Object.assign({}, (targetId === 2 ? state.adminProfile : {}), empRec || {});
+                const workSec = document.getElementById('m-work-sec');
+                if (workSec) {
+                    workSec.style.display = 'block';
+                    document.getElementById('m-job').value = (p.job && p.job !== '--') ? p.job : ((p.title && p.title !== '--') ? p.title : '');
+                    document.getElementById('m-dept').value = (p.dept && p.dept !== '--') ? p.dept : '';
+                    document.getElementById('m-manager').value = p.reportsTo || (p.role === 'Admin / HR' ? 'Board of Directors / CEO' : 'Jane Smith (HR Head)');
+                    document.getElementById('m-location').value = p.workLocation || (p.city ? `${p.city} Office` : 'Bangalore Headquarters (HQ)');
+                    document.getElementById('m-schedule').value = p.workSchedule || '40 Hours / Week (Mon-Fri)';
+                    document.getElementById('m-role').value = p.role || 'Admin / HR';
+                }
             }
 
             document.getElementById('m-dob').value = (p.dob && p.dob !== '--') ? p.dob : '';
             document.getElementById('m-gender').value = (p.gender && p.gender !== '--') ? p.gender : 'Male';
+            document.getElementById('m-nationality').value = (p.nationality && p.nationality !== '--') ? p.nationality : 'Indian';
             document.getElementById('m-marital').value = (p.marital && p.marital !== '--') ? p.marital : 'Single';
             document.getElementById('m-phone').value = (p.personalPhone && p.personalPhone !== '--') ? p.personalPhone : (p.phone && p.phone !== '--' ? p.phone : '');
             document.getElementById('m-aadhar').value = (p.aadhar && p.aadhar !== '--') ? p.aadhar : '';
             document.getElementById('m-pan').value = (p.pan && p.pan !== '--') ? p.pan : '';
+            document.getElementById('m-passport').value = (p.passport && p.passport !== '--') ? p.passport : '';
+
+            document.getElementById('m-street').value = (p.street && p.street !== '--') ? p.street : '';
+            document.getElementById('m-city').value = (p.city && p.city !== '--') ? p.city : '';
+            document.getElementById('m-pin').value = (p.pin && p.pin !== '--') ? p.pin : '';
+            document.getElementById('m-country').value = (p.country && p.country !== '--') ? p.country : 'India';
+
+            document.getElementById('m-emg').value = (p.emgName && p.emgName !== '--') ? p.emgName : '';
+            document.getElementById('m-emg-phone').value = (p.emgPhone && p.emgPhone !== '--') ? p.emgPhone : '';
             document.getElementById('m-bank-name').value = (p.bankName && p.bankName !== '--') ? p.bankName : '';
             document.getElementById('m-bank-acc').value = (p.bankAcc && p.bankAcc !== '--') ? p.bankAcc : '';
             document.getElementById('m-bank-ifsc').value = (p.bankIfsc && p.bankIfsc !== '--') ? p.bankIfsc : '';
-            document.getElementById('m-street').value = (p.street && p.street !== '--') ? p.street : '';
-            document.getElementById('m-emg').value = (p.emgName && p.emgName !== '--') ? p.emgName : '';
-            document.getElementById('m-emg-phone').value = (p.emgPhone && p.emgPhone !== '--') ? p.emgPhone : '';
 
             document.getElementById('private-info-modal').style.display = 'flex';
         }
@@ -2713,58 +2780,104 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function handleSavePrivateInfo(e) {
             e.preventDefault();
+            const targetId = (state.role === 'admin' && state.viewingEmployeeId) ? state.viewingEmployeeId : state.currentEmployeeId;
+
             const dob = document.getElementById('m-dob').value;
             const gender = document.getElementById('m-gender').value;
+            const nationality = document.getElementById('m-nationality').value;
             const marital = document.getElementById('m-marital').value;
             const phone = document.getElementById('m-phone').value;
             const aadhar = document.getElementById('m-aadhar').value;
             const pan = document.getElementById('m-pan').value;
+            const passport = document.getElementById('m-passport').value;
+
+            const street = document.getElementById('m-street').value;
+            const city = document.getElementById('m-city').value;
+            const pin = document.getElementById('m-pin').value;
+            const country = document.getElementById('m-country').value;
+
+            const emgName = document.getElementById('m-emg').value;
+            const emgPhone = document.getElementById('m-emg-phone').value;
             const bankName = document.getElementById('m-bank-name').value;
             const bankAcc = document.getElementById('m-bank-acc').value;
             const bankIfsc = document.getElementById('m-bank-ifsc').value;
-            const street = document.getElementById('m-street').value;
-            const emgName = document.getElementById('m-emg').value;
-            const emgPhone = document.getElementById('m-emg-phone').value;
 
-            let emp = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
+            let emp = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
             if (emp) {
                 emp.dob = dob;
                 emp.gender = gender;
+                emp.nationality = nationality;
                 emp.marital = marital;
                 emp.personalPhone = phone;
                 emp.phone = phone || emp.phone;
                 emp.aadhar = aadhar;
                 emp.pan = pan;
+                emp.passport = passport;
+                emp.street = street;
+                emp.city = city;
+                emp.pin = pin;
+                emp.country = country;
+                emp.emgName = emgName;
+                emp.emgPhone = emgPhone;
                 emp.bankName = bankName;
                 emp.bankAcc = bankAcc;
                 emp.bankIfsc = bankIfsc;
-                emp.street = street;
-                emp.emgName = emgName;
-                emp.emgPhone = emgPhone;
+
+                if (state.role === 'admin') {
+                    const job = document.getElementById('m-job')?.value;
+                    const dept = document.getElementById('m-dept')?.value;
+                    const manager = document.getElementById('m-manager')?.value;
+                    const loc = document.getElementById('m-location')?.value;
+                    const sched = document.getElementById('m-schedule')?.value;
+                    const role = document.getElementById('m-role')?.value;
+
+                    if (job) emp.job = job;
+                    if (dept) emp.dept = dept;
+                    if (manager) emp.reportsTo = manager;
+                    if (loc) emp.workLocation = loc;
+                    if (sched) emp.workSchedule = sched;
+                    if (role) emp.role = role;
+                }
             }
 
-            if (state.role === 'admin') {
+            if (state.role === 'admin' && (targetId === 2 || !state.viewingEmployeeId)) {
                 Object.assign(state.adminProfile, {
-                    dob, gender, marital, personalPhone: phone, phone,
-                    aadhar, pan, bankName, bankAcc, bankIfsc, street, emgName, emgPhone
+                    dob, gender, nationality, marital, personalPhone: phone, phone,
+                    aadhar, pan, passport, street, city, pin, country,
+                    emgName, emgPhone, bankName, bankAcc, bankIfsc
                 });
+                const job = document.getElementById('m-job')?.value;
+                const dept = document.getElementById('m-dept')?.value;
+                const manager = document.getElementById('m-manager')?.value;
+                const loc = document.getElementById('m-location')?.value;
+                const sched = document.getElementById('m-schedule')?.value;
+                const role = document.getElementById('m-role')?.value;
+                if (job) state.adminProfile.title = job;
+                if (dept) state.adminProfile.dept = dept;
+                if (manager) state.adminProfile.reportsTo = manager;
+                if (loc) state.adminProfile.workLocation = loc;
+                if (sched) state.adminProfile.workSchedule = sched;
+                if (role) state.adminProfile.role = role;
             }
 
             saveState();
             closeEditPrivateModal();
             renderAdminProfile();
-            alert('Personal details updated successfully!');
+            renderDashboard();
+            renderEmployees();
+            alert('Profile details updated successfully!');
         }
 
-        /* Render Admin Profile */
+        /* Render Admin / Employee Profile */
         function renderAdminProfile() {
+            const targetId = (state.role === 'admin' && state.viewingEmployeeId) ? state.viewingEmployeeId : state.currentEmployeeId;
             let p;
             if (state.role === 'employee') {
                 p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
                 if (!p) p = state.employees[0];
             } else {
-                const empRec = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
-                p = Object.assign({}, state.adminProfile, empRec || {});
+                const empRec = state.employees.find(e => e.id === targetId || (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
+                p = Object.assign({}, (targetId === 2 ? state.adminProfile : {}), empRec || {});
             }
 
             const wage = Number(p.monthlyWage) || 50000;
@@ -2910,7 +3023,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             const tbodyAtt = document.getElementById('dash-tbl-today-attendance');
             tbodyAtt.innerHTML = state.attendances.slice(0, 5).map(a => `
-                <tr>
+                <tr onclick="openTab('attendance')" style="cursor:pointer;" title="Click to view Attendance">
                     <td><strong>${a.employee}</strong></td>
                     <td>${a.checkIn}</td>
                     <td>${a.checkOut}</td>
@@ -2927,7 +3040,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             const filtered = state.employees.filter(e => e.name.toLowerCase().includes(query) || e.job.toLowerCase().includes(query) || e.dept.toLowerCase().includes(query));
 
             tbodyEmp.innerHTML = filtered.map(e => `
-                <tr onclick="openTab('profile')" style="cursor:pointer;" title="Click to view profile">
+                <tr onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer;" title="Click to view profile">
                     <td>
                         <strong>${e.name}</strong>
                         <div style="font-size:0.75rem; color:var(--text-muted);">${e.job}</div>
@@ -3035,7 +3148,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         function renderEmployees() {
             const grid = document.getElementById('grid-employees');
             grid.innerHTML = state.employees.map(e => `
-                <div class="emp-card" onclick="openTab('profile')">
+                <div class="emp-card" onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer;" title="Click to view full profile">
                     <div class="emp-head">
                         <div class="avatar">${e.name.split(' ').map(n=>n[0]).join('')}</div>
                         <div>
@@ -3058,6 +3171,19 @@ HTML_CONTENT = """<!DOCTYPE html>
             document.getElementById('stat-contract').innerText = state.documents.filter(d => d.type === 'contract').length;
             document.getElementById('stat-cert').innerText = state.documents.filter(d => d.type === 'certificate').length;
             document.getElementById('stat-verified').innerText = state.documents.filter(d => d.status === 'verified').length;
+
+            const docEmpSelect = document.getElementById('doc-employee');
+            if (docEmpSelect) {
+                if (state.role === 'employee') {
+                    docEmpSelect.innerHTML = `<option value="${state.currentEmployee}">${state.currentEmployee}</option>`;
+                    docEmpSelect.disabled = true;
+                } else {
+                    docEmpSelect.disabled = false;
+                    docEmpSelect.innerHTML = state.employees.map(e => `
+                        <option value="${e.name}" ${e.name === state.currentEmployee ? 'selected' : ''}>${e.name} (${e.dept || e.job})</option>
+                    `).join('');
+                }
+            }
 
             const tbody = document.getElementById('tbl-documents');
             let data = state.documents;
