@@ -900,7 +900,10 @@ HTML_CONTENT = """<!DOCTYPE html>
         <div class="nav-right">
             <!-- In-App Notification Bell -->
             <div class="nav-btn-icon" onclick="toggleNotificationModal()" title="View Email & In-App Notifications">
-                <span>🔔</span>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--text-main);">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
                 <span class="notif-badge-count" id="notif-count">0</span>
             </div>
             <div class="nav-user-info" id="nav-user-info">
@@ -925,7 +928,10 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <p class="header-sub">Live organizational metrics, pending approvals, and email alert activity</p>
                 </div>
                 <div style="display:flex; gap:0.5rem;">
-                    <button class="btn btn-primary" onclick="toggleNotificationModal()">🔔 Notification Center</button>
+                    <button class="btn btn-primary" onclick="toggleNotificationModal()" style="display:inline-flex; align-items:center; gap:0.45rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span>Notification Center</span>
+                    </button>
                     <button class="btn btn-secondary" onclick="resetData()">↺ Refresh</button>
                 </div>
             </div>
@@ -952,7 +958,9 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- Hero KPI Cards -->
             <div class="kpi-grid">
                 <div class="kpi-card kpi-blue" onclick="openTab('employees')">
-                    <div class="kpi-icon-box">👥</div>
+                    <div class="kpi-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
                     <div>
                         <div class="kpi-label">Total Employees</div>
                         <div class="kpi-val" id="dash-kpi-employees">0</div>
@@ -961,7 +969,9 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
 
                 <div class="kpi-card kpi-green" onclick="openTab('attendance')">
-                    <div class="kpi-icon-box">⏱</div>
+                    <div class="kpi-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
                     <div>
                         <div class="kpi-label">Present Today</div>
                         <div class="kpi-val" id="dash-kpi-present">0</div>
@@ -970,7 +980,9 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
 
                 <div class="kpi-card kpi-amber" onclick="openTab('leave')">
-                    <div class="kpi-icon-box">🌴</div>
+                    <div class="kpi-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
                     <div>
                         <div class="kpi-label">On Leave Today</div>
                         <div class="kpi-val" id="dash-kpi-on-leave">0</div>
@@ -979,7 +991,9 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
 
                 <div class="kpi-card kpi-red" onclick="openTab('leave')">
-                    <div class="kpi-icon-box">⏳</div>
+                    <div class="kpi-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    </div>
                     <div>
                         <div class="kpi-label">Pending Requests</div>
                         <div class="kpi-val" id="dash-kpi-pending">0</div>
@@ -992,7 +1006,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             <div class="card" style="border-left: 4px solid var(--accent-purple-hover);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
                     <div>
-                        <h3 style="font-size: 1.05rem; color:#fff;">🛡️ Pending Time Off Applications (HR Decision Hub)</h3>
+                        <h3 style="font-size: 1.05rem; color:#fff;">Pending Time Off Applications (HR Decision Hub)</h3>
                         <p style="font-size: 0.8rem; color:var(--text-muted); margin-top:2px;">Decisions update employee records & trigger automated email notifications</p>
                     </div>
                     <button class="btn btn-secondary" style="font-size: 0.8rem;" onclick="openTab('leave')">View Full Queue</button>
@@ -1153,10 +1167,10 @@ HTML_CONTENT = """<!DOCTYPE html>
                         </div>
                         <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 2px;" id="prof-hero-title">--</p>
                         <div class="profile-chips">
-                            <span class="chip" id="prof-hero-login">🔑 --</span>
-                            <span class="chip" id="prof-hero-email">✉️ --</span>
-                            <span class="chip" id="prof-hero-phone">📞 --</span>
-                            <span class="chip" id="prof-hero-joined">📅 --</span>
+                            <span class="chip" id="prof-hero-login">Login: --</span>
+                            <span class="chip" id="prof-hero-email">Email: --</span>
+                            <span class="chip" id="prof-hero-phone">Phone: --</span>
+                            <span class="chip" id="prof-hero-joined">Joined: --</span>
                         </div>
                     </div>
                 </div>
@@ -1414,7 +1428,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <button id="btn-in" class="btn btn-success" onclick="handleCheckIn()">Check In</button>
-                    <button id="btn-break" class="btn btn-secondary" onclick="handleBreakToggle()" disabled>☕ Take a Break</button>
+                    <button id="btn-break" class="btn btn-secondary" onclick="handleBreakToggle()" disabled>Take a Break</button>
                     <button id="btn-out" class="btn btn-danger" onclick="handleCheckOut()" disabled>Check Out</button>
                 </div>
             </div>
@@ -1503,7 +1517,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <div style="display:flex; align-items:center; gap:0.5rem;">
-                            <h3 style="font-size: 1.1rem; color: #fff;">🛡️ HR Time Off Management & Decision Hub</h3>
+                            <h3 style="font-size: 1.1rem; color: #fff;">HR Time Off Management & Decision Hub</h3>
                             <span class="badge badge-purple">Admin Mode</span>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
@@ -1838,7 +1852,9 @@ HTML_CONTENT = """<!DOCTYPE html>
         <div class="modal-card" style="max-width: 620px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <div style="display:flex; align-items:center; gap:0.6rem;">
-                    <div style="background:rgba(113,75,103,0.3); border:1px solid var(--accent-purple); padding:0.35rem 0.6rem; border-radius:6px; font-size:1.1rem;">🔔</div>
+                    <div style="background:rgba(113,75,103,0.3); border:1px solid var(--accent-purple); padding:0.4rem 0.5rem; border-radius:6px; display:flex; align-items:center; justify-content:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-main);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </div>
                     <div>
                         <h3 style="font-size: 1.15rem;">Email & In-App Notification Center</h3>
                         <p style="font-size: 0.78rem; color: var(--text-muted);">Live audit log of sent Dayflow security alerts and transactional emails</p>
@@ -2682,9 +2698,9 @@ HTML_CONTENT = """<!DOCTYPE html>
                 state.isOnBreak = true;
                 state.breakStartTimestamp = now;
                 const btn = document.getElementById('btn-break');
-                if (btn) { btn.innerText = '▶️ Resume Work'; btn.className = 'btn btn-primary'; }
+                if (btn) { btn.innerText = 'Resume Work'; btn.className = 'btn btn-primary'; }
                 const txt = document.getElementById('txt-status');
-                if (txt) txt.innerHTML = '☕ <span style="color:#fbbf24;">On Break</span>';
+                if (txt) txt.innerHTML = '<span style="color:#fbbf24;">On Break (Paused)</span>';
             } else {
                 // Resume Work
                 state.isOnBreak = false;
@@ -2694,7 +2710,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     state.breakStartTimestamp = null;
                 }
                 const btn = document.getElementById('btn-break');
-                if (btn) { btn.innerText = '☕ Take a Break'; btn.className = 'btn btn-secondary'; }
+                if (btn) { btn.innerText = 'Take a Break'; btn.className = 'btn btn-secondary'; }
                 const txt = document.getElementById('txt-status');
                 if (txt) txt.innerHTML = 'Present';
             }
@@ -3631,11 +3647,11 @@ Role: ${newUser.role.toUpperCase()}`);
             document.getElementById('prof-hero-name').innerText = p.name || '--';
             document.getElementById('prof-hero-avatar').innerText = (p.name || 'U').split(' ').map(n=>n[0]).join('').toUpperCase();
             document.getElementById('prof-hero-title').innerText = `${p.job || p.title || '--'} • ${p.dept || '--'}`;
-            document.getElementById('prof-hero-login').innerText = `🔑 ${p.loginId || '--'}`;
-            document.getElementById('prof-hero-email').innerText = `✉️ ${p.email || '--'}`;
-            document.getElementById('prof-hero-phone').innerText = `📞 ${p.phone || p.personalPhone || '--'}`;
+            document.getElementById('prof-hero-login').innerText = `Login: ${p.loginId || '--'}`;
+            document.getElementById('prof-hero-email').innerText = `Email: ${p.email || '--'}`;
+            document.getElementById('prof-hero-phone').innerText = `Phone: ${p.phone || p.personalPhone || '--'}`;
             const joinDate = p.joining ? new Date(p.joining).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '--';
-            document.getElementById('prof-hero-joined').innerText = `📅 Joined ${joinDate}`;
+            document.getElementById('prof-hero-joined').innerText = `Joined: ${joinDate}`;
 
             // Update role badge
             const badge = document.getElementById('prof-hero-badge');
@@ -3795,12 +3811,12 @@ Role: ${newUser.role.toUpperCase()}`);
 
             if (state.isCheckedIn) {
                 dot.className = 'dot green';
-                txt.innerText = state.isOnBreak ? '☕ On Break' : 'Present';
+                txt.innerText = state.isOnBreak ? 'On Break (Paused)' : 'Present';
                 checkIn.innerText = state.activeCheckInTime || '--:--';
                 btnIn.disabled = true;
                 if (btnBreak) {
                     btnBreak.disabled = false;
-                    btnBreak.innerText = state.isOnBreak ? '▶️ Resume Work' : '☕ Take a Break';
+                    btnBreak.innerText = state.isOnBreak ? 'Resume Work' : 'Take a Break';
                     btnBreak.className = state.isOnBreak ? 'btn btn-primary' : 'btn btn-secondary';
                 }
                 btnOut.disabled = false;
@@ -3816,7 +3832,7 @@ Role: ${newUser.role.toUpperCase()}`);
                 btnIn.disabled = false;
                 if (btnBreak) {
                     btnBreak.disabled = true;
-                    btnBreak.innerText = '☕ Take a Break';
+                    btnBreak.innerText = 'Take a Break';
                     btnBreak.className = 'btn btn-secondary';
                 }
                 btnOut.disabled = true;
@@ -4000,15 +4016,21 @@ Role: ${newUser.role.toUpperCase()}`);
                         if (l.status === 'pending') {
                             actionsHtml = `
                                 <div style="display:inline-flex; gap:0.35rem; justify-content:flex-end;">
-                                    <button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="openLeaveDetailModal(${l.id})">👁️ Details</button>
-                                    <button class="btn btn-success" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleQuickApprove(${l.id})">Approve</button>
-                                    <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleQuickReject(${l.id})">Reject</button>
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem; display:inline-flex; align-items:center; gap:0.35rem;" onclick="openLeaveDetailModal(${l.id})">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>Details</span>
+                                    </button>
+                                    <button class="btn btn-success" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="handleQuickApprove(${l.id})">Approve</button>
+                                    <button class="btn btn-danger" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="handleQuickReject(${l.id})">Reject</button>
                                 </div>
                             `;
                         } else {
                             actionsHtml = `
                                 <div style="display:inline-flex; gap:0.35rem; justify-content:flex-end;">
-                                    <button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="openLeaveDetailModal(${l.id})">👁️ View Details</button>
+                                    <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem; display:inline-flex; align-items:center; gap:0.35rem;" onclick="openLeaveDetailModal(${l.id})">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <span>View Details</span>
+                                    </button>
                                 </div>
                             `;
                         }
@@ -4102,7 +4124,12 @@ Role: ${newUser.role.toUpperCase()}`);
                         <td><code>${d.filename}</code> <span style="font-size:0.75rem; color:var(--text-muted);">(${d.size})</span></td>
                         <td>${d.date}</td>
                         <td><span class="badge ${badge}">${d.status.toUpperCase()}</span></td>
-                        <td><button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="previewFile(${d.id})">👁️ View</button></td>
+                        <td>
+                            <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem; display:inline-flex; align-items:center; gap:0.35rem;" onclick="previewFile(${d.id})">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                <span>View</span>
+                            </button>
+                        </td>
                         <td>${hrAction}</td>
                     </tr>
                 `;
