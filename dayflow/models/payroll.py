@@ -25,3 +25,21 @@ class DayflowPayroll(models.Model):
     def _compute_net_salary(self):
         for record in self:
             record.net_salary = record.base_salary + record.allowances - record.deductions
+
+    def action_approve(self):
+        """Approve payroll record (Admin/HR only)."""
+        for record in self:
+            record.payroll_status = 'approved'
+        return True
+
+    def action_pay(self):
+        """Mark payroll record as paid (Admin/HR only)."""
+        for record in self:
+            record.payroll_status = 'paid'
+        return True
+
+    def action_draft(self):
+        """Reset payroll record to draft (Admin/HR only)."""
+        for record in self:
+            record.payroll_status = 'draft'
+        return True

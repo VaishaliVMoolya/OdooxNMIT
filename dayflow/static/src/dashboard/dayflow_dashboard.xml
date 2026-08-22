@@ -1,0 +1,387 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="dayflow.DayflowDashboard" owl="1">
+        <div class="dayflow-dashboard-container">
+            <!-- Top Navigation / Header -->
+            <div class="dayflow-header-bar">
+                <div class="header-left">
+                    <div class="brand-badge">
+                        <i class="fa fa-cubes brand-icon"/>
+                    </div>
+                    <div>
+                        <h1 class="brand-title">Dayflow HRMS</h1>
+                        <p class="brand-subtitle">Admin &amp; Human Resource Management Console</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary btn-sm rounded-pill shadow-sm" t-on-click="createEmployee">
+                        <i class="fa fa-user-plus mr-1"/> New Employee
+                    </button>
+                    <button class="btn btn-outline-success btn-sm rounded-pill" t-on-click="createAttendance">
+                        <i class="fa fa-clock-o mr-1"/> Check-in / Out
+                    </button>
+                    <button class="btn btn-outline-info btn-sm rounded-pill" t-on-click="createPayroll">
+                        <i class="fa fa-credit-card mr-1"/> New Payroll
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill" t-on-click="openDocuments">
+                        <i class="fa fa-folder-open-o mr-1"/> Documents
+                    </button>
+                    <button class="btn btn-light btn-sm rounded-circle refresh-btn ml-2" t-on-click="refreshDashboard" title="Refresh Live Data">
+                        <i class="fa fa-refresh" t-att-class="{'fa-spin': state.loading}"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="dashboard-body">
+                <!-- KPI Summary Cards -->
+                <div class="kpi-grid">
+                    <!-- Total Employees Card -->
+                    <div class="kpi-card kpi-blue" t-on-click="openEmployees">
+                        <div class="kpi-icon-wrapper">
+                            <i class="fa fa-users"/>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Total Employees</span>
+                            <span class="kpi-value"><t t-esc="state.kpi.total_employees"/></span>
+                            <span class="kpi-link">View Directory <i class="fa fa-arrow-right ml-1"/></span>
+                        </div>
+                    </div>
+
+                    <!-- Present Today Card -->
+                    <div class="kpi-card kpi-green" t-on-click="openTodayAttendance">
+                        <div class="kpi-icon-wrapper">
+                            <i class="fa fa-check-circle"/>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Present Today</span>
+                            <span class="kpi-value"><t t-esc="state.kpi.present_today"/></span>
+                            <span class="kpi-link">View Attendance <i class="fa fa-arrow-right ml-1"/></span>
+                        </div>
+                    </div>
+
+                    <!-- On Leave Card -->
+                    <div class="kpi-card kpi-amber" t-on-click="openLeaveRequests">
+                        <div class="kpi-icon-wrapper">
+                            <i class="fa fa-calendar-minus-o"/>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">On Leave Today</span>
+                            <span class="kpi-value"><t t-esc="state.kpi.on_leave_today"/></span>
+                            <span class="kpi-link">View Time Off <i class="fa fa-arrow-right ml-1"/></span>
+                        </div>
+                    </div>
+
+                    <!-- Pending Requests Card -->
+                    <div class="kpi-card kpi-red" t-on-click="openPendingLeaves">
+                        <div class="kpi-icon-wrapper">
+                            <i class="fa fa-hourglass-half"/>
+                        </div>
+                        <div class="kpi-content">
+                            <span class="kpi-label">Pending Requests</span>
+                            <span class="kpi-value"><t t-esc="state.kpi.pending_leave_requests"/></span>
+                            <span class="kpi-link">Review Applications <i class="fa fa-arrow-right ml-1"/></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Pending Leave Requests (Decision Hub) -->
+                <div class="section-card shadow-sm mb-4">
+                    <div class="section-header">
+                        <div class="d-flex align-items-center">
+                            <div class="section-icon text-danger mr-2">
+                                <i class="fa fa-exclamation-circle"/>
+                            </div>
+                            <div>
+                                <h3 class="section-title mb-0">Pending Leave Requests</h3>
+                                <span class="text-muted small">Review and decision employee time-off applications</span>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-primary btn-sm" t-on-click="openPendingLeaves">
+                                <i class="fa fa-list mr-1"/> View All Requests
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="section-content">
+                        <t t-if="state.pending_leaves.length === 0">
+                            <div class="empty-state py-4 text-center">
+                                <i class="fa fa-check-circle-o text-success fa-3x mb-2"/>
+                                <p class="text-muted mb-0 font-weight-medium">All leave requests have been reviewed!</p>
+                                <span class="text-muted small">New employee leave applications will appear here for decisioning.</span>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle custom-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Department</th>
+                                            <th>Leave Type</th>
+                                            <th>Duration</th>
+                                            <th>Remarks</th>
+                                            <th class="text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="state.pending_leaves" t-as="leave" t-key="leave.id">
+                                            <tr class="clickable-row" t-on-click="() => this.openLeaveForm(leave.id)">
+                                                <td>
+                                                    <span class="font-weight-bold text-dark"><t t-esc="leave.employee_name"/></span>
+                                                </td>
+                                                <td><span class="text-muted"><t t-esc="leave.department"/></span></td>
+                                                <td>
+                                                    <span class="badge badge-pill badge-primary"><t t-esc="leave.leave_type"/></span>
+                                                </td>
+                                                <td>
+                                                    <span class="small font-weight-medium"><t t-esc="leave.date_from"/> → <t t-esc="leave.date_to"/></span>
+                                                    <span class="badge badge-light ml-1">(<t t-esc="leave.number_of_days"/> d)</span>
+                                                </td>
+                                                <td><span class="text-muted small text-truncate d-inline-block" style="max-width: 220px;"><t t-esc="leave.remarks"/></span></td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-success btn-xs btn-action mr-1" title="Approve Leave" t-on-click="(ev) => this.approveLeave(leave.id, ev)">
+                                                        <i class="fa fa-check mr-1"/> Approve
+                                                    </button>
+                                                    <button class="btn btn-danger btn-xs btn-action mr-1" title="Reject Leave" t-on-click="(ev) => this.rejectLeave(leave.id, ev)">
+                                                        <i class="fa fa-times mr-1"/> Reject
+                                                    </button>
+                                                    <button class="btn btn-outline-secondary btn-xs btn-action" title="Review Full Form" t-on-click="() => this.openLeaveForm(leave.id)">
+                                                        <i class="fa fa-eye"/>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Two-Column Grid: Today's Attendance & Employee Overview -->
+                <div class="row">
+                    <!-- Today's Attendance Column -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="section-card shadow-sm h-100">
+                            <div class="section-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="section-icon text-success mr-2">
+                                        <i class="fa fa-calendar-check-o"/>
+                                    </div>
+                                    <div>
+                                        <h3 class="section-title mb-0">Today's Attendance</h3>
+                                        <span class="text-muted small">Live daily check-in and check-out logs</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-success btn-sm" t-on-click="openAttendance">
+                                    <i class="fa fa-external-link mr-1"/> Full Log
+                                </button>
+                            </div>
+
+                            <div class="section-content">
+                                <t t-if="state.attendance.length === 0">
+                                    <div class="empty-state py-4 text-center">
+                                        <i class="fa fa-clock-o text-muted fa-3x mb-2"/>
+                                        <p class="text-muted mb-0">No attendance entries recorded for today.</p>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle custom-table mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Employee</th>
+                                                    <th>Check In</th>
+                                                    <th>Check Out</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="state.attendance" t-as="att" t-key="att.id">
+                                                    <tr class="clickable-row" t-on-click="() => this.openEmployeeForm(att.employee_id)">
+                                                        <td>
+                                                            <span class="font-weight-bold text-dark"><t t-esc="att.employee_name"/></span>
+                                                            <span class="d-block text-muted small"><t t-esc="att.department"/></span>
+                                                        </td>
+                                                        <td><span class="badge badge-light"><t t-esc="att.check_in"/></span></td>
+                                                        <td><span class="badge badge-light"><t t-esc="att.check_out"/></span></td>
+                                                        <td>
+                                                            <span t-if="att.dayflow_status === 'present'" class="badge badge-success">Present</span>
+                                                            <span t-elif="att.dayflow_status === 'absent'" class="badge badge-danger">Absent</span>
+                                                            <span t-elif="att.dayflow_status === 'half_day'" class="badge badge-warning">Half-day</span>
+                                                            <span t-elif="att.dayflow_status === 'leave'" class="badge badge-info">Leave</span>
+                                                            <span t-else="" class="badge badge-secondary"><t t-esc="att.status"/></span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Employee Directory Column -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="section-card shadow-sm h-100">
+                            <div class="section-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="section-icon text-info mr-2">
+                                        <i class="fa fa-id-badge"/>
+                                    </div>
+                                    <div>
+                                        <h3 class="section-title mb-0">Employee Directory</h3>
+                                        <span class="text-muted small">Search and select employees to view profile</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-info btn-sm" t-on-click="openEmployees">
+                                    <i class="fa fa-users mr-1"/> Directory
+                                </button>
+                            </div>
+
+                            <!-- Search Input -->
+                            <div class="px-3 pt-2 pb-2">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-right-0"><i class="fa fa-search text-muted"/></span>
+                                    </div>
+                                    <input type="text" class="form-control border-left-0" placeholder="Search employees by name, department, designation..." t-on-input="onEmployeeSearchInput"/>
+                                </div>
+                            </div>
+
+                            <div class="section-content">
+                                <t t-if="filteredEmployees.length === 0">
+                                    <div class="empty-state py-4 text-center">
+                                        <i class="fa fa-user-times text-muted fa-3x mb-2"/>
+                                        <p class="text-muted mb-0">No matching employees found.</p>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                                        <table class="table table-hover align-middle custom-table mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Employee</th>
+                                                    <th>Designation</th>
+                                                    <th>Role</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
+                                                    <tr class="clickable-row" t-on-click="() => this.openEmployeeForm(emp.id)">
+                                                        <td>
+                                                            <span class="font-weight-bold text-dark"><t t-esc="emp.name"/></span>
+                                                            <span class="d-block text-muted small"><t t-esc="emp.work_email"/></span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="text-dark small"><t t-esc="emp.designation"/></span>
+                                                            <span class="d-block text-muted small"><t t-esc="emp.department"/></span>
+                                                        </td>
+                                                        <td>
+                                                            <span t-if="emp.dayflow_role === 'Admin / HR'" class="badge badge-dark">Admin / HR</span>
+                                                            <span t-else="" class="badge badge-secondary">Employee</span>
+                                                        </td>
+                                                        <td>
+                                                            <span t-if="emp.status === 'Present'" class="badge badge-success">Present</span>
+                                                            <span t-elif="emp.status === 'On Leave'" class="badge badge-warning">On Leave</span>
+                                                            <span t-else="" class="badge badge-light">Not In</span>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Payroll & Salary Structures -->
+                <div class="section-card shadow-sm mb-4">
+                    <div class="section-header">
+                        <div class="d-flex align-items-center">
+                            <div class="section-icon text-primary mr-2">
+                                <i class="fa fa-money"/>
+                            </div>
+                            <div>
+                                <h3 class="section-title mb-0">Payroll &amp; Salary Structure Management</h3>
+                                <span class="text-muted small">Organization salary breakdown, allowances, deductions, and net payouts</span>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-primary btn-sm mr-2" t-on-click="createPayroll">
+                                <i class="fa fa-plus mr-1"/> Update / Add Salary
+                            </button>
+                            <button class="btn btn-primary btn-sm" t-on-click="openPayroll">
+                                <i class="fa fa-sliders mr-1"/> Manage All Payroll
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="section-content">
+                        <t t-if="state.payroll.length === 0">
+                            <div class="empty-state py-4 text-center">
+                                <i class="fa fa-credit-card text-muted fa-3x mb-2"/>
+                                <p class="text-muted mb-0 font-weight-medium">No payroll records configured yet.</p>
+                                <span class="text-muted small">Click "Update / Add Salary" to set up employee salary structures.</span>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle custom-table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Ref</th>
+                                            <th>Employee</th>
+                                            <th>Structure</th>
+                                            <th>Period</th>
+                                            <th class="text-right">Base Salary</th>
+                                            <th class="text-right">Allowances</th>
+                                            <th class="text-right">Deductions</th>
+                                            <th class="text-right">Net Salary</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="state.payroll" t-as="pay" t-key="pay.id">
+                                            <tr class="clickable-row" t-on-click="() => this.openPayrollForm(pay.id)">
+                                                <td><span class="font-weight-bold text-primary"><t t-esc="pay.name"/></span></td>
+                                                <td>
+                                                    <span class="font-weight-medium text-dark"><t t-esc="pay.employee_name"/></span>
+                                                    <span class="d-block text-muted small"><t t-esc="pay.department"/></span>
+                                                </td>
+                                                <td><span class="text-muted small"><t t-esc="pay.salary_structure"/></span></td>
+                                                <td><span class="badge badge-light"><t t-esc="pay.pay_period"/></span></td>
+                                                <td class="text-right font-weight-medium"><t t-esc="pay.base_salary"/></td>
+                                                <td class="text-right text-success">+ <t t-esc="pay.allowances"/></td>
+                                                <td class="text-right text-danger">- <t t-esc="pay.deductions"/></td>
+                                                <td class="text-right font-weight-bold text-dark"><t t-esc="pay.net_salary"/></td>
+                                                <td class="text-center">
+                                                    <span t-if="pay.payroll_status === 'draft'" class="badge badge-info">Draft</span>
+                                                    <span t-elif="pay.payroll_status === 'approved'" class="badge badge-warning">Approved</span>
+                                                    <span t-elif="pay.payroll_status === 'paid'" class="badge badge-success">Paid</span>
+                                                    <span t-else="" class="badge badge-secondary"><t t-esc="pay.payroll_status"/></span>
+                                                </td>
+                                                <td class="text-right">
+                                                    <button class="btn btn-outline-primary btn-xs btn-action" title="Edit Salary Structure" t-on-click="() => this.openPayrollForm(pay.id)">
+                                                        <i class="fa fa-pencil mr-1"/> Edit Salary
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -10,12 +10,13 @@
                 <field name="employee_id"/>
                 <field name="document_type" widget="badge"/>
                 <field name="file_name"/>
+                <field name="file_size"/>
                 <field name="upload_date"/>
                 <field name="expiry_date"/>
                 <field name="document_status" widget="badge"
                        decoration-success="document_status == 'verified'"
                        decoration-warning="document_status == 'draft'"
-                       decoration-danger="document_status == 'expired'"/>
+                       decoration-danger="document_status in ('rejected', 'expired')"/>
             </tree>
         </field>
     </record>
@@ -27,8 +28,9 @@
         <field name="arch" type="xml">
             <form string="Employee Document">
                 <header>
-                    <button name="action_verify_document" string="Verify Document" type="object" class="oe_highlight" groups="dayflow.group_dayflow_admin" attrs="{'invisible': [('document_status', '=', 'verified')]}"/>
-                    <field name="document_status" widget="statusbar" statusbar_visible="draft,verified,expired"/>
+                    <button name="action_verify_document" string="Approve / Verify" type="object" class="btn-success" groups="dayflow.group_dayflow_admin" attrs="{'invisible': [('document_status', '=', 'verified')]}"/>
+                    <button name="action_reject_document" string="Reject Document" type="object" class="btn-danger" groups="dayflow.group_dayflow_admin" attrs="{'invisible': [('document_status', '=', 'rejected')]}"/>
+                    <field name="document_status" widget="statusbar" statusbar_visible="draft,verified,rejected,expired"/>
                 </header>
                 <sheet>
                     <group>
@@ -41,13 +43,15 @@
                         <group string="Validity &amp; Attachment">
                             <field name="document_file" filename="file_name"/>
                             <field name="file_name"/>
+                            <field name="file_size"/>
                             <field name="issue_date"/>
                             <field name="expiry_date"/>
                             <field name="verified_by_id" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Verification Notes &amp; Description">
-                        <field name="notes" placeholder="Enter document verification remarks or notes..."/>
+                    <group string="Notes &amp; HR Review">
+                        <field name="notes" placeholder="Employee description or notes..."/>
+                        <field name="admin_comments" placeholder="HR / Admin decision notes or review comments..."/>
                     </group>
                 </sheet>
             </form>
@@ -66,6 +70,7 @@
                 <separator/>
                 <filter string="Verified Documents" name="status_verified" domain="[('document_status', '=', 'verified')]"/>
                 <filter string="Pending Verification" name="status_draft" domain="[('document_status', '=', 'draft')]"/>
+                <filter string="Rejected" name="status_rejected" domain="[('document_status', '=', 'rejected')]"/>
                 <filter string="Expired" name="status_expired" domain="[('document_status', '=', 'expired')]"/>
                 <separator/>
                 <filter string="ID Proof" name="type_id_proof" domain="[('document_type', '=', 'id_proof')]"/>
