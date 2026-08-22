@@ -27,6 +27,47 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Private Information" name="dayflow_private_info">
+                            <group>
+                                <group string="Personal Identification">
+                                    <field name="pan_no"/>
+                                    <field name="aadhar_no"/>
+                                    <field name="passport_no"/>
+                                    <field name="personal_email"/>
+                                    <field name="personal_phone"/>
+                                </group>
+                                <group string="Banking &amp; Payment Details">
+                                    <field name="bank_name"/>
+                                    <field name="bank_account_no"/>
+                                    <field name="ifsc_code"/>
+                                </group>
+                                <group string="Emergency Contact">
+                                    <field name="emergency_contact_name"/>
+                                    <field name="emergency_contact_relation"/>
+                                    <field name="emergency_contact_phone"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Salary &amp; Compensation" name="dayflow_salary_info" groups="dayflow.group_dayflow_admin">
+                            <group>
+                                <group string="Base Compensation">
+                                    <field name="monthly_wage"/>
+                                    <field name="salary_structure"/>
+                                    <field name="basic_salary"/>
+                                    <field name="net_take_home" decoration-success="True" style="font-weight: bold;"/>
+                                </group>
+                                <group string="Allowances Breakdown">
+                                    <field name="hra_allowance"/>
+                                    <field name="standard_allowance"/>
+                                    <field name="performance_bonus"/>
+                                    <field name="lta_allowance"/>
+                                </group>
+                                <group string="Deductions Breakdown">
+                                    <field name="pf_deduction"/>
+                                    <field name="pt_deduction"/>
+                                </group>
+                            </group>
+                        </page>
                         <page string="Verification Documents" name="dayflow_documents">
                             <field name="document_ids">
                                 <tree editable="bottom">
@@ -37,7 +78,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Payroll Records" name="dayflow_payroll">
+                        <page string="Payroll Records" name="dayflow_payroll" groups="dayflow.group_dayflow_admin">
                             <field name="payroll_ids">
                                 <tree>
                                     <field name="name"/>
