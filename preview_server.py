@@ -613,35 +613,133 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
+
+        /* ─── Auth Wall ─────────────────────────── */
+        #auth-wall {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #auth-wall.hidden { display: none; }
+        .auth-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-line);
+            border-radius: 14px;
+            padding: 2.25rem 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            margin-bottom: 1.75rem;
+            justify-content: center;
+        }
+        .auth-logo .brand-badge { font-size: 1rem; padding: 0.35rem 0.7rem; }
+        .auth-logo span { font-size: 1.25rem; font-weight: 700; color: #fff; }
+        .auth-title { text-align: center; font-size: 1.05rem; font-weight: 600; margin-bottom: 0.35rem; }
+        .auth-sub { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        .auth-hint {
+            margin-top: 1.25rem;
+            background: rgba(109,40,217,0.12);
+            border: 1px solid rgba(109,40,217,0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        .auth-hint code { color: #a78bfa; font-size: 0.82rem; }
+        .auth-error {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #f87171;
+            border-radius: 6px;
+            padding: 0.55rem 0.9rem;
+            font-size: 0.82rem;
+            margin-bottom: 0.9rem;
+            display: none;
+        }
+        .nav-signout-btn {
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.35);
+            color: #f87171;
+            padding: 0.28rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .nav-signout-btn:hover { background: rgba(239,68,68,0.28); }
+        .nav-user-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .nav-user-info strong { color: var(--text-main); }
     </style>
 </head>
 <body>
+
+    <!-- ─── AUTH WALL ──────────────────────────────────────── -->
+    <div id="auth-wall">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <span class="brand-badge">DF</span>
+                <span>Dayflow HRMS</span>
+            </div>
+            <div class="auth-title">Welcome Back</div>
+            <div class="auth-sub">Sign in to access the HR Management System</div>
+            <div class="auth-error" id="auth-error-msg">Invalid credentials. Please try again.</div>
+            <form onsubmit="handleLogin(event)">
+                <div class="field" style="margin-bottom:0.9rem;">
+                    <label>Login ID</label>
+                    <input type="text" id="auth-login-id" class="input" placeholder="e.g. admin or OIJODO20240001" autocomplete="username" required>
+                </div>
+                <div class="field" style="margin-bottom:1.25rem;">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" class="input" placeholder="Enter password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Sign In →</button>
+            </form>
+            <div class="auth-hint">
+                <strong style="color:#a78bfa;">Demo Credentials:</strong><br>
+                Admin &nbsp;&nbsp; — &nbsp; Login: <code>admin</code> &nbsp; Password: <code>admin123</code><br>
+                Employee — &nbsp; Login: <code>employee</code> &nbsp; Password: <code>emp123</code><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Login: <code>OIROTA20250003</code> &nbsp; Password: <code>emp123</code>
+            </div>
+        </div>
+    </div>
 
     <!-- Top Navbar -->
     <nav class="navbar">
         <a href="#" class="brand">
             <span class="brand-badge">DF</span> Dayflow HRMS
         </a>
-        <ul class="nav-links">
+        <ul class="nav-links" id="nav-links-list">
             <li class="nav-tab active" id="tab-btn-dashboard" onclick="openTab('dashboard')">Dashboard</li>
             <li class="nav-tab" id="tab-btn-attendance" onclick="openTab('attendance')">Attendance</li>
             <li class="nav-tab" id="tab-btn-leave" onclick="openTab('leave')">Time Off</li>
-            <li class="nav-tab" id="tab-btn-employees" onclick="openTab('employees')">Employees</li>
+            <li class="nav-tab nav-admin-only" id="tab-btn-employees" onclick="openTab('employees')">Employees</li>
             <li class="nav-tab" id="tab-btn-documents" onclick="openTab('documents')">Documents</li>
-            <li class="nav-tab" id="tab-btn-payroll" onclick="openTab('payroll')">Payroll</li>
-            <li class="nav-tab" id="tab-btn-profile" onclick="openTab('profile')">Admin Profile</li>
+            <li class="nav-tab nav-admin-only" id="tab-btn-payroll" onclick="openTab('payroll')">Payroll</li>
+            <li class="nav-tab" id="tab-btn-profile" onclick="openTab('profile')">My Profile</li>
         </ul>
         <div class="nav-right">
-            <div class="user-pill">
-                <span>Role:</span>
-                <select id="user-role-select" onchange="onRoleChange(this.value)">
-                    <option value="admin">HR Manager (Admin)</option>
-                    <option value="employee">Employee (John Doe)</option>
-                </select>
+            <div class="nav-user-info" id="nav-user-info">
+                <div class="avatar" style="width:30px;height:30px;font-size:0.78rem;" id="nav-avatar">JS</div>
+                <strong id="nav-user-name">Jane Smith</strong>
+                <span id="nav-user-role-badge" class="badge badge-purple" style="font-size:0.7rem;">Admin</span>
             </div>
-            <div style="cursor: pointer;" onclick="openTab('profile')" title="View Admin Profile">
-                <div class="avatar" style="width: 34px; height: 34px; font-size: 0.85rem;" id="nav-avatar">JS</div>
-            </div>
+            <button class="nav-signout-btn" onclick="handleSignOut()">Sign Out</button>
         </div>
     </nav>
 
@@ -770,6 +868,90 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
         </div>
 
+        <!-- EMPLOYEE DASHBOARD PANEL -->
+        <div id="panel-emp-dashboard" class="tab-panel">
+            <div class="header-row">
+                <div>
+                    <h1 class="header-title" id="emp-dash-greeting">Welcome, John Doe</h1>
+                    <p class="header-sub" id="emp-dash-sub">Your personal HR summary for today</p>
+                </div>
+                <button class="btn btn-secondary" onclick="openTab('attendance')">📋 View Full Attendance</button>
+            </div>
+
+            <!-- Employee KPI Cards -->
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fill,minmax(200px,1fr));">
+                <div class="kpi-card kpi-green">
+                    <div class="kpi-icon-box">⏱</div>
+                    <div>
+                        <div class="kpi-label">Today's Status</div>
+                        <div class="kpi-val" id="emp-dash-status">Not Checked In</div>
+                        <div class="kpi-sub" id="emp-dash-checkin-time" style="color:#34d399;">--:--</div>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-blue">
+                    <div class="kpi-icon-box">📅</div>
+                    <div>
+                        <div class="kpi-label">Paid Leave Left</div>
+                        <div class="kpi-val" id="emp-dash-paid-bal">24</div>
+                        <div class="kpi-sub" style="color:#60a5fa;">days remaining</div>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-amber">
+                    <div class="kpi-icon-box">🏥</div>
+                    <div>
+                        <div class="kpi-label">Sick Leave Left</div>
+                        <div class="kpi-val" id="emp-dash-sick-bal">7</div>
+                        <div class="kpi-sub" style="color:#fbbf24;">days remaining</div>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-red">
+                    <div class="kpi-icon-box">⏳</div>
+                    <div>
+                        <div class="kpi-label">Pending Requests</div>
+                        <div class="kpi-val" id="emp-dash-pending">0</div>
+                        <div class="kpi-sub" style="color:#f87171;">awaiting HR review</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3 style="font-size:1rem;margin-bottom:1rem;">⚡ Quick Actions</h3>
+                <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="openTab('attendance')">🕐 Check In / Check Out</button>
+                    <button class="btn btn-secondary" onclick="openTab('leave')">📅 Apply for Leave</button>
+                    <button class="btn btn-secondary" onclick="openTab('documents')">📎 Upload Document</button>
+                    <button class="btn btn-secondary" onclick="openTab('profile')">👤 My Profile</button>
+                </div>
+            </div>
+
+            <!-- Recent Leave Requests -->
+            <div class="card">
+                <h3 style="font-size:1rem;margin-bottom:1rem;">📋 My Recent Leave Requests</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Type</th><th>Start</th><th>End</th><th>Days</th><th>Reason</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="emp-dash-leave-tbl"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Attendance -->
+            <div class="card">
+                <h3 style="font-size:1rem;margin-bottom:1rem;">📆 Recent Attendance (Last 5 Days)</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Date</th><th>Check In</th><th>Check Out</th><th>Status</th><th>Worked Hours</th></tr>
+                        </thead>
+                        <tbody id="emp-dash-att-tbl"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- ADMIN PROFILE TAB (Excalidraw Design) -->
         <div id="panel-profile" class="tab-panel">
             <!-- Profile Hero Header -->
@@ -792,8 +974,8 @@ HTML_CONTENT = """<!DOCTYPE html>
                     </div>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:0.5rem; align-items:flex-end;">
-                    <button class="btn btn-primary" onclick="openEditPrivateModal()">✎ Edit Private Info</button>
-                    <button class="btn btn-secondary" onclick="openSalaryModal(2)">💰 Update Salary Structure</button>
+                    <button class="btn btn-primary" onclick="openEditPrivateModal()">✎ Edit Personal Info</button>
+                    <button class="btn btn-secondary prof-admin-edit-btn" onclick="openSalaryModal(null)">💰 Update Salary Structure</button>
                 </div>
             </div>
 
@@ -983,35 +1165,35 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- Section 3: Work & Privileges -->
             <div id="psec-work" class="profile-section">
                 <div class="card">
-                    <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Organizational Role & Security</h3>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Organizational Role &amp; Security</h3>
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="lbl">Job Title</div>
-                            <div class="val">Head of Human Resources</div>
+                            <div class="val" id="prof-work-job">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Department</div>
-                            <div class="val">Human Resources & Talent</div>
+                            <div class="val" id="prof-work-dept">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Reports To</div>
-                            <div class="val">Board of Directors / CEO</div>
+                            <div class="val" id="prof-work-manager">--</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Work Location</div>
-                            <div class="val">Bangalore Headquarters (HQ)</div>
+                            <div class="val" id="prof-work-location">Bangalore Headquarters (HQ)</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Working Schedule</div>
-                            <div class="val">40 Hours / Week (Mon-Fri)</div>
+                            <div class="val" id="prof-work-schedule">40 Hours / Week (Mon-Fri)</div>
                         </div>
                         <div class="info-item">
                             <div class="lbl">Security Group</div>
-                            <div class="val"><span class="badge badge-purple">dayflow.group_dayflow_admin</span></div>
+                            <div class="val"><span class="badge badge-purple" id="prof-work-sec-group">dayflow.group_dayflow_user</span></div>
                         </div>
                     </div>
-                    <div style="background-color: var(--bg-card); border: 1px solid var(--border-line); padding: 1rem; border-radius: 8px; font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
-                        🛡️ <strong>Admin Privileges:</strong> Full authorization to approve/reject time off requests, verify compliance documents, adjust employee salary structures, provision user accounts, and review executive metrics.
+                    <div id="prof-work-privileges-note" style="background-color: var(--bg-card); border: 1px solid var(--border-line); padding: 1rem; border-radius: 8px; font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
+                        👤 <strong>Employee Access:</strong> Access to check-in/out attendance tracking, time-off leave applications, personal compensation records, and verified compliance document uploads.
                     </div>
                 </div>
             </div>
@@ -1019,7 +1201,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- Section 4: Verified Documents -->
             <div id="psec-docs" class="profile-section">
                 <div class="card">
-                    <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Attached Compliance & Verification Documents</h3>
+                    <h3 style="font-size: 1.05rem; margin-bottom: 1rem; color: var(--accent-purple-hover);">Attached Compliance &amp; Verification Documents</h3>
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -1031,28 +1213,8 @@ HTML_CONTENT = """<!DOCTYPE html>
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Employment Contract 2026</strong></td>
-                                    <td><span class="badge badge-purple">Contract</span></td>
-                                    <td><code>jane_contract_2026.pdf</code></td>
-                                    <td>2026-08-01</td>
-                                    <td><span class="badge badge-green">VERIFIED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Master Degree in HR Management</strong></td>
-                                    <td><span class="badge badge-purple">Certificate</span></td>
-                                    <td><code>jane_degree_mba.pdf</code></td>
-                                    <td>2023-01-10</td>
-                                    <td><span class="badge badge-green">VERIFIED</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Aadhaar Card Copy</strong></td>
-                                    <td><span class="badge badge-purple">ID Proof</span></td>
-                                    <td><code>jane_aadhaar.pdf</code></td>
-                                    <td>2023-01-10</td>
-                                    <td><span class="badge badge-green">VERIFIED</span></td>
-                                </tr>
+                            <tbody id="prof-tbl-docs">
+                                <tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1rem;">No verified compliance documents on file.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1193,38 +1355,99 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
 
             <div class="card" id="form-emp-card" style="display: none;">
-                <h3 style="font-size: 1.05rem; margin-bottom: 1rem;">Create Employee Profile</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.05rem;">Create Employee Profile &amp; Login Account</h3>
+                    <button type="button" class="btn btn-secondary" style="padding:0.2rem 0.6rem;" onclick="toggleEmpForm()">✕</button>
+                </div>
+                <div id="emp-create-error" style="display:none; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#f87171; padding:0.6rem 0.9rem; border-radius:6px; font-size:0.85rem; margin-bottom:1rem;"></div>
                 <form onsubmit="handleAddEmp(event)">
+                    <!-- Personal Info -->
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-bottom:0.5rem;">1. Personal &amp; Contact Details</div>
                     <div class="form-row">
                         <div class="field">
-                            <label>Full Name</label>
-                            <input type="text" id="emp-name" class="input" placeholder="Alice Johnson" required>
+                            <label>Full Name *</label>
+                            <input type="text" id="emp-name" class="input" placeholder="e.g. Rahul Sharma" required>
                         </div>
                         <div class="field">
-                            <label>Work Email</label>
-                            <input type="email" id="emp-email" class="input" placeholder="alice@company.com" required>
+                            <label>Employee ID / Code</label>
+                            <input type="text" id="emp-code" class="input" placeholder="e.g. EMP-TEST-001">
                         </div>
                         <div class="field">
-                            <label>Job Title</label>
-                            <input type="text" id="emp-job" class="input" placeholder="Software Engineer" required>
+                            <label>Work Email *</label>
+                            <input type="email" id="emp-email" class="input" placeholder="rahul@company.com" required>
                         </div>
                         <div class="field">
-                            <label>Department</label>
-                            <input type="text" id="emp-dept" class="input" placeholder="Engineering" required>
+                            <label>Phone Number</label>
+                            <input type="text" id="emp-phone" class="input" placeholder="+91 98765 00000">
                         </div>
                         <div class="field">
-                            <label>Role</label>
+                            <label>Date of Birth</label>
+                            <input type="date" id="emp-dob" class="input" value="1996-05-15">
+                        </div>
+                        <div class="field">
+                            <label>City / Location</label>
+                            <input type="text" id="emp-city" class="input" placeholder="Bangalore, Karnataka">
+                        </div>
+                    </div>
+
+                    <!-- Work Info -->
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">2. Work &amp; Role Details</div>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>Job Title *</label>
+                            <input type="text" id="emp-job" class="input" placeholder="e.g. Software Engineer" required>
+                        </div>
+                        <div class="field">
+                            <label>Department *</label>
+                            <input type="text" id="emp-dept" class="input" placeholder="e.g. Engineering" required>
+                        </div>
+                        <div class="field">
+                            <label>Role *</label>
                             <select id="emp-role" class="input" required>
                                 <option value="Employee">Employee</option>
                                 <option value="Admin / HR">Admin / HR</option>
                             </select>
                         </div>
                         <div class="field">
-                            <label>Joining Date</label>
+                            <label>Joining Date *</label>
                             <input type="date" id="emp-joining" class="input" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-success">Save Profile</button>
+
+                    <!-- Login Credentials -->
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">3. Login Credentials</div>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>Login ID / Username *</label>
+                            <input type="text" id="emp-login-id" class="input" placeholder="e.g. rahul123 or testemployee" required autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <label>Password *</label>
+                            <input type="password" id="emp-password" class="input" placeholder="Enter password" required autocomplete="new-password">
+                        </div>
+                        <div class="field">
+                            <label>Confirm Password *</label>
+                            <input type="password" id="emp-confirm-password" class="input" placeholder="Confirm password" required autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <!-- Compensation -->
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--accent-purple-hover); margin-top:1rem; margin-bottom:0.5rem;">4. Compensation Structure</div>
+                    <div class="form-row">
+                        <div class="field">
+                            <label>Monthly Salary / Wage (₹) *</label>
+                            <input type="number" id="emp-wage" class="input" value="50000" min="5000" step="1000" required>
+                        </div>
+                        <div class="field">
+                            <label>Salary Structure</label>
+                            <input type="text" id="emp-struct" class="input" value="Standard Base" placeholder="e.g. Senior Technical Base">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:1.25rem; display:flex; gap:0.75rem;">
+                        <button type="submit" class="btn btn-success">✓ Create Employee &amp; Account</button>
+                        <button type="button" class="btn btn-secondary" onclick="toggleEmpForm()">Cancel</button>
+                    </div>
                 </form>
             </div>
 
@@ -1479,58 +1702,62 @@ HTML_CONTENT = """<!DOCTYPE html>
 
     <script>
         const DEFAULT_ATTENDANCE = [
-            { id: 1, date: '2026-08-21', employee: 'John Doe', checkIn: '09:00 AM', checkOut: '05:30 PM', status: 'present', workedHours: 8.5, effectiveHours: 8.5, extraHours: 0.5 },
-            { id: 2, date: '2026-08-20', employee: 'John Doe', checkIn: '08:50 AM', checkOut: '06:10 PM', status: 'present', workedHours: 9.3, effectiveHours: 9.3, extraHours: 1.3 },
-            { id: 3, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0 },
-            { id: 4, date: '2026-08-22', employee: 'Jane Smith', checkIn: '09:05 AM', checkOut: '--', status: 'present', workedHours: 2.5, effectiveHours: 2.5, extraHours: 0.0 },
-            { id: 5, date: '2026-08-22', employee: 'Robert Taylor', checkIn: '08:45 AM', checkOut: '--', status: 'present', workedHours: 2.8, effectiveHours: 2.8, extraHours: 0.0 }
+            { id: 1, employeeId: 1, date: '2026-08-21', employee: 'John Doe', checkIn: '09:00 AM', checkOut: '05:30 PM', checkInTimestamp: 1787302800000, checkOutTimestamp: 1787333400000, status: 'present', workedHours: 8.5, effectiveHours: 8.5, extraHours: 0.5, isActive: false },
+            { id: 2, employeeId: 1, date: '2026-08-20', employee: 'John Doe', checkIn: '08:50 AM', checkOut: '06:10 PM', checkInTimestamp: 1787215800000, checkOutTimestamp: 1787249400000, status: 'present', workedHours: 9.3, effectiveHours: 9.3, extraHours: 1.3, isActive: false },
+            { id: 3, employeeId: 1, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', checkInTimestamp: 1787130900000, checkOutTimestamp: 1787144400000, status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0, isActive: false },
+            { id: 4, employeeId: 2, date: '2026-08-22', employee: 'Jane Smith', checkIn: '09:05 AM', checkOut: '--', checkInTimestamp: 1787389500000, checkOutTimestamp: null, status: 'present', workedHours: 2.5, effectiveHours: 2.5, extraHours: 0.0, isActive: false },
+            { id: 5, employeeId: 3, date: '2026-08-22', employee: 'Robert Taylor', checkIn: '08:45 AM', checkOut: '--', checkInTimestamp: 1787388300000, checkOutTimestamp: null, status: 'present', workedHours: 2.8, effectiveHours: 2.8, extraHours: 0.0, isActive: false }
         ];
 
         const DEFAULT_LEAVE = [
-            { id: 101, employee: 'John Doe', type: 'sick', startDate: '2026-08-25', endDate: '2026-08-26', days: 2, remarks: 'Fever and rest recommended', status: 'pending', adminComments: '' },
-            { id: 102, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', status: 'approved', adminComments: 'Approved by HR' },
-            { id: 103, employee: 'Robert Taylor', type: 'paid', startDate: '2026-08-23', endDate: '2026-08-24', days: 2, remarks: 'Attending developer conference', status: 'pending', adminComments: '' }
+            { id: 101, employeeId: 1, employee: 'John Doe', type: 'sick', startDate: '2026-08-25', endDate: '2026-08-26', days: 2, remarks: 'Fever and rest recommended', status: 'pending', adminComments: '' },
+            { id: 102, employeeId: 2, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', status: 'approved', adminComments: 'Approved by HR' },
+            { id: 103, employeeId: 3, employee: 'Robert Taylor', type: 'paid', startDate: '2026-08-23', endDate: '2026-08-24', days: 2, remarks: 'Attending developer conference', status: 'pending', adminComments: '' }
         ];
 
         const DEFAULT_EMPLOYEES = [
-            { id: 1, name: 'John Doe', email: 'john.doe@company.com', job: 'Senior Software Engineer', dept: 'Engineering', role: 'Employee', joining: '2024-03-15', loginId: 'OIJODO20240001', provisioned: true },
-            { id: 2, name: 'Jane Smith', email: 'jane.smith@dayflow.org', job: 'Head of Human Resources', dept: 'Human Resources', role: 'Admin / HR', joining: '2023-01-10', loginId: 'OIJASM20230002', provisioned: true },
-            { id: 3, name: 'Robert Taylor', email: 'robert.t@company.com', job: 'Product Manager', dept: 'Product', role: 'Employee', joining: '2025-06-01', loginId: 'OIROTA20250003', provisioned: false }
-        ];
-
-        const DEFAULT_DOCUMENTS = [
-            { id: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', size: '1.2 MB', date: '2026-08-10', status: 'verified', adminComments: 'Verified by HR', fileData: '' },
-            { id: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', size: '450 KB', date: '2026-08-01', status: 'verified', adminComments: 'Signed contract on file', fileData: '' }
-        ];
-
-        const DEFAULT_PAYROLL = [
-            { id: 1, ref: 'PAY/2026/001', employee: 'John Doe', structure: 'Senior Technical', period: 'August 2026', base: 65000, allow: 12000, deduct: 4500, status: 'approved' },
-            { id: 2, ref: 'PAY/2026/002', employee: 'Jane Smith', structure: 'HR Specialist Base', period: 'August 2026', base: 55000, allow: 8000, deduct: 3500, status: 'paid' },
-            { id: 3, ref: 'PAY/2026/003', employee: 'Robert Taylor', structure: 'Product Lead', period: 'August 2026', base: 58000, allow: 9000, deduct: 3800, status: 'draft' }
-        ];
-
-        let state = {
-            role: 'admin',
-            currentEmployee: 'Jane Smith',
-            isCheckedIn: false,
-            activeCheckInTime: null,
-            checkInTimestamp: null,
-            tickerInterval: null,
-            currentDocFilter: 'all',
-            attendances: JSON.parse(localStorage.getItem('df_attendances')) || DEFAULT_ATTENDANCE,
-            leaves: JSON.parse(localStorage.getItem('df_leaves')) || DEFAULT_LEAVE,
-            employees: JSON.parse(localStorage.getItem('df_employees')) || DEFAULT_EMPLOYEES,
-            documents: JSON.parse(localStorage.getItem('df_documents')) || DEFAULT_DOCUMENTS,
-            payrolls: JSON.parse(localStorage.getItem('df_payrolls')) || DEFAULT_PAYROLL,
-            adminProfile: {
+            {
+                id: 1,
+                name: 'John Doe',
+                email: 'john.doe@company.com',
+                job: 'Senior Software Engineer',
+                dept: 'Engineering',
+                role: 'Employee',
+                joining: '2024-03-15',
+                loginId: 'OIJODO20240001',
+                phone: '+91 98765 11111',
+                personalPhone: '+91 98765 11111',
+                dob: '1992-08-20',
+                gender: 'Male',
+                nationality: 'Indian',
+                marital: 'Single',
+                aadhar: '1234-5678-9012',
+                pan: 'ABCDE1234F',
+                passport: 'A1234567',
+                street: 'Flat 302, Green Glen Layout, Bellandur',
+                city: 'Bangalore, Karnataka',
+                pin: '560103',
+                country: 'India',
+                emgName: 'Mary Doe (Sister)',
+                emgPhone: '+91 98765 22222',
+                bankName: 'ICICI Bank (Salary Account)',
+                bankAcc: '001105001234',
+                bankIfsc: 'ICIC0000011',
+                monthlyWage: 65000,
+                struct: 'Senior Technical',
+                provisioned: true
+            },
+            {
+                id: 2,
                 name: 'Jane Smith',
-                role: 'Admin / HR',
-                title: 'Head of Human Resources & Administration',
-                dept: 'Human Resources',
-                loginId: 'OIJASM20230002',
                 email: 'jane.smith@dayflow.org',
-                phone: '+91 98765 43212',
+                job: 'Head of Human Resources',
+                dept: 'Human Resources',
+                role: 'Admin / HR',
                 joining: '2023-01-10',
+                loginId: 'OIJASM20230002',
+                phone: '+91 98765 43212',
+                personalPhone: '+91 98765 11223',
                 dob: '1990-06-15',
                 gender: 'Female',
                 nationality: 'Indian',
@@ -1538,7 +1765,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                 aadhar: '4589-2314-7890',
                 pan: 'ABCPJ4589K',
                 passport: 'Z9876543',
-                personalPhone: '+91 98765 11223',
                 street: 'No. 42, 8th Main, 4th Cross, Indiranagar',
                 city: 'Bangalore, Karnataka',
                 pin: '560038',
@@ -1549,8 +1775,308 @@ HTML_CONTENT = """<!DOCTYPE html>
                 bankAcc: '50100234567890',
                 bankIfsc: 'HDFC0001234',
                 monthlyWage: 55000,
-                struct: 'HR Specialist Base'
+                struct: 'HR Specialist Base',
+                provisioned: true
+            },
+            {
+                id: 3,
+                name: 'Robert Taylor',
+                email: 'robert.t@company.com',
+                job: 'Product Manager',
+                dept: 'Product',
+                role: 'Employee',
+                joining: '2025-06-01',
+                loginId: 'OIROTA20250003',
+                phone: '+91 98765 44444',
+                personalPhone: '+91 98765 44444',
+                dob: '1994-11-10',
+                gender: 'Male',
+                nationality: 'Indian',
+                marital: 'Single',
+                aadhar: '9876-5432-1098',
+                pan: 'XYZAB9876K',
+                passport: 'P9876543',
+                street: 'Villa 12, Palm Meadows, Whitefield',
+                city: 'Bangalore, Karnataka',
+                pin: '560066',
+                country: 'India',
+                emgName: 'Sarah Taylor (Mother)',
+                emgPhone: '+91 98765 66666',
+                bankName: 'Axis Bank (Salary Account)',
+                bankAcc: '912010045678901',
+                bankIfsc: 'UTIB0000123',
+                monthlyWage: 58000,
+                struct: 'Product Lead',
+                provisioned: false
             }
+        ];
+
+        const DEFAULT_DOCUMENTS = [
+            { id: 1, employeeId: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', size: '1.2 MB', date: '2026-08-10', status: 'verified', adminComments: 'Verified by HR', fileData: '' },
+            { id: 2, employeeId: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', size: '450 KB', date: '2026-08-01', status: 'verified', adminComments: 'Signed contract on file', fileData: '' },
+            { id: 3, employeeId: 2, title: 'Master Degree in HR Management', employee: 'Jane Smith', type: 'certificate', filename: 'jane_degree_mba.pdf', size: '890 KB', date: '2023-01-10', status: 'verified', adminComments: 'Verified MBA degree', fileData: '' }
+        ];
+
+        const DEFAULT_PAYROLL = [
+            { id: 1, employeeId: 1, ref: 'PAY/2026/001', employee: 'John Doe', structure: 'Senior Technical', period: 'August 2026', base: 65000, allow: 12000, deduct: 4500, status: 'approved' },
+            { id: 2, employeeId: 2, ref: 'PAY/2026/002', employee: 'Jane Smith', structure: 'HR Specialist Base', period: 'August 2026', base: 55000, allow: 8000, deduct: 3500, status: 'paid' },
+            { id: 3, employeeId: 3, ref: 'PAY/2026/003', employee: 'Robert Taylor', structure: 'Product Lead', period: 'August 2026', base: 58000, allow: 9000, deduct: 3800, status: 'draft' }
+        ];
+
+
+        // ─── DEMO USERS DATABASE ──────────────────────────────────
+        // Each user maps loginId+password → employee record
+        const DEFAULT_USERS = [
+            {
+                userId: 'u1',
+                loginId: 'admin',
+                password: 'admin123',
+                role: 'admin',
+                employeeId: 2,
+                name: 'Jane Smith',
+                initials: 'JS'
+            },
+            {
+                userId: 'u2',
+                loginId: 'OIJASM20230002',
+                password: 'admin123',
+                role: 'admin',
+                employeeId: 2,
+                name: 'Jane Smith',
+                initials: 'JS'
+            },
+            {
+                userId: 'u3',
+                loginId: 'employee',
+                password: 'emp123',
+                role: 'employee',
+                employeeId: 1,
+                name: 'John Doe',
+                initials: 'JD'
+            },
+            {
+                userId: 'u4',
+                loginId: 'OIJODO20240001',
+                password: 'emp123',
+                role: 'employee',
+                employeeId: 1,
+                name: 'John Doe',
+                initials: 'JD'
+            },
+            {
+                userId: 'u5',
+                loginId: 'OIROTA20250003',
+                password: 'emp123',
+                role: 'employee',
+                employeeId: 3,
+                name: 'Robert Taylor',
+                initials: 'RT'
+            }
+        ];
+
+        // ─── AUTH HELPERS ─────────────────────────────────────────
+        const SESSION_KEY = 'df_session';
+
+        function getSession() {
+            try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
+            catch(e) { return null; }
+        }
+        function setSession(userRecord) {
+            localStorage.setItem(SESSION_KEY, JSON.stringify(userRecord));
+        }
+        function clearSession() {
+            localStorage.removeItem(SESSION_KEY);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const loginId = document.getElementById('auth-login-id').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errEl = document.getElementById('auth-error-msg');
+
+            const userList = (state && state.users && state.users.length) ? state.users : (JSON.parse(localStorage.getItem('df_users')) || DEFAULT_USERS);
+            const user = userList.find(u =>
+                u.loginId.toLowerCase() === loginId.toLowerCase() && u.password === password
+            );
+
+            if (!user) {
+                errEl.style.display = 'block';
+                return;
+            }
+            errEl.style.display = 'none';
+            setSession(user);
+            applySession(user);
+        }
+
+        function handleSignOut() {
+            clearSession();
+            // Reset transient state (but NOT data)
+            state.role = 'admin';
+            state.currentEmployee = 'Jane Smith';
+            state.isCheckedIn = false;
+            state.activeCheckInTime = null;
+            state.checkInTimestamp = null;
+            if (state.tickerInterval) { clearInterval(state.tickerInterval); state.tickerInterval = null; }
+            document.getElementById('auth-login-id').value = '';
+            document.getElementById('auth-password').value = '';
+            document.getElementById('auth-wall').classList.remove('hidden');
+        }
+
+        function applySession(user) {
+            // Find the employee record
+            const emp = state.employees.find(e => e.id === user.employeeId || (e.loginId && e.loginId.toLowerCase() === user.loginId.toLowerCase()) || e.name === user.name) || state.employees[0];
+
+            // Update in-memory state
+            state.role = user.role;
+            state.currentEmployee = emp ? emp.name : user.name;
+            state.currentUserId = user.userId;
+            state.currentEmployeeId = emp ? emp.id : user.employeeId;
+
+            // Restore active check-in for this employee
+            if (state.tickerInterval) { clearInterval(state.tickerInterval); state.tickerInterval = null; }
+            state.isCheckedIn = false;
+            state.activeCheckInTime = null;
+            state.checkInTimestamp = null;
+            const activeRec = state.attendances.find(a => a.isActive && a.employee === state.currentEmployee);
+            if (activeRec) {
+                state.isCheckedIn = true;
+                state.activeCheckInTime = activeRec.checkIn;
+                state.checkInTimestamp = activeRec.id;
+                state.tickerInterval = setInterval(updateLiveTicker, 1000);
+            }
+
+            // Update navbar
+            document.getElementById('nav-avatar').innerText = user.initials || (user.name ? user.name.split(' ').map(n=>n[0]).join('').toUpperCase() : 'U');
+            document.getElementById('nav-user-name').innerText = user.name;
+            const roleBadge = document.getElementById('nav-user-role-badge');
+            if (user.role === 'admin') {
+                roleBadge.innerText = 'Admin';
+                roleBadge.className = 'badge badge-purple';
+            } else {
+                roleBadge.innerText = 'Employee';
+                roleBadge.className = 'badge badge-green';
+            }
+
+            // Show/hide admin-only nav items
+            document.querySelectorAll('.nav-admin-only').forEach(el => {
+                el.style.display = (user.role === 'admin') ? '' : 'none';
+            });
+
+            // Show the app, hide auth wall
+            document.getElementById('auth-wall').classList.add('hidden');
+
+            // Render everything for this role
+            renderAll();
+
+            // Navigate to the correct dashboard
+            if (user.role === 'admin') {
+                openTab('dashboard');
+            } else {
+                openTab('emp-dashboard');
+            }
+        }
+
+        function guardAdminTab(tabId) {
+            const adminOnlyTabs = ['employees', 'payroll'];
+            if (adminOnlyTabs.includes(tabId) && state.role !== 'admin') {
+                alert('⛔ Access Denied — This section is for HR Administrators only.');
+                openTab('emp-dashboard');
+                return false;
+            }
+            return true;
+        }
+
+        const DEFAULT_ADMIN_PROFILE = {
+            name: 'Jane Smith',
+            role: 'Admin / HR',
+            title: 'Head of Human Resources & Administration',
+            dept: 'Human Resources',
+            loginId: 'OIJASM20230002',
+            email: 'jane.smith@dayflow.org',
+            phone: '+91 98765 43212',
+            joining: '2023-01-10',
+            dob: '1990-06-15',
+            gender: 'Female',
+            nationality: 'Indian',
+            marital: 'Married',
+            aadhar: '4589-2314-7890',
+            pan: 'ABCPJ4589K',
+            passport: 'Z9876543',
+            personalPhone: '+91 98765 11223',
+            street: 'No. 42, 8th Main, 4th Cross, Indiranagar',
+            city: 'Bangalore, Karnataka',
+            pin: '560038',
+            country: 'India',
+            emgName: 'Rajesh Smith (Spouse)',
+            emgPhone: '+91 98765 99887',
+            bankName: 'HDFC Bank (Salary Account)',
+            bankAcc: '50100234567890',
+            bankIfsc: 'HDFC0001234',
+            monthlyWage: 55000,
+            struct: 'HR Specialist Base'
+        };
+
+        function initPersistentLayer() {
+            // First run bootstrap: seed stores only if they don't already exist
+            if (!localStorage.getItem('df_users')) {
+                localStorage.setItem('df_users', JSON.stringify(DEFAULT_USERS));
+            }
+            if (!localStorage.getItem('df_employees')) {
+                localStorage.setItem('df_employees', JSON.stringify(DEFAULT_EMPLOYEES));
+            }
+            if (!localStorage.getItem('df_attendances')) {
+                localStorage.setItem('df_attendances', JSON.stringify(DEFAULT_ATTENDANCE));
+            }
+            if (!localStorage.getItem('df_leaves')) {
+                localStorage.setItem('df_leaves', JSON.stringify(DEFAULT_LEAVE));
+            }
+            if (!localStorage.getItem('df_documents')) {
+                localStorage.setItem('df_documents', JSON.stringify(DEFAULT_DOCUMENTS));
+            }
+            if (!localStorage.getItem('df_payrolls')) {
+                localStorage.setItem('df_payrolls', JSON.stringify(DEFAULT_PAYROLL));
+            }
+            if (!localStorage.getItem('df_admin_profile')) {
+                localStorage.setItem('df_admin_profile', JSON.stringify(DEFAULT_ADMIN_PROFILE));
+            }
+
+            // Ensure bootstrap admin account (admin / admin123) is always guaranteed
+            try {
+                let users = JSON.parse(localStorage.getItem('df_users')) || [];
+                if (!users.some(u => (u.loginId || '').toLowerCase() === 'admin')) {
+                    users.unshift({
+                        userId: 'u1',
+                        loginId: 'admin',
+                        password: 'admin123',
+                        role: 'admin',
+                        employeeId: 2,
+                        name: 'Jane Smith',
+                        initials: 'JS'
+                    });
+                    localStorage.setItem('df_users', JSON.stringify(users));
+                }
+            } catch(e) {}
+        }
+
+        initPersistentLayer();
+
+        let state = {
+            role: 'admin',
+            currentEmployee: 'Jane Smith',
+            currentUserId: 'u1',
+            currentEmployeeId: 2,
+            isCheckedIn: false,
+            activeCheckInTime: null,
+            checkInTimestamp: null,
+            tickerInterval: null,
+            currentDocFilter: 'all',
+            users: JSON.parse(localStorage.getItem('df_users')) || JSON.parse(JSON.stringify(DEFAULT_USERS)),
+            attendances: JSON.parse(localStorage.getItem('df_attendances')) || JSON.parse(JSON.stringify(DEFAULT_ATTENDANCE)),
+            leaves: JSON.parse(localStorage.getItem('df_leaves')) || JSON.parse(JSON.stringify(DEFAULT_LEAVE)),
+            employees: JSON.parse(localStorage.getItem('df_employees')) || JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES)),
+            documents: JSON.parse(localStorage.getItem('df_documents')) || JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS)),
+            payrolls: JSON.parse(localStorage.getItem('df_payrolls')) || JSON.parse(JSON.stringify(DEFAULT_PAYROLL)),
+            adminProfile: JSON.parse(localStorage.getItem('df_admin_profile')) || JSON.parse(JSON.stringify(DEFAULT_ADMIN_PROFILE))
         };
 
         function saveState() {
@@ -1560,18 +2086,39 @@ HTML_CONTENT = """<!DOCTYPE html>
             localStorage.setItem('df_documents', JSON.stringify(state.documents));
             localStorage.setItem('df_payrolls', JSON.stringify(state.payrolls));
             localStorage.setItem('df_admin_profile', JSON.stringify(state.adminProfile));
+            localStorage.setItem('df_users', JSON.stringify(state.users));
         }
 
         function resetData() {
-            localStorage.clear();
+            // Restore seed dataset into localStorage
+            localStorage.setItem('df_users', JSON.stringify(DEFAULT_USERS));
+            localStorage.setItem('df_employees', JSON.stringify(DEFAULT_EMPLOYEES));
+            localStorage.setItem('df_attendances', JSON.stringify(DEFAULT_ATTENDANCE));
+            localStorage.setItem('df_leaves', JSON.stringify(DEFAULT_LEAVE));
+            localStorage.setItem('df_documents', JSON.stringify(DEFAULT_DOCUMENTS));
+            localStorage.setItem('df_payrolls', JSON.stringify(DEFAULT_PAYROLL));
+            localStorage.setItem('df_admin_profile', JSON.stringify(DEFAULT_ADMIN_PROFILE));
+
+            state.users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+            state.employees = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
             state.attendances = JSON.parse(JSON.stringify(DEFAULT_ATTENDANCE));
             state.leaves = JSON.parse(JSON.stringify(DEFAULT_LEAVE));
-            state.employees = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
             state.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
             state.payrolls = JSON.parse(JSON.stringify(DEFAULT_PAYROLL));
+            state.adminProfile = JSON.parse(JSON.stringify(DEFAULT_ADMIN_PROFILE));
+
             state.isCheckedIn = false;
-            if (state.tickerInterval) clearInterval(state.tickerInterval);
-            renderAll();
+            state.activeCheckInTime = null;
+            state.checkInTimestamp = null;
+            if (state.tickerInterval) { clearInterval(state.tickerInterval); state.tickerInterval = null; }
+
+            // Re-apply the current session so role/nav stay correct
+            const session = getSession();
+            if (session) {
+                applySession(session);
+            } else {
+                renderAll();
+            }
         }
 
         function formatCurrency(val) {
@@ -1595,6 +2142,9 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function openTab(tabId) {
+            // Access control: enforce admin-only tabs
+            if (!guardAdminTab(tabId)) return;
+
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
 
@@ -1606,7 +2156,13 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (tabId === 'profile') {
                 renderAdminProfile();
             }
+            if (tabId === 'emp-dashboard') {
+                renderEmployeeDashboard();
+            }
         }
+
+        // onRoleChange is now replaced by login — kept as no-op for safety
+        function onRoleChange(role) { /* deprecated: use handleLogin */ }
 
         function openProfileSection(secId) {
             document.querySelectorAll('.profile-subtab').forEach(el => el.classList.remove('active'));
@@ -1616,18 +2172,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (btn) btn.classList.add('active');
             const sec = document.getElementById('psec-' + secId);
             if (sec) sec.classList.add('active');
-        }
-
-        function onRoleChange(role) {
-            state.role = role;
-            if (role === 'admin') {
-                state.currentEmployee = 'Jane Smith';
-                document.getElementById('nav-avatar').innerText = 'JS';
-            } else {
-                state.currentEmployee = 'John Doe';
-                document.getElementById('nav-avatar').innerText = 'JD';
-            }
-            renderAll();
         }
 
         /* Attendance actions */
@@ -1642,10 +2186,13 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             const newRec = {
                 id: Date.now(),
-                date: formatDate(now),
+                employeeId: state.currentEmployeeId,
                 employee: state.currentEmployee,
+                date: formatDate(now),
                 checkIn: state.activeCheckInTime,
                 checkOut: '--',
+                checkInTimestamp: state.checkInTimestamp,
+                checkOutTimestamp: null,
                 status: 'present',
                 workedHours: 0.0,
                 effectiveHours: 0.0,
@@ -1657,19 +2204,23 @@ HTML_CONTENT = """<!DOCTYPE html>
             saveState();
             renderAttendance();
             renderDashboard();
+            renderEmployeeDashboard();
         }
 
         function updateLiveTicker() {
             if (!state.isCheckedIn || !state.checkInTimestamp) return;
 
-            const diffSec = Math.floor((Date.now() - state.checkInTimestamp) / 1000);
+            const diffSec = Math.max(0, Math.floor((Date.now() - state.checkInTimestamp) / 1000));
             const hrs = Math.floor(diffSec / 3600);
             const mins = Math.floor((diffSec % 3600) / 60);
             const secs = diffSec % 60;
 
-            document.getElementById('txt-worked-hours').innerText = `${hrs}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+            const workedEl = document.getElementById('txt-worked-hours');
+            if (workedEl) {
+                workedEl.innerText = `${hrs}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+            }
 
-            const activeRec = state.attendances.find(a => a.isActive);
+            const activeRec = state.attendances.find(a => a.isActive && ((a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
             if (activeRec) {
                 const workedHrs = parseFloat((diffSec / 3600).toFixed(2));
                 activeRec.workedHours = workedHrs;
@@ -1682,24 +2233,29 @@ HTML_CONTENT = """<!DOCTYPE html>
         function handleCheckOut() {
             if (!state.isCheckedIn) return;
             const now = new Date();
-            if (state.tickerInterval) clearInterval(state.tickerInterval);
+            if (state.tickerInterval) { clearInterval(state.tickerInterval); state.tickerInterval = null; }
 
-            const activeRec = state.attendances.find(a => a.isActive);
+            const activeRec = state.attendances.find(a => a.isActive && ((a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
             if (activeRec) {
                 activeRec.checkOut = formatTime(now);
+                activeRec.checkOutTimestamp = now.getTime();
                 activeRec.isActive = false;
-                const diffSec = Math.floor((now.getTime() - state.checkInTimestamp) / 1000);
+                const startTs = activeRec.checkInTimestamp || state.checkInTimestamp || now.getTime();
+                const diffSec = Math.max(1, Math.floor((now.getTime() - startTs) / 1000));
                 const workedHrs = parseFloat((diffSec / 3600).toFixed(2));
-                activeRec.workedHours = workedHrs > 0 ? workedHrs : 0.1;
+                activeRec.workedHours = workedHrs > 0 ? workedHrs : 0.01;
                 activeRec.effectiveHours = activeRec.workedHours;
                 activeRec.extraHours = activeRec.workedHours > 8.0 ? parseFloat((activeRec.workedHours - 8.0).toFixed(2)) : 0.0;
                 activeRec.status = 'present';
             }
 
             state.isCheckedIn = false;
+            state.activeCheckInTime = null;
+            state.checkInTimestamp = null;
             saveState();
             renderAttendance();
             renderDashboard();
+            renderEmployeeDashboard();
         }
 
         /* Leave actions */
@@ -1710,10 +2266,11 @@ HTML_CONTENT = """<!DOCTYPE html>
             const end = document.getElementById('leave-end').value;
             const reason = document.getElementById('leave-reason').value;
 
-            const days = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
+            const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1);
 
             state.leaves.unshift({
                 id: Date.now(),
+                employeeId: state.currentEmployeeId,
                 employee: state.currentEmployee,
                 type: type,
                 startDate: start,
@@ -1727,7 +2284,9 @@ HTML_CONTENT = """<!DOCTYPE html>
             saveState();
             renderLeaves();
             renderDashboard();
+            renderEmployeeDashboard();
             e.target.reset();
+            alert('Leave request submitted successfully for HR review.');
         }
 
         function handleApproveLeave(id) {
@@ -1757,33 +2316,147 @@ HTML_CONTENT = """<!DOCTYPE html>
         /* Employee actions */
         function toggleEmpForm() {
             const card = document.getElementById('form-emp-card');
+            const errEl = document.getElementById('emp-create-error');
+            if (errEl) { errEl.style.display = 'none'; errEl.innerText = ''; }
             card.style.display = card.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function showCreateEmpError(msg) {
+            const errEl = document.getElementById('emp-create-error');
+            if (errEl) {
+                errEl.innerText = msg;
+                errEl.style.display = 'block';
+            } else {
+                alert(msg);
+            }
         }
 
         function handleAddEmp(e) {
             e.preventDefault();
+            const errEl = document.getElementById('emp-create-error');
+            if (errEl) { errEl.style.display = 'none'; errEl.innerText = ''; }
+
+            const name = (document.getElementById('emp-name')?.value || '').trim();
+            const email = (document.getElementById('emp-email')?.value || '').trim();
+            const phone = (document.getElementById('emp-phone')?.value || '').trim();
+            const empCode = (document.getElementById('emp-code')?.value || '').trim();
+            const dob = document.getElementById('emp-dob')?.value || '1996-05-15';
+            const city = (document.getElementById('emp-city')?.value || '').trim();
+            const job = (document.getElementById('emp-job')?.value || '').trim();
+            const dept = (document.getElementById('emp-dept')?.value || '').trim();
+            const role = document.getElementById('emp-role')?.value || 'Employee';
+            const joining = document.getElementById('emp-joining')?.value;
+            const loginId = (document.getElementById('emp-login-id')?.value || '').trim();
+            const password = document.getElementById('emp-password')?.value;
+            const confirmPassword = document.getElementById('emp-confirm-password')?.value;
+            const wage = Number(document.getElementById('emp-wage')?.value) || 50000;
+            const struct = (document.getElementById('emp-struct')?.value || '').trim() || 'Standard Base';
+
+            // Validation 1: Required fields
+            if (!name) {
+                showCreateEmpError('Validation Error: Full Name is required.');
+                return;
+            }
+            if (!email) {
+                showCreateEmpError('Validation Error: Work Email is required.');
+                return;
+            }
+            if (!job) {
+                showCreateEmpError('Validation Error: Job Title is required.');
+                return;
+            }
+            if (!dept) {
+                showCreateEmpError('Validation Error: Department is required.');
+                return;
+            }
+            if (!joining) {
+                showCreateEmpError('Validation Error: Joining Date is required.');
+                return;
+            }
+            if (!loginId) {
+                showCreateEmpError('Validation Error: Login ID / Username is required.');
+                return;
+            }
+            if (!password) {
+                showCreateEmpError('Validation Error: Password is required.');
+                return;
+            }
+
+            // Validation 2: Password matching
+            if (password !== confirmPassword) {
+                showCreateEmpError('Validation Error: Password and Confirm Password do not match.');
+                return;
+            }
+
+            // Validation 3: Duplicate Login ID
+            const loginLower = loginId.toLowerCase();
+            const userList = (state && state.users) ? state.users : DEFAULT_USERS;
+            if (userList.some(u => (u.loginId || '').toLowerCase() === loginLower) ||
+                state.employees.some(emp => (emp.loginId || '').toLowerCase() === loginLower)) {
+                showCreateEmpError(`Validation Error: Login ID "${loginId}" is already in use. Please choose another username.`);
+                return;
+            }
+
+            // Generate unique employee ID
+            const newId = state.employees.reduce((max, emp) => Math.max(max, Number(emp.id) || 0), 0) + 1;
+
             const newEmp = {
-                id: Date.now(),
-                name: document.getElementById('emp-name').value,
-                email: document.getElementById('emp-email').value,
-                job: document.getElementById('emp-job').value,
-                dept: document.getElementById('emp-dept').value,
-                role: document.getElementById('emp-role').value,
-                joining: document.getElementById('emp-joining').value,
-                loginId: '',
-                provisioned: false
+                id: newId,
+                code: empCode || `EMP${String(newId).padStart(3, '0')}`,
+                name: name,
+                email: email,
+                phone: phone || '+91 98765 00000',
+                personalPhone: phone || '+91 98765 00000',
+                job: job,
+                dept: dept,
+                role: role,
+                joining: joining,
+                dob: dob || '1995-01-01',
+                gender: 'Male',
+                nationality: 'Indian',
+                marital: 'Single',
+                aadhar: '--',
+                pan: '--',
+                passport: '--',
+                street: '--',
+                city: city || 'Bangalore, Karnataka',
+                pin: '--',
+                country: 'India',
+                emgName: '--',
+                emgPhone: '--',
+                bankName: 'HDFC Bank (Salary Account)',
+                bankAcc: '--',
+                bankIfsc: '--',
+                loginId: loginId,
+                monthlyWage: wage,
+                struct: struct,
+                provisioned: true
             };
+
+            const newUser = {
+                userId: `u_${newId}`,
+                loginId: loginId,
+                password: password,
+                role: role === 'Admin / HR' ? 'admin' : 'employee',
+                employeeId: newId,
+                name: name,
+                initials: name.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'
+            };
+
             state.employees.unshift(newEmp);
+            if (!state.users) state.users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+            state.users.push(newUser);
 
             state.payrolls.push({
                 id: Date.now(),
+                employeeId: newId,
                 ref: `PAY/2026/00${state.payrolls.length + 1}`,
                 employee: newEmp.name,
-                structure: 'Standard Base',
+                structure: newEmp.struct,
                 period: 'August 2026',
-                base: 45000,
-                allow: 6000,
-                deduct: 2500,
+                base: Math.round(wage * 0.8),
+                allow: Math.round(wage * 0.2),
+                deduct: Math.round(wage * 0.08),
                 status: 'draft'
             });
 
@@ -1791,6 +2464,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderAll();
             e.target.reset();
             toggleEmpForm();
+            alert(`✅ Employee "${name}" created successfully!\nLogin ID: ${loginId}\nRole: ${newUser.role.toUpperCase()}`);
         }
 
         function handleProvision(id) {
@@ -1799,6 +2473,18 @@ HTML_CONTENT = """<!DOCTYPE html>
                 const year = emp.joining ? emp.joining.split('-')[0] : '2026';
                 emp.provisioned = true;
                 emp.loginId = `DAYFLOW-${emp.name.replace(/[^A-Z]/gi, '').toUpperCase()}-${year}-000${Math.floor(Math.random() * 90 + 10)}`;
+                const userList = (state && state.users) ? state.users : DEFAULT_USERS;
+                if (!userList.some(u => u.loginId === emp.loginId)) {
+                    state.users.push({
+                        userId: `u_${emp.id}`,
+                        loginId: emp.loginId,
+                        password: 'emp123',
+                        role: emp.role === 'Admin / HR' ? 'admin' : 'employee',
+                        employeeId: emp.id,
+                        name: emp.name,
+                        initials: emp.name.split(' ').map(n=>n[0]).join('').toUpperCase() || 'U'
+                    });
+                }
                 saveState();
                 renderEmployees();
                 renderDashboard();
@@ -1823,10 +2509,15 @@ HTML_CONTENT = """<!DOCTYPE html>
             const reader = new FileReader();
 
             reader.onload = function(evt) {
+                const targetEmp = (state.role === 'employee') ? state.currentEmployee : (document.getElementById('doc-employee')?.value || state.currentEmployee);
+                const targetEmpRec = state.employees.find(emp => emp.name === targetEmp || (state.currentEmployeeId && emp.id === state.currentEmployeeId));
+                const targetEmpId = targetEmpRec ? targetEmpRec.id : state.currentEmployeeId;
+
                 state.documents.unshift({
                     id: Date.now(),
-                    title: document.getElementById('doc-title').value,
-                    employee: document.getElementById('doc-employee').value,
+                    employeeId: targetEmpId,
+                    title: document.getElementById('doc-title').value || file.name,
+                    employee: targetEmp,
                     type: document.getElementById('doc-type').value,
                     filename: file.name,
                     size: formatFileSize(file.size),
@@ -1838,7 +2529,9 @@ HTML_CONTENT = """<!DOCTYPE html>
 
                 saveState();
                 renderDocuments();
+                renderEmployeeDashboard();
                 e.target.reset();
+                alert('Document uploaded successfully.');
             };
 
             reader.readAsDataURL(file);
@@ -1990,19 +2683,26 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         /* Edit Private Info Modal Actions */
         function openEditPrivateModal() {
-            const p = state.adminProfile;
-            document.getElementById('m-dob').value = p.dob;
-            document.getElementById('m-gender').value = p.gender;
-            document.getElementById('m-marital').value = p.marital;
-            document.getElementById('m-phone').value = p.personalPhone;
-            document.getElementById('m-aadhar').value = p.aadhar;
-            document.getElementById('m-pan').value = p.pan;
-            document.getElementById('m-bank-name').value = p.bankName;
-            document.getElementById('m-bank-acc').value = p.bankAcc;
-            document.getElementById('m-bank-ifsc').value = p.bankIfsc;
-            document.getElementById('m-street').value = p.street;
-            document.getElementById('m-emg').value = p.emgName;
-            document.getElementById('m-emg-phone').value = p.emgPhone;
+            let p;
+            if (state.role === 'employee') {
+                p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee) || state.employees[0];
+            } else {
+                const empRec = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
+                p = Object.assign({}, state.adminProfile, empRec || {});
+            }
+
+            document.getElementById('m-dob').value = (p.dob && p.dob !== '--') ? p.dob : '';
+            document.getElementById('m-gender').value = (p.gender && p.gender !== '--') ? p.gender : 'Male';
+            document.getElementById('m-marital').value = (p.marital && p.marital !== '--') ? p.marital : 'Single';
+            document.getElementById('m-phone').value = (p.personalPhone && p.personalPhone !== '--') ? p.personalPhone : (p.phone && p.phone !== '--' ? p.phone : '');
+            document.getElementById('m-aadhar').value = (p.aadhar && p.aadhar !== '--') ? p.aadhar : '';
+            document.getElementById('m-pan').value = (p.pan && p.pan !== '--') ? p.pan : '';
+            document.getElementById('m-bank-name').value = (p.bankName && p.bankName !== '--') ? p.bankName : '';
+            document.getElementById('m-bank-acc').value = (p.bankAcc && p.bankAcc !== '--') ? p.bankAcc : '';
+            document.getElementById('m-bank-ifsc').value = (p.bankIfsc && p.bankIfsc !== '--') ? p.bankIfsc : '';
+            document.getElementById('m-street').value = (p.street && p.street !== '--') ? p.street : '';
+            document.getElementById('m-emg').value = (p.emgName && p.emgName !== '--') ? p.emgName : '';
+            document.getElementById('m-emg-phone').value = (p.emgPhone && p.emgPhone !== '--') ? p.emgPhone : '';
 
             document.getElementById('private-info-modal').style.display = 'flex';
         }
@@ -2013,30 +2713,61 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function handleSavePrivateInfo(e) {
             e.preventDefault();
-            const p = state.adminProfile;
-            p.dob = document.getElementById('m-dob').value;
-            p.gender = document.getElementById('m-gender').value;
-            p.marital = document.getElementById('m-marital').value;
-            p.personalPhone = document.getElementById('m-phone').value;
-            p.aadhar = document.getElementById('m-aadhar').value;
-            p.pan = document.getElementById('m-pan').value;
-            p.bankName = document.getElementById('m-bank-name').value;
-            p.bankAcc = document.getElementById('m-bank-acc').value;
-            p.bankIfsc = document.getElementById('m-bank-ifsc').value;
-            p.street = document.getElementById('m-street').value;
-            p.emgName = document.getElementById('m-emg').value;
-            p.emgPhone = document.getElementById('m-emg-phone').value;
+            const dob = document.getElementById('m-dob').value;
+            const gender = document.getElementById('m-gender').value;
+            const marital = document.getElementById('m-marital').value;
+            const phone = document.getElementById('m-phone').value;
+            const aadhar = document.getElementById('m-aadhar').value;
+            const pan = document.getElementById('m-pan').value;
+            const bankName = document.getElementById('m-bank-name').value;
+            const bankAcc = document.getElementById('m-bank-acc').value;
+            const bankIfsc = document.getElementById('m-bank-ifsc').value;
+            const street = document.getElementById('m-street').value;
+            const emgName = document.getElementById('m-emg').value;
+            const emgPhone = document.getElementById('m-emg-phone').value;
+
+            let emp = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
+            if (emp) {
+                emp.dob = dob;
+                emp.gender = gender;
+                emp.marital = marital;
+                emp.personalPhone = phone;
+                emp.phone = phone || emp.phone;
+                emp.aadhar = aadhar;
+                emp.pan = pan;
+                emp.bankName = bankName;
+                emp.bankAcc = bankAcc;
+                emp.bankIfsc = bankIfsc;
+                emp.street = street;
+                emp.emgName = emgName;
+                emp.emgPhone = emgPhone;
+            }
+
+            if (state.role === 'admin') {
+                Object.assign(state.adminProfile, {
+                    dob, gender, marital, personalPhone: phone, phone,
+                    aadhar, pan, bankName, bankAcc, bankIfsc, street, emgName, emgPhone
+                });
+            }
 
             saveState();
             closeEditPrivateModal();
             renderAdminProfile();
-            alert('Admin Private Information updated successfully!');
+            alert('Personal details updated successfully!');
         }
 
         /* Render Admin Profile */
         function renderAdminProfile() {
-            const p = state.adminProfile;
-            const wage = p.monthlyWage || 55000;
+            let p;
+            if (state.role === 'employee') {
+                p = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
+                if (!p) p = state.employees[0];
+            } else {
+                const empRec = state.employees.find(e => (state.currentEmployeeId && e.id === state.currentEmployeeId) || e.name === state.currentEmployee);
+                p = Object.assign({}, state.adminProfile, empRec || {});
+            }
+
+            const wage = Number(p.monthlyWage) || 50000;
             const basic = Math.round(wage * 0.50);
             const hra = Math.round(basic * 0.50);
             const stdAllow = Math.round(wage * 0.1667);
@@ -2050,37 +2781,48 @@ HTML_CONTENT = """<!DOCTYPE html>
             const netSalary = totalEarnings - totalDeduct;
 
             // Hero
-            document.getElementById('prof-hero-name').innerText = p.name;
-            document.getElementById('prof-hero-title').innerText = `${p.title} • ${p.dept}`;
-            document.getElementById('prof-hero-login').innerText = `🔑 ${p.loginId}`;
-            document.getElementById('prof-hero-email').innerText = `✉️ ${p.email}`;
-            document.getElementById('prof-hero-phone').innerText = `📞 ${p.phone}`;
-            document.getElementById('prof-hero-joined').innerText = `📅 Joined Jan 10, 2023`;
+            document.getElementById('prof-hero-name').innerText = p.name || '--';
+            document.getElementById('prof-hero-avatar').innerText = (p.name || 'U').split(' ').map(n=>n[0]).join('').toUpperCase();
+            document.getElementById('prof-hero-title').innerText = `${p.job || p.title || '--'} • ${p.dept || '--'}`;
+            document.getElementById('prof-hero-login').innerText = `🔑 ${p.loginId || '--'}`;
+            document.getElementById('prof-hero-email').innerText = `✉️ ${p.email || '--'}`;
+            document.getElementById('prof-hero-phone').innerText = `📞 ${p.phone || p.personalPhone || '--'}`;
+            const joinDate = p.joining ? new Date(p.joining).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '--';
+            document.getElementById('prof-hero-joined').innerText = `📅 Joined ${joinDate}`;
 
-            // Private Info
-            document.getElementById('prof-dob').innerText = p.dob;
-            document.getElementById('prof-gender').innerText = p.gender;
-            document.getElementById('prof-nationality').innerText = p.nationality;
-            document.getElementById('prof-marital').innerText = p.marital;
-            document.getElementById('prof-aadhar').innerText = p.aadhar;
-            document.getElementById('prof-pan').innerText = p.pan;
-            document.getElementById('prof-passport').innerText = p.passport;
-            document.getElementById('prof-personal-phone').innerText = p.personalPhone;
-            document.getElementById('prof-addr-street').innerText = p.street;
-            document.getElementById('prof-addr-city').innerText = p.city;
-            document.getElementById('prof-addr-pin').innerText = p.pin;
-            document.getElementById('prof-addr-country').innerText = p.country;
-            document.getElementById('prof-emg-name').innerText = p.emgName;
-            document.getElementById('prof-emg-phone').innerText = p.emgPhone;
-            document.getElementById('prof-bank-name').innerText = p.bankName;
-            document.getElementById('prof-bank-acc').innerText = p.bankAcc;
-            document.getElementById('prof-bank-ifsc').innerText = p.bankIfsc;
+            // Update role badge
+            const badge = document.getElementById('prof-hero-badge');
+            if (badge) { badge.innerText = p.role || 'Employee'; }
 
-            // Salary Breakdown
+            // Hide admin-only edit buttons for employees
+            document.querySelectorAll('.prof-admin-edit-btn').forEach(b => {
+                b.style.display = state.role === 'admin' ? '' : 'none';
+            });
+
+            // Section 1: Private Info
+            document.getElementById('prof-dob').innerText = p.dob || '--';
+            document.getElementById('prof-gender').innerText = p.gender || '--';
+            document.getElementById('prof-nationality').innerText = p.nationality || 'Indian';
+            document.getElementById('prof-marital').innerText = p.marital || '--';
+            document.getElementById('prof-aadhar').innerText = p.aadhar || '--';
+            document.getElementById('prof-pan').innerText = p.pan || '--';
+            document.getElementById('prof-passport').innerText = p.passport || '--';
+            document.getElementById('prof-personal-phone').innerText = p.personalPhone || p.phone || '--';
+            document.getElementById('prof-addr-street').innerText = p.street || '--';
+            document.getElementById('prof-addr-city').innerText = p.city || '--';
+            document.getElementById('prof-addr-pin').innerText = p.pin || '--';
+            document.getElementById('prof-addr-country').innerText = p.country || 'India';
+            document.getElementById('prof-emg-name').innerText = p.emgName || '--';
+            document.getElementById('prof-emg-phone').innerText = p.emgPhone || '--';
+            document.getElementById('prof-bank-name').innerText = p.bankName || '--';
+            document.getElementById('prof-bank-acc').innerText = p.bankAcc || '--';
+            document.getElementById('prof-bank-ifsc').innerText = p.bankIfsc || '--';
+
+            // Section 2: Salary Breakdown
             document.getElementById('prof-sal-wage').innerText = formatCurrency(wage);
             document.getElementById('prof-sal-ctc').innerText = formatCurrency(wage * 12);
             document.getElementById('prof-sal-net').innerText = formatCurrency(netSalary);
-            document.getElementById('prof-sal-struct').innerText = p.struct;
+            document.getElementById('prof-sal-struct').innerText = p.struct || 'Standard Base';
             document.getElementById('prof-comp-basic').innerText = formatCurrency(basic);
             document.getElementById('prof-comp-hra').innerText = formatCurrency(hra);
             document.getElementById('prof-comp-std').innerText = formatCurrency(stdAllow);
@@ -2088,6 +2830,47 @@ HTML_CONTENT = """<!DOCTYPE html>
             document.getElementById('prof-comp-lta').innerText = formatCurrency(lta);
             document.getElementById('prof-comp-pf').innerText = `- ${formatCurrency(pf)}`;
             document.getElementById('prof-comp-deduct-total').innerText = `- ${formatCurrency(totalDeduct)}`;
+
+            // Section 3: Work & Privileges
+            const jobEl = document.getElementById('prof-work-job');
+            if (jobEl) jobEl.innerText = p.job || p.title || '--';
+            const deptEl = document.getElementById('prof-work-dept');
+            if (deptEl) deptEl.innerText = p.dept || '--';
+            const mgrEl = document.getElementById('prof-work-manager');
+            if (mgrEl) mgrEl.innerText = p.role === 'Admin / HR' ? 'Board of Directors / CEO' : 'Jane Smith (HR Head)';
+            const locEl = document.getElementById('prof-work-location');
+            if (locEl) locEl.innerText = p.city ? `${p.city} Office` : 'Bangalore Headquarters (HQ)';
+            const schedEl = document.getElementById('prof-work-schedule');
+            if (schedEl) schedEl.innerText = '40 Hours / Week (Mon-Fri)';
+            const secEl = document.getElementById('prof-work-sec-group');
+            if (secEl) secEl.innerText = p.role === 'Admin / HR' ? 'dayflow.group_dayflow_admin' : 'dayflow.group_dayflow_user';
+            const privNote = document.getElementById('prof-work-privileges-note');
+            if (privNote) {
+                if (p.role === 'Admin / HR') {
+                    privNote.innerHTML = '🛡️ <strong>Admin Privileges:</strong> Full authorization to approve/reject time off requests, verify compliance documents, adjust employee salary structures, provision user accounts, and review executive metrics.';
+                } else {
+                    privNote.innerHTML = '👤 <strong>Employee Access:</strong> Access to check-in/out attendance tracking, time-off leave applications, personal compensation records, and verified compliance document uploads.';
+                }
+            }
+
+            // Section 4: Verified Documents
+            const docTbl = document.getElementById('prof-tbl-docs');
+            if (docTbl) {
+                const myVerifiedDocs = state.documents.filter(d => (d.employeeId === p.id || d.employee === p.name) && d.status === 'verified');
+                if (myVerifiedDocs.length === 0) {
+                    docTbl.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1rem;">No verified compliance documents on file.</td></tr>';
+                } else {
+                    docTbl.innerHTML = myVerifiedDocs.map(d => `
+                        <tr>
+                            <td><strong>${d.title}</strong></td>
+                            <td><span class="badge badge-purple">${(d.type || '').toUpperCase()}</span></td>
+                            <td><code>${d.filename}</code></td>
+                            <td>${d.date}</td>
+                            <td><span class="badge badge-green">VERIFIED</span></td>
+                        </tr>
+                    `).join('');
+                }
+            }
         }
 
         /* Render Dashboard */
@@ -2181,7 +2964,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function renderAttendanceTbl() {
             const tbody = document.getElementById('tbl-attendance');
-            let data = state.role === 'employee' ? state.attendances.filter(a => a.employee === state.currentEmployee) : state.attendances;
+            let data = state.role === 'employee' ? state.attendances.filter(a => (a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee) : state.attendances;
 
             tbody.innerHTML = data.map(a => `
                 <tr>
@@ -2198,8 +2981,8 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         function renderLeaves() {
-            const activeEmp = state.role === 'employee' ? state.currentEmployee : null;
-            const relevantLeaves = activeEmp ? state.leaves.filter(l => l.employee === activeEmp) : state.leaves;
+            const isEmp = state.role === 'employee';
+            const relevantLeaves = isEmp ? state.leaves.filter(l => (l.employeeId && l.employeeId === state.currentEmployeeId) || l.employee === state.currentEmployee) : state.leaves;
 
             const usedPaid = relevantLeaves.filter(l => l.type === 'paid' && l.status === 'approved').reduce((sum, l) => sum + (l.days || 0), 0);
             const usedSick = relevantLeaves.filter(l => l.type === 'sick' && l.status === 'approved').reduce((sum, l) => sum + (l.days || 0), 0);
@@ -2216,7 +2999,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (elUnpaid) elUnpaid.innerText = 'Unlimited';
 
             const tbody = document.getElementById('tbl-leave');
-            let data = state.role === 'employee' ? state.leaves.filter(l => l.employee === state.currentEmployee) : state.leaves;
+            let data = isEmp ? state.leaves.filter(l => (l.employeeId && l.employeeId === state.currentEmployeeId) || l.employee === state.currentEmployee) : state.leaves;
 
             tbody.innerHTML = data.map(l => {
                 const badge = l.status === 'approved' ? 'badge-green' : l.status === 'rejected' ? 'badge-red' : 'badge-amber';
@@ -2278,7 +3061,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             const tbody = document.getElementById('tbl-documents');
             let data = state.documents;
-            if (state.role === 'employee') data = data.filter(d => d.employee === state.currentEmployee);
+            if (state.role === 'employee') data = data.filter(d => (d.employeeId && d.employeeId === state.currentEmployeeId) || d.employee === state.currentEmployee);
 
             if (state.currentDocFilter !== 'all') {
                 data = state.currentDocFilter === 'verified' ? data.filter(d => d.status === 'verified') : data.filter(d => d.type === state.currentDocFilter);
@@ -2321,7 +3104,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             const adminActions = document.getElementById('admin-payroll-actions');
 
             if (state.role === 'employee') {
-                data = data.filter(p => p.employee === state.currentEmployee);
+                data = data.filter(p => (p.employeeId && p.employeeId === state.currentEmployeeId) || p.employee === state.currentEmployee);
                 if (tag) tag.innerText = 'Showing your personal salary structure (Record Rule Protected)';
                 if (adminActions) adminActions.style.display = 'none';
             } else {
@@ -2374,6 +3157,84 @@ HTML_CONTENT = """<!DOCTYPE html>
             }).join('');
         }
 
+        function renderEmployeeDashboard() {
+            const empName = state.currentEmployee;
+            const empId = state.currentEmployeeId;
+            const today = new Date().toISOString().split('T')[0];
+
+            // Greeting
+            const greet = document.getElementById('emp-dash-greeting');
+            if (greet) greet.innerText = `Welcome, ${empName}`;
+            const sub = document.getElementById('emp-dash-sub');
+            if (sub) sub.innerText = `Your personal HR summary — ${today}`;
+
+            // Today's attendance status
+            const todayAtt = state.attendances.find(a => ((a.employeeId && a.employeeId === empId) || a.employee === empName) && a.date === today);
+            const statusEl = document.getElementById('emp-dash-status');
+            const timeEl = document.getElementById('emp-dash-checkin-time');
+            if (statusEl) {
+                if (state.isCheckedIn) {
+                    statusEl.innerText = 'Checked In';
+                    if (timeEl) timeEl.innerText = state.activeCheckInTime || '--:--';
+                } else if (todayAtt && todayAtt.checkOut && todayAtt.checkOut !== '--') {
+                    statusEl.innerText = 'Checked Out';
+                    if (timeEl) timeEl.innerText = `In: ${todayAtt.checkIn} → Out: ${todayAtt.checkOut}`;
+                } else {
+                    statusEl.innerText = 'Not Checked In';
+                    if (timeEl) timeEl.innerText = '--:--';
+                }
+            }
+
+            // Leave balances
+            const approvedLeaves = state.leaves.filter(l => ((l.employeeId && l.employeeId === empId) || l.employee === empName) && l.status === 'approved');
+            const usedPaid = approvedLeaves.filter(l => l.type === 'paid').reduce((s, l) => s + (l.days || 0), 0);
+            const usedSick = approvedLeaves.filter(l => l.type === 'sick').reduce((s, l) => s + (l.days || 0), 0);
+            const paidEl = document.getElementById('emp-dash-paid-bal');
+            const sickEl = document.getElementById('emp-dash-sick-bal');
+            if (paidEl) paidEl.innerText = Math.max(0, 24 - usedPaid);
+            if (sickEl) sickEl.innerText = Math.max(0, 7 - usedSick);
+
+            // Pending count
+            const myPending = state.leaves.filter(l => ((l.employeeId && l.employeeId === empId) || l.employee === empName) && l.status === 'pending').length;
+            const pendEl = document.getElementById('emp-dash-pending');
+            if (pendEl) pendEl.innerText = myPending;
+
+            // Recent leave requests table
+            const leaveTbl = document.getElementById('emp-dash-leave-tbl');
+            if (leaveTbl) {
+                const myLeaves = state.leaves.filter(l => (l.employeeId && l.employeeId === empId) || l.employee === empName).slice(-5).reverse();
+                if (myLeaves.length === 0) {
+                    leaveTbl.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1rem;">No leave requests yet.</td></tr>`;
+                } else {
+                    const badgeClass = { approved: 'badge-green', pending: 'badge-amber', rejected: 'badge-red' };
+                    leaveTbl.innerHTML = myLeaves.map(l => `<tr>
+                        <td><span class="badge badge-purple">${l.type.toUpperCase()}</span></td>
+                        <td>${l.startDate}</td><td>${l.endDate}</td><td>${l.days}d</td>
+                        <td style="color:var(--text-muted);font-size:0.82rem;">${l.remarks || '--'}</td>
+                        <td><span class="badge ${badgeClass[l.status] || 'badge-amber'}">${l.status.toUpperCase()}</span></td>
+                    </tr>`).join('');
+                }
+            }
+
+            // Recent attendance table (last 5)
+            const attTbl = document.getElementById('emp-dash-att-tbl');
+            if (attTbl) {
+                const myAtt = state.attendances.filter(a => (a.employeeId && a.employeeId === empId) || a.employee === empName).slice(-5).reverse();
+                if (myAtt.length === 0) {
+                    attTbl.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">No attendance records yet.</td></tr>`;
+                } else {
+                    const badgeClass = { present: 'badge-green', absent: 'badge-red', half_day: 'badge-amber' };
+                    attTbl.innerHTML = myAtt.map(a => `<tr>
+                        <td>${a.date}</td>
+                        <td>${a.checkIn || '--'}</td>
+                        <td>${a.checkOut || '--'}</td>
+                        <td><span class="badge ${badgeClass[a.status] || 'badge-purple'}">${(a.status||'').toUpperCase()}</span></td>
+                        <td>${a.workedHours || a.effectiveHours || '--'}</td>
+                    </tr>`).join('');
+                }
+            }
+        }
+
         function renderAll() {
             renderDashboard();
             renderAdminProfile();
@@ -2382,18 +3243,22 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderEmployees();
             renderDocuments();
             renderPayroll();
+            renderEmployeeDashboard();
         }
 
+
+
         window.addEventListener('DOMContentLoaded', () => {
-            const activeRec = state.attendances.find(a => a.isActive && a.employee === state.currentEmployee);
-            if (activeRec) {
-                state.isCheckedIn = true;
-                state.activeCheckInTime = activeRec.checkIn;
-                state.checkInTimestamp = activeRec.id;
-                state.tickerInterval = setInterval(updateLiveTicker, 1000);
+            const session = getSession();
+            if (session) {
+                // Existing session — restore without showing auth wall
+                applySession(session);
+            } else {
+                // No session — show auth wall (already visible by default)
+                // Do not call renderAll() yet — wait for login
             }
-            renderAll();
         });
+
     </script>
 </body>
 </html>
