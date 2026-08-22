@@ -1394,29 +1394,75 @@ HTML_CONTENT = """<!DOCTYPE html>
         <!-- ATTENDANCE TAB -->
         <div id="panel-attendance" class="tab-panel">
             <div class="header-row">
-                <div><h1 class="header-title">Attendance Tracking</h1></div>
-                <button class="btn btn-secondary" onclick="resetData()">Reset Data</button>
+                <div>
+                    <h1 class="header-title">Attendance Tracking</h1>
+                    <p class="header-sub">Daily check-in logs, break tracking, working hours calculation, and payroll ledger</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-secondary" onclick="resetData()">Reset Data</button>
+                </div>
             </div>
 
+            <!-- Interactive Attendance Banner with Break Tracking -->
             <div class="banner">
-                <div class="banner-metrics">
+                <div class="banner-metrics" style="gap: 1.8rem; flex-wrap: wrap;">
                     <div class="metric"><span class="metric-label">Status</span><div class="metric-val"><span id="dot-status" class="dot red"></span><span id="txt-status">Not Checked In</span></div></div>
                     <div class="metric"><span class="metric-label">Check-In</span><span class="metric-val" id="txt-checkin-time">--:--</span></div>
-                    <div class="metric"><span class="metric-label">Working Hours</span><span class="metric-val" id="txt-worked-hours" style="color: var(--accent-purple-hover);">0h 00m</span></div>
+                    <div class="metric"><span class="metric-label">Total Time</span><span class="metric-val" id="txt-worked-hours" style="color: var(--accent-purple-hover);">0h 00m</span></div>
+                    <div class="metric"><span class="metric-label">Break Duration</span><span class="metric-val" id="txt-break-hours" style="color: #fbbf24;">0h 00m</span></div>
+                    <div class="metric"><span class="metric-label">Effective Hours</span><span class="metric-val" id="txt-effective-hours" style="color: #34d399; font-weight: 800;">0h 00m</span></div>
                 </div>
-                <div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <button id="btn-in" class="btn btn-success" onclick="handleCheckIn()">Check In</button>
+                    <button id="btn-break" class="btn btn-secondary" onclick="handleBreakToggle()" disabled>☕ Take a Break</button>
                     <button id="btn-out" class="btn btn-danger" onclick="handleCheckOut()" disabled>Check Out</button>
                 </div>
             </div>
 
+            <!-- Attendance History Table -->
             <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.85rem;">
+                    <h3 style="font-size: 1.05rem;">Daily Attendance Logs</h3>
+                    <span class="badge badge-purple" id="att-scope-tag">Attendance Log</span>
+                </div>
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr><th>Date</th><th>Employee</th><th>Check In</th><th>Check Out</th><th>Status</th><th>Worked Hours</th><th>Effective Hours</th><th>Extra Hours</th></tr>
                         </thead>
                         <tbody id="tbl-attendance"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Monthly Attendance & Leave Payroll Ledger (Person 4 Cross-Module Integration) -->
+            <div class="card" style="margin-top: 1.5rem; background: linear-gradient(135deg, rgba(24, 27, 36, 0.95), rgba(113, 75, 103, 0.15)); border: 1px solid rgba(113, 75, 103, 0.4);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.85rem;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <h3 style="font-size: 1.05rem;">📊 Monthly Attendance &amp; Leave Payroll Ledger</h3>
+                            <span class="badge badge-green">Payroll Ready</span>
+                        </div>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 3px;">
+                            Calculates final payable days: <em>Payable Days = Present + (0.5 × Half-day) + Approved Paid Leaves</em>
+                        </p>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Working Days</th>
+                                <th>Present Days</th>
+                                <th>Half Days (0.5d)</th>
+                                <th>Approved Paid Leaves</th>
+                                <th>Unpaid Leaves</th>
+                                <th>Overtime Hours</th>
+                                <th style="color: #34d399; font-weight: 700;">Final Payable Days</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-payroll-ledger"></tbody>
                     </table>
                 </div>
             </div>
@@ -1837,6 +1883,15 @@ HTML_CONTENT = """<!DOCTYPE html>
                         <option value="paid">Paid Time Off</option>
                         <option value="sick">Sick Leave</option>
                         <option value="unpaid">Unpaid Leave</option>
+                    </select>
+                </div>
+
+                <div class="field" style="margin-bottom: 0.85rem;">
+                    <label>Duration / Session</label>
+                    <select id="mleave-session" class="input" onchange="calcLeaveDuration()" required>
+                        <option value="full">Full Day (1.0 Day per date)</option>
+                        <option value="half_am">First Half AM (0.5 Day)</option>
+                        <option value="half_pm">Second Half PM (0.5 Day)</option>
                     </select>
                 </div>
 
@@ -2580,11 +2635,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (sec) sec.classList.add('active');
         }
 
-        /* Attendance actions */
+        /* Attendance actions with Break Tracking */
         function handleCheckIn() {
             if (state.isCheckedIn) return;
             const now = new Date();
             state.isCheckedIn = true;
+            state.isOnBreak = false;
+            state.breakSeconds = 0;
+            state.breakStartTimestamp = null;
             state.activeCheckInTime = formatTime(now);
             state.checkInTimestamp = now.getTime();
 
@@ -2603,6 +2661,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 checkOutTimestamp: null,
                 status: 'present',
                 workedHours: 0.0,
+                breakHours: 0.0,
                 effectiveHours: 0.0,
                 extraHours: 0.0,
                 isActive: true
@@ -2615,9 +2674,43 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderEmployeeDashboard();
         }
 
+        function handleBreakToggle() {
+            if (!state.isCheckedIn) return;
+            const now = Date.now();
+            if (!state.isOnBreak) {
+                // Start Break
+                state.isOnBreak = true;
+                state.breakStartTimestamp = now;
+                const btn = document.getElementById('btn-break');
+                if (btn) { btn.innerText = '▶️ Resume Work'; btn.className = 'btn btn-primary'; }
+                const txt = document.getElementById('txt-status');
+                if (txt) txt.innerHTML = '☕ <span style="color:#fbbf24;">On Break</span>';
+            } else {
+                // Resume Work
+                state.isOnBreak = false;
+                if (state.breakStartTimestamp) {
+                    const elapsedBreak = Math.floor((now - state.breakStartTimestamp) / 1000);
+                    state.breakSeconds = (state.breakSeconds || 0) + elapsedBreak;
+                    state.breakStartTimestamp = null;
+                }
+                const btn = document.getElementById('btn-break');
+                if (btn) { btn.innerText = '☕ Take a Break'; btn.className = 'btn btn-secondary'; }
+                const txt = document.getElementById('txt-status');
+                if (txt) txt.innerHTML = 'Present';
+            }
+            saveState();
+            renderAttendance();
+        }
+
         function handleCheckOut() {
             if (!state.isCheckedIn) return;
             const now = new Date();
+            if (state.isOnBreak && state.breakStartTimestamp) {
+                const elapsedBreak = Math.floor((now.getTime() - state.breakStartTimestamp) / 1000);
+                state.breakSeconds = (state.breakSeconds || 0) + elapsedBreak;
+                state.breakStartTimestamp = null;
+                state.isOnBreak = false;
+            }
             state.isCheckedIn = false;
             if (state.tickerInterval) {
                 clearInterval(state.tickerInterval);
@@ -2629,14 +2722,18 @@ HTML_CONTENT = """<!DOCTYPE html>
             const elapsedHours = state.checkInTimestamp
                 ? parseFloat(((checkOutTimestamp - state.checkInTimestamp) / (1000 * 60 * 60)).toFixed(2))
                 : 0.0;
+            const breakHrs = parseFloat(((state.breakSeconds || 0) / 3600).toFixed(2));
+            const effectiveHrs = Math.max(0.0, parseFloat((elapsedHours - breakHrs).toFixed(2)));
 
             const activeRec = state.attendances.find(a => a.isActive && ((a.employeeId && a.employeeId === state.currentEmployeeId) || a.employee === state.currentEmployee));
             if (activeRec) {
                 activeRec.checkOut = checkOutStr;
                 activeRec.checkOutTimestamp = checkOutTimestamp;
                 activeRec.workedHours = elapsedHours;
-                activeRec.effectiveHours = elapsedHours;
-                activeRec.extraHours = elapsedHours > 8.0 ? parseFloat((elapsedHours - 8.0).toFixed(2)) : 0.0;
+                activeRec.breakHours = breakHrs;
+                activeRec.effectiveHours = effectiveHrs;
+                activeRec.extraHours = effectiveHrs > 8.0 ? parseFloat((effectiveHrs - 8.0).toFixed(2)) : 0.0;
+                activeRec.status = effectiveHrs >= 4.0 ? 'present' : 'half_day';
                 activeRec.isActive = false;
             }
 
@@ -2648,21 +2745,41 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         function updateLiveTicker() {
             if (!state.isCheckedIn || !state.checkInTimestamp) return;
-            const diffMs = Date.now() - state.checkInTimestamp;
+            const now = Date.now();
+            const diffMs = now - state.checkInTimestamp;
             const totalSec = Math.floor(diffMs / 1000);
+            
+            let curBreakSec = state.breakSeconds || 0;
+            if (state.isOnBreak && state.breakStartTimestamp) {
+                curBreakSec += Math.floor((now - state.breakStartTimestamp) / 1000);
+            }
+            const effectiveSec = Math.max(0, totalSec - curBreakSec);
+
             const hrs = Math.floor(totalSec / 3600);
             const mins = Math.floor((totalSec % 3600) / 60);
             const secs = totalSec % 60;
-            const el = document.getElementById('txt-worked-hours');
-            if (el) {
-                el.innerText = `${hrs}h ${String(mins).padStart(2,'0')}m ${String(secs).padStart(2,'0')}s`;
-            }
+
+            const bHrs = Math.floor(curBreakSec / 3600);
+            const bMins = Math.floor((curBreakSec % 3600) / 60);
+
+            const eHrs = Math.floor(effectiveSec / 3600);
+            const eMins = Math.floor((effectiveSec % 3600) / 60);
+
+            const elTotal = document.getElementById('txt-worked-hours');
+            const elBreak = document.getElementById('txt-break-hours');
+            const elEff = document.getElementById('txt-effective-hours');
+
+            if (elTotal) elTotal.innerText = `${hrs}h ${String(mins).padStart(2,'0')}m ${String(secs).padStart(2,'0')}s`;
+            if (elBreak) elBreak.innerText = `${bHrs}h ${String(bMins).padStart(2,'0')}m`;
+            if (elEff) elEff.innerText = `${eHrs}h ${String(eMins).padStart(2,'0')}m`;
         }
 
         /* Leave Modal & Calendar actions */
         function openLeaveModal(prefilledDate) {
             document.getElementById('mleave-emp-name').value = state.currentEmployee;
             document.getElementById('mleave-type').value = 'paid';
+            const sessionEl = document.getElementById('mleave-session');
+            if (sessionEl) sessionEl.value = 'full';
 
             const defaultStart = prefilledDate || '2026-08-25';
             const defaultEnd = prefilledDate || '2026-08-27';
@@ -2682,13 +2799,19 @@ HTML_CONTENT = """<!DOCTYPE html>
         function calcLeaveDuration() {
             const startVal = document.getElementById('mleave-start').value;
             const endVal = document.getElementById('mleave-end').value;
+            const sessionEl = document.getElementById('mleave-session');
+            const session = sessionEl ? sessionEl.value : 'full';
 
             if (startVal && endVal) {
                 const s = new Date(startVal);
                 const e = new Date(endVal);
                 let diffDays = Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1;
                 if (diffDays <= 0) diffDays = 1;
-                document.getElementById('mleave-duration-preview').innerText = `${diffDays} Day${diffDays > 1 ? 's' : ''}`;
+                
+                if (session === 'half_am' || session === 'half_pm') {
+                    diffDays = 0.5;
+                }
+                document.getElementById('mleave-duration-preview').innerText = `${diffDays} Day${diffDays > 1 ? 's' : ''} (${session === 'full' ? 'Full Day' : session === 'half_am' ? 'First Half AM' : 'Second Half PM'})`;
             }
         }
 
@@ -2696,6 +2819,8 @@ HTML_CONTENT = """<!DOCTYPE html>
             e.preventDefault();
             const emp = state.currentEmployee;
             const type = document.getElementById('mleave-type').value;
+            const sessionEl = document.getElementById('mleave-session');
+            const session = sessionEl ? sessionEl.value : 'full';
             const start = document.getElementById('mleave-start').value;
             const end = document.getElementById('mleave-end').value;
             const reason = document.getElementById('mleave-reason').value;
@@ -2706,13 +2831,19 @@ HTML_CONTENT = """<!DOCTYPE html>
                 return;
             }
 
-            const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1);
+            let days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1);
+            if (session === 'half_am' || session === 'half_pm') {
+                days = 0.5;
+            }
 
             state.leaves.unshift({
                 id: Date.now(),
                 employeeId: state.currentEmployeeId,
                 employee: state.currentEmployee,
                 type: type,
+                session: session,
+                isHalfDay: session !== 'full',
+                halfDayPeriod: session === 'half_am' ? 'am' : session === 'half_pm' ? 'pm' : null,
                 startDate: start,
                 endDate: end,
                 days: days,
@@ -2733,7 +2864,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 'Time Off: Application Submitted',
                 'admin@dayflow.org',
                 'leave_submitted',
-                `New ${type.toUpperCase()} request from ${emp} (${start} to ${end}, ${days} days). Pending review.`
+                `New ${type.toUpperCase()} request from ${emp} (${start} to ${end}, ${days} days - ${session === 'full' ? 'Full Day' : 'Half Day'}). Pending review.`
             );
         }
 
@@ -2768,6 +2899,25 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (leave) {
                 leave.status = newStatus;
                 leave.adminComments = comment || (newStatus === 'approved' ? 'Approved by HR' : 'Rejected by HR');
+
+                if (newStatus === 'approved') {
+                    const targetStatus = leave.isHalfDay ? 'half_day' : 'leave';
+                    const worked = leave.isHalfDay ? 4.0 : 0.0;
+                    state.attendances.unshift({
+                        id: Date.now(),
+                        employeeId: leave.employeeId,
+                        date: leave.startDate,
+                        employee: leave.employee,
+                        checkIn: leave.isHalfDay ? (leave.halfDayPeriod === 'pm' ? '01:00 PM' : '09:00 AM') : '--',
+                        checkOut: leave.isHalfDay ? (leave.halfDayPeriod === 'pm' ? '05:00 PM' : '01:00 PM') : '--',
+                        status: targetStatus,
+                        workedHours: worked,
+                        breakHours: 0.0,
+                        effectiveHours: worked,
+                        extraHours: 0.0
+                    });
+                }
+
                 saveState();
                 closeLeaveDetailModal();
                 renderAll();
@@ -2777,7 +2927,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 const recipientEmail = empObj ? empObj.email : 'employee@company.com';
                 const notifTitle = newStatus === 'approved' ? 'Time Off: Request Approved' : 'Time Off: Request Rejected';
                 const notifBody = newStatus === 'approved' ? 
-                    `Your ${leave.type.toUpperCase()} request for ${leave.startDate} to ${leave.endDate} has been approved by HR.` :
+                    `Your ${leave.type.toUpperCase()} request (${leave.isHalfDay ? 'Half-Day' : 'Full Day'}) for ${leave.startDate} to ${leave.endDate} has been approved by HR.` :
                     `Your ${leave.type.toUpperCase()} request was rejected. Remarks: ${leave.adminComments}`;
 
                 triggerNotification(
@@ -2794,6 +2944,23 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (leave) {
                 leave.status = 'approved';
                 leave.adminComments = 'Approved by HR';
+
+                const targetStatus = leave.isHalfDay ? 'half_day' : 'leave';
+                const worked = leave.isHalfDay ? 4.0 : 0.0;
+                state.attendances.unshift({
+                    id: Date.now(),
+                    employeeId: leave.employeeId,
+                    date: leave.startDate,
+                    employee: leave.employee,
+                    checkIn: leave.isHalfDay ? (leave.halfDayPeriod === 'pm' ? '01:00 PM' : '09:00 AM') : '--',
+                    checkOut: leave.isHalfDay ? (leave.halfDayPeriod === 'pm' ? '05:00 PM' : '01:00 PM') : '--',
+                    status: targetStatus,
+                    workedHours: worked,
+                    breakHours: 0.0,
+                    effectiveHours: worked,
+                    extraHours: 0.0
+                });
+
                 saveState();
                 renderAll();
 
@@ -2802,7 +2969,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     'Time Off: Request Approved',
                     empObj ? empObj.email : 'employee@company.com',
                     'leave_approved',
-                    `Your leave request for ${leave.startDate} to ${leave.endDate} has been approved by HR.`
+                    `Your leave request (${leave.isHalfDay ? 'Half-Day' : 'Full Day'}) for ${leave.startDate} to ${leave.endDate} has been approved by HR.`
                 );
             }
         }
@@ -3623,23 +3790,39 @@ Role: ${newUser.role.toUpperCase()}`);
             const txt = document.getElementById('txt-status');
             const checkIn = document.getElementById('txt-checkin-time');
             const btnIn = document.getElementById('btn-in');
+            const btnBreak = document.getElementById('btn-break');
             const btnOut = document.getElementById('btn-out');
 
             if (state.isCheckedIn) {
                 dot.className = 'dot green';
-                txt.innerText = 'Present';
+                txt.innerText = state.isOnBreak ? '☕ On Break' : 'Present';
                 checkIn.innerText = state.activeCheckInTime || '--:--';
                 btnIn.disabled = true;
+                if (btnBreak) {
+                    btnBreak.disabled = false;
+                    btnBreak.innerText = state.isOnBreak ? '▶️ Resume Work' : '☕ Take a Break';
+                    btnBreak.className = state.isOnBreak ? 'btn btn-primary' : 'btn btn-secondary';
+                }
                 btnOut.disabled = false;
             } else {
                 dot.className = 'dot red';
                 txt.innerText = 'Not Checked In';
                 checkIn.innerText = '--:--';
                 document.getElementById('txt-worked-hours').innerText = '0h 00m';
+                const elBreak = document.getElementById('txt-break-hours');
+                const elEff = document.getElementById('txt-effective-hours');
+                if (elBreak) elBreak.innerText = '0h 00m';
+                if (elEff) elEff.innerText = '0h 00m';
                 btnIn.disabled = false;
+                if (btnBreak) {
+                    btnBreak.disabled = true;
+                    btnBreak.innerText = '☕ Take a Break';
+                    btnBreak.className = 'btn btn-secondary';
+                }
                 btnOut.disabled = true;
             }
             renderAttendanceTbl();
+            renderPayrollLedger();
         }
 
         function renderAttendanceTbl() {
@@ -3658,6 +3841,45 @@ Role: ${newUser.role.toUpperCase()}`);
                     <td style="color:${a.extraHours>0?'var(--accent-green)':'inherit'}">${a.extraHours}h</td>
                 </tr>
             `).join('');
+        }
+
+        /* Monthly Payroll Attendance Ledger (Person 4 Cross-Module Integration) */
+        function renderPayrollLedger() {
+            const tbody = document.getElementById('tbl-payroll-ledger');
+            if (!tbody) return;
+
+            const employees = state.employees || [];
+            tbody.innerHTML = employees.map(emp => {
+                const empAtts = state.attendances.filter(a => a.employeeId === emp.id || a.employee === emp.name);
+                const empLeaves = state.leaves.filter(l => (l.employeeId === emp.id || l.employee === emp.name) && l.status === 'approved');
+
+                const presentCount = empAtts.filter(a => a.status === 'present').length;
+                const halfDayCount = empAtts.filter(a => a.status === 'half_day').length;
+                const paidLeavesCount = empLeaves.filter(l => l.type === 'paid' || l.type === 'sick').reduce((s, l) => s + (l.days || 0), 0);
+                const unpaidLeavesCount = empLeaves.filter(l => l.type === 'unpaid').reduce((s, l) => s + (l.days || 0), 0);
+                const totalOvertime = empAtts.reduce((s, a) => s + (a.extraHours || 0), 0).toFixed(1);
+
+                // Standard Working Days for month (22 business days)
+                const workingDays = 22;
+                // Final Payable Days = Present + (0.5 * Half-Day) + Paid Leaves
+                const payableDays = Math.min(workingDays, (presentCount + (0.5 * halfDayCount) + paidLeavesCount)).toFixed(1);
+
+                return `
+                    <tr>
+                        <td>
+                            <strong>${emp.name}</strong>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">${emp.job} (${emp.dept})</div>
+                        </td>
+                        <td>${workingDays} Days</td>
+                        <td><span class="badge badge-green">${presentCount} Days</span></td>
+                        <td><span class="badge badge-amber">${halfDayCount} (0.5d)</span></td>
+                        <td><span class="badge badge-purple">${paidLeavesCount} Days</span></td>
+                        <td><span class="badge ${unpaidLeavesCount > 0 ? 'badge-red' : 'badge-secondary'}">${unpaidLeavesCount} Days</span></td>
+                        <td style="color:${parseFloat(totalOvertime) > 0 ? '#34d399' : 'inherit'}; font-weight:600;">${totalOvertime}h</td>
+                        <td><strong style="color:#34d399; font-size:1rem;">${payableDays} / ${workingDays}</strong></td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         /* Render Leaves */
