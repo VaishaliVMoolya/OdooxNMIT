@@ -62,6 +62,12 @@ class HrAttendance(models.Model):
                 else:
                     record.dayflow_status = 'absent'
 
+    @api.constrains('check_in', 'check_out')
+    def _check_validity_check_out(self):
+        for record in self:
+            if record.check_in and record.check_out and record.check_out < record.check_in:
+                raise ValidationError(_('Check-out time cannot be earlier than Check-in time.'))
+
     @api.model
     def employee_check_in(self, employee_id=None):
         """Action for an employee to check in."""
@@ -113,3 +119,11 @@ class HrAttendance(models.Model):
             'check_out': fields.Datetime.now(),
         })
         return open_attendance
+
+    def action_check_in(self):
+        """Form view button trigger for Check In."""
+        return self.employee_check_in()
+
+    def action_check_out(self):
+        """Form view button trigger for Check Out."""
+        return self.employee_check_out()

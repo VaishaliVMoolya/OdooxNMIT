@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Dayflow HRMS - Interactive UI Live Preview Server
-Renders the complete Dayflow HRMS interface (Attendance + Time Off + Admin Approval Workflow)
-matching the exact Excalidraw wireframes and Odoo views.
+Dayflow HRMS - Fully Functional Live UI Preview Server
+Renders an interactive, dynamic Dayflow HRMS interface covering:
+- Attendance Tracking & Live Ticker
+- Time Off / Leave Requests & HR Approvals
+- Employee Profile Directory & Account Provisioning (Person 2)
+- Employee Verification Documents Upload & Library (Person 2)
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -22,7 +25,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             --bg-secondary: #1a1c26;
             --bg-card: #222533;
             --bg-input: #2d3142;
-            --accent-purple: #714B67; /* Odoo brand color */
+            --accent-purple: #714B67;
             --accent-purple-hover: #86597a;
             --accent-blue: #3b82f6;
             --accent-green: #10b981;
@@ -48,7 +51,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             flex-direction: column;
         }
 
-        /* Top Navbar */
         .navbar {
             background-color: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
@@ -122,7 +124,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            cursor: pointer;
         }
 
         .role-badge select {
@@ -135,7 +136,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             cursor: pointer;
         }
 
-        /* Container */
         .container {
             max-width: 1280px;
             margin: 0 auto;
@@ -144,7 +144,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             flex: 1;
         }
 
-        /* Header Title Row */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -157,8 +156,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             font-weight: 700;
         }
 
+        .page-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
         .btn {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.25rem;
             border-radius: 6px;
             border: none;
             font-weight: 600;
@@ -170,12 +175,17 @@ HTML_CONTENT = """<!DOCTYPE html>
             gap: 0.5rem;
         }
 
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background-color: var(--accent-purple);
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background-color: var(--accent-purple-hover);
         }
 
@@ -184,7 +194,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             color: white;
         }
 
-        .btn-success:hover {
+        .btn-success:hover:not(:disabled) {
             filter: brightness(1.1);
         }
 
@@ -193,7 +203,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             color: white;
         }
 
-        .btn-danger:hover {
+        .btn-danger:hover:not(:disabled) {
             filter: brightness(1.1);
         }
 
@@ -203,94 +213,139 @@ HTML_CONTENT = """<!DOCTYPE html>
             border: 1px solid var(--border-color);
         }
 
-        .btn-secondary:hover {
-            background-color: #383e54;
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--border-color);
         }
 
-        /* Cards Grid */
-        .cards-row {
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(113, 75, 103, 0.15), rgba(34, 37, 51, 0.9));
+            border: 1px solid rgba(113, 75, 103, 0.4);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .banner-metrics {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .metric-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-dot.green { background-color: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
+        .status-dot.red { background-color: var(--accent-red); }
+
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
 
         .stat-card {
-            background-color: var(--bg-secondary);
+            background-color: var(--bg-card);
             border: 1px solid var(--border-color);
+            padding: 1.25rem;
             border-radius: 8px;
+        }
+
+        .stat-card .val {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-top: 0.35rem;
+        }
+
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .employee-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
             padding: 1.25rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            position: relative;
         }
 
-        .stat-card-title {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .emp-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .stat-card-val {
-            font-size: 1.75rem;
+        .emp-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
-            color: var(--text-primary);
+            font-size: 1.1rem;
+            color: white;
         }
 
-        .stat-card-desc {
+        .emp-info h4 { font-size: 1.05rem; font-weight: 700; }
+        .emp-info p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        .emp-meta {
             font-size: 0.8rem;
             color: var(--text-secondary);
-        }
-
-        /* Checkin Box */
-        .checkin-banner {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.25rem 1.5rem;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
+            flex-direction: column;
+            gap: 0.3rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
         }
 
-        .checkin-info {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--accent-green);
-            box-shadow: 0 0 10px var(--accent-green);
-        }
-
-        /* Table */
-        .table-container {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-        }
-
-        .table-header-bar {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        .table-title {
-            font-weight: 600;
-            font-size: 1rem;
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
         }
 
         table {
@@ -301,90 +356,66 @@ HTML_CONTENT = """<!DOCTYPE html>
         }
 
         th {
-            background-color: rgba(0, 0, 0, 0.2);
+            background-color: var(--bg-card);
             color: var(--text-secondary);
-            font-weight: 600;
             padding: 0.75rem 1rem;
+            font-weight: 600;
             border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
         }
 
         td {
             padding: 0.85rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
+            border-bottom: 1px solid rgba(55, 65, 81, 0.5);
         }
 
         tr:hover td {
             background-color: rgba(255, 255, 255, 0.02);
         }
 
-        /* Badges */
         .badge {
-            padding: 0.25rem 0.65rem;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.6rem;
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
-            display: inline-block;
         }
 
-        .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .badge-info { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-present { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-halfday { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-absent { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-leave { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-pending { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-role { background-color: rgba(113, 75, 103, 0.3); color: #e9d5ff; border: 1px solid rgba(113, 75, 103, 0.5); }
 
-        /* Modal */
-        .modal-backdrop {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            width: 100%;
-            max-width: 500px;
-            padding: 1.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
             margin-bottom: 1.25rem;
         }
 
-        .modal-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
         .form-group {
-            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
         }
 
-        .form-label {
-            display: block;
+        .form-group label {
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-secondary);
-            margin-bottom: 0.4rem;
         }
 
         .form-control {
-            width: 100%;
-            padding: 0.6rem 0.8rem;
-            background: var(--bg-input);
+            background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
             color: var(--text-primary);
+            padding: 0.65rem 0.85rem;
+            border-radius: 6px;
             font-size: 0.9rem;
             outline: none;
         }
@@ -393,561 +424,795 @@ HTML_CONTENT = """<!DOCTYPE html>
             border-color: var(--accent-purple);
         }
 
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            margin-top: 1.5rem;
-        }
-
-        /* Weekly View Grid */
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .day-box {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.75rem;
-            text-align: center;
-        }
-
-        .day-name {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .day-date {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin: 0.35rem 0;
-        }
-
-        .hidden { display: none !important; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
 
-    <!-- TOP NAVBAR -->
+    <!-- Navbar -->
     <nav class="navbar">
         <a href="#" class="navbar-brand">
-            <div class="navbar-logo">DF</div>
-            <span>Dayflow HRMS</span>
+            <span class="navbar-logo">DF</span> Dayflow HRMS
         </a>
         <ul class="navbar-nav">
-            <li class="nav-item" onclick="switchTab('employees')">Employees</li>
-            <li class="nav-item active" onclick="switchTab('attendance')">Attendance</li>
-            <li class="nav-item" onclick="switchTab('timeoff')">Time Off</li>
-            <li class="nav-item" onclick="switchTab('payroll')">Payroll</li>
-            <li class="nav-item" onclick="switchTab('documents')">Documents</li>
+            <li class="nav-item" id="nav-employees" onclick="switchTab('employees')">Employees</li>
+            <li class="nav-item active" id="nav-attendance" onclick="switchTab('attendance')">Attendance</li>
+            <li class="nav-item" id="nav-leave" onclick="switchTab('leave')">Time Off</li>
+            <li class="nav-item" id="nav-payroll" onclick="switchTab('payroll')">Payroll</li>
+            <li class="nav-item" id="nav-documents" onclick="switchTab('documents')">Documents</li>
         </ul>
         <div class="nav-right">
             <div class="role-badge">
-                <span>Role:</span>
-                <select id="roleSelector" onchange="toggleRole(this.value)">
+                Role: 
+                <select id="user-role-select" onchange="onRoleChange(this.value)">
                     <option value="employee">Employee (John Doe)</option>
-                    <option value="admin">Admin / HR Officer</option>
+                    <option value="admin">HR / Admin Manager</option>
                 </select>
             </div>
         </div>
     </nav>
 
-    <!-- MAIN CONTAINER -->
     <div class="container">
 
-        <!-- ================= ATTENDANCE SECTION ================= -->
-        <section id="section-attendance">
+        <!-- ATTENDANCE TAB -->
+        <div id="tab-attendance" class="tab-content active">
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Attendance Tracking</h1>
-                    <p style="color: var(--text-secondary); font-size: 0.875rem;">Daily logs, check-in/out, and working hours calculation</p>
+                    <p class="page-subtitle">Real-time check-in/out, worked hours calculation, and status logging</p>
                 </div>
                 <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-secondary" onclick="toggleAttendanceView('daily')">Daily View</button>
-                    <button class="btn btn-secondary" onclick="toggleAttendanceView('weekly')">Weekly View</button>
+                    <button class="btn btn-secondary" onclick="resetAttendanceData()">Reset Data</button>
                 </div>
             </div>
 
-            <!-- Checkin Banner (for Employee) -->
-            <div class="checkin-banner" id="employeeCheckinBanner">
-                <div class="checkin-info">
-                    <div class="status-dot" id="statusDot"></div>
-                    <div>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Today's Status</div>
-                        <div style="font-size: 1.1rem; font-weight: 700;" id="todayStatusText">Present (Checked In)</div>
+            <!-- Attendance Banner -->
+            <div class="action-banner">
+                <div class="banner-metrics">
+                    <div class="metric-group">
+                        <span class="metric-label">Today's Status</span>
+                        <div class="metric-value">
+                            <span id="banner-status-dot" class="status-dot red"></span>
+                            <span id="banner-status-text">Not Checked In</span>
+                        </div>
                     </div>
-                    <div style="border-left: 1px solid var(--border-color); padding-left: 1.5rem;">
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Check In Time</div>
-                        <div style="font-size: 1rem; font-weight: 600;" id="checkinTimeText">09:00 AM</div>
+                    <div class="metric-group">
+                        <span class="metric-label">Check In Time</span>
+                        <span class="metric-value" id="banner-checkin-time">--:--</span>
                     </div>
-                    <div style="border-left: 1px solid var(--border-color); padding-left: 1.5rem;">
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Working Hours</div>
-                        <div style="font-size: 1rem; font-weight: 600; color: #10b981;" id="workedHoursText">4h 15m</div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 0.75rem;">
-                    <button class="btn btn-success" id="btnCheckIn" onclick="handleCheckIn()">Check In</button>
-                    <button class="btn btn-danger" id="btnCheckOut" onclick="handleCheckOut()">Check Out</button>
-                </div>
-            </div>
-
-            <!-- Weekly View Container -->
-            <div class="table-container hidden" id="weeklyViewBox" style="padding: 1.25rem;">
-                <div class="table-title" style="margin-bottom: 0.75rem;">Weekly Attendance Overview (Oct 13 - Oct 19, 2025)</div>
-                <div class="week-grid">
-                    <div class="day-box">
-                        <div class="day-name">Mon</div>
-                        <div class="day-date">13</div>
-                        <span class="badge badge-success">Present (8.5h)</span>
-                    </div>
-                    <div class="day-box">
-                        <div class="day-name">Tue</div>
-                        <div class="day-date">14</div>
-                        <span class="badge badge-success">Present (8.0h)</span>
-                    </div>
-                    <div class="day-box">
-                        <div class="day-name">Wed</div>
-                        <div class="day-date">15</div>
-                        <span class="badge badge-info">Leave (Paid)</span>
-                    </div>
-                    <div class="day-box">
-                        <div class="day-name">Thu</div>
-                        <div class="day-date">16</div>
-                        <span class="badge badge-warning">Half-day (3.5h)</span>
-                    </div>
-                    <div class="day-box">
-                        <div class="day-name">Fri</div>
-                        <div class="day-date">17</div>
-                        <span class="badge badge-success">Present (9.0h)</span>
-                    </div>
-                    <div class="day-box">
-                        <div class="day-name">Sat</div>
-                        <div class="day-date">18</div>
-                        <span class="badge" style="color: var(--text-secondary);">Weekend</span>
-                    </div>
-                    <div class="day-box">
-                        <div class="day-name">Sun</div>
-                        <div class="day-date">19</div>
-                        <span class="badge" style="color: var(--text-secondary);">Weekend</span>
+                    <div class="metric-group">
+                        <span class="metric-label">Working Hours</span>
+                        <span class="metric-value" id="banner-worked-hours" style="color: var(--accent-purple-hover);">0h 00m</span>
                     </div>
                 </div>
-            </div>
-
-            <!-- Attendance History Table -->
-            <div class="table-container" id="dailyViewBox">
-                <div class="table-header-bar">
-                    <div class="table-title">Attendance Log &amp; Working Hours</div>
-                    <div style="font-size: 0.85rem; color: var(--text-secondary);" id="attendanceSubtext">Showing personal attendance logs</div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Employee</th>
-                            <th>Check In</th>
-                            <th>Check Out</th>
-                            <th>Status</th>
-                            <th>Worked Hours</th>
-                            <th>Effective Hours</th>
-                            <th>Extra Hours</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTableBody">
-                        <!-- Rendered by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- ================= TIME OFF / LEAVE SECTION ================= -->
-        <section id="section-timeoff" class="hidden">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Time Off &amp; Leave Management</h1>
-                    <p style="color: var(--text-secondary); font-size: 0.875rem;">Apply for leave and manage employee time-off approval requests</p>
-                </div>
-                <div>
-                    <button class="btn btn-primary" onclick="openLeaveModal()">+ Apply for Time Off</button>
+                <div class="banner-actions">
+                    <button id="btn-check-in" class="btn btn-success" onclick="handleCheckIn()">Check In</button>
+                    <button id="btn-check-out" class="btn btn-danger" onclick="handleCheckOut()" disabled>Check Out</button>
                 </div>
             </div>
 
-            <!-- Balance Cards Row -->
-            <div class="cards-row">
-                <div class="stat-card">
-                    <div class="stat-card-title">Paid Time Off</div>
-                    <div class="stat-card-val" style="color: #10b981;">24 Days</div>
-                    <div class="stat-card-desc">Annual &amp; Casual Leave available</div>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.1rem;">Attendance Logs & Worked Hours</h3>
+                    <span id="record-rule-tag" style="font-size: 0.8rem; color: var(--text-secondary);">Showing personal attendance logs (Record Rule Protected)</span>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-card-title">Sick Leave</div>
-                    <div class="stat-card-val" style="color: #3b82f6;">19 Days</div>
-                    <div class="stat-card-desc">Medical certificate required &gt; 2 days</div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Employee</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Status</th>
+                                <th>Worked Hours</th>
+                                <th>Effective Hours</th>
+                                <th>Extra Hours</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body"></tbody>
+                    </table>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-card-title">Unpaid Leaves</div>
-                    <div class="stat-card-val" style="color: #f59e0b;">Available</div>
-                    <div class="stat-card-desc">Subject to HR / Admin approval</div>
-                </div>
-            </div>
-
-            <!-- Time Off Requests Table -->
-            <div class="table-container">
-                <div class="table-header-bar">
-                    <div class="table-title">Time Off Applications</div>
-                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Review approval statuses and admin remarks</div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Employee</th>
-                            <th>Leave Type</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
-                            <th>Allocation</th>
-                            <th>Status</th>
-                            <th>Reason / Remarks</th>
-                            <th>HR Comments</th>
-                            <th id="actionsHeader">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaveTableBody">
-                        <!-- Rendered by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Other Sections Placeholder -->
-        <section id="section-employees" class="hidden">
-            <div class="page-header">
-                <h1 class="page-title">Employee Directory (Person 2 Domain)</h1>
-            </div>
-            <div class="stat-card">
-                <p>Employee Profile Management, Onboarding, Documents, and Personal Information owned by Person 2.</p>
-            </div>
-        </section>
-
-        <section id="section-payroll" class="hidden">
-            <div class="page-header">
-                <h1 class="page-title">Payroll &amp; Salary Structure (Person 4 Domain)</h1>
-            </div>
-            <div class="stat-card">
-                <p>Organization Salary Calculation, Base Wage, Allowances, Deductions, and Net Pay owned by Person 4.</p>
-            </div>
-        </section>
-
-        <section id="section-documents" class="hidden">
-            <div class="page-header">
-                <h1 class="page-title">Verification Documents (Person 2 Domain)</h1>
-            </div>
-            <div class="stat-card">
-                <p>File Uploads, ID Proofs, Certificates, and Document Archival owned by Person 2.</p>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- TIME OFF APPLICATION MODAL (Matching Wireframe 4) -->
-    <div class="modal-backdrop" id="leaveModal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Time Off Type Request</div>
-                <span style="cursor: pointer; font-size: 1.25rem;" onclick="closeLeaveModal()">&times;</span>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Employee</label>
-                <input type="text" class="form-control" value="John Doe (EMP001)" readonly>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Time Off Type</label>
-                <select class="form-control" id="leaveTypeInput">
-                    <option value="Paid Time Off">Paid Time Off</option>
-                    <option value="Sick Leave">Sick Leave</option>
-                    <option value="Unpaid Leaves">Unpaid Leaves</option>
-                </select>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                <div class="form-group">
-                    <label class="form-label">Start Date</label>
-                    <input type="date" class="form-control" id="startDateInput" value="2025-10-22">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">End Date</label>
-                    <input type="date" class="form-control" id="endDateInput" value="2025-10-23">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Allocation (Days)</label>
-                <input type="number" class="form-control" id="allocationDaysInput" value="2" min="1">
-            </div>
-            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
-                <input type="checkbox" id="attachmentInput" style="width: 16px; height: 16px;">
-                <label for="attachmentInput" class="form-label" style="margin-bottom: 0;">Medical Certificate / Document Attached (For Sick Leave)</label>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Remarks / Reason</label>
-                <textarea class="form-control" id="remarksInput" rows="2" placeholder="Family event / Medical recovery..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeLeaveModal()">Discard</button>
-                <button class="btn btn-primary" onclick="submitLeaveRequest()">Submit Application</button>
             </div>
         </div>
+
+        <!-- TIME OFF / LEAVE TAB -->
+        <div id="tab-leave" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Time Off & Leave Management</h1>
+                    <p class="page-subtitle">Apply for leave, review allocations, and manage approvals</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="metric-label">Paid Time Off</div>
+                    <div class="val" style="color: #34d399;">12 Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="metric-label">Sick Leave</div>
+                    <div class="val" style="color: #fbbf24;">8 Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="metric-label">Unpaid Leave</div>
+                    <div class="val" style="color: #60a5fa;">Unlimited</div>
+                </div>
+            </div>
+
+            <!-- Apply Leave Form -->
+            <div class="card" id="apply-leave-card">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Apply for Time Off</h3>
+                <form onsubmit="handleLeaveSubmit(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Leave Type</label>
+                            <select id="leave-type" class="form-control" required>
+                                <option value="paid">Paid Time Off</option>
+                                <option value="sick">Sick Leave</option>
+                                <option value="unpaid">Unpaid Leaves</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="leave-start-date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="leave-end-date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                        <label>Reason / Remarks</label>
+                        <textarea id="leave-remarks" class="form-control" rows="2" placeholder="State reason for leave application..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Leave Application</button>
+                </form>
+            </div>
+
+            <!-- Leave Applications Table -->
+            <div class="card">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Leave Applications & Approval Workflow</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Leave Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>HR Comments / Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leave-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMPLOYEES TAB (Person 2) -->
+        <div id="tab-employees" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Employee Profiles & Directory</h1>
+                    <p class="page-subtitle">Manage organization member profiles, roles, joining dates, and account provisioning</p>
+                </div>
+                <button class="btn btn-primary" onclick="toggleAddEmpForm()">+ Add Employee</button>
+            </div>
+
+            <!-- Add Employee Form -->
+            <div class="card" id="add-emp-card" style="display: none;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Create New Employee Profile</h3>
+                <form onsubmit="handleAddEmployee(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="emp-name" class="form-control" placeholder="e.g. Alice Johnson" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Work Email</label>
+                            <input type="email" id="emp-email" class="form-control" placeholder="alice@company.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Job Title</label>
+                            <input type="text" id="emp-job" class="form-control" placeholder="e.g. Software Engineer" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="emp-dept" class="form-control" placeholder="e.g. Engineering" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dayflow Role</label>
+                            <select id="emp-role" class="form-control" required>
+                                <option value="Employee">Employee</option>
+                                <option value="Admin / HR">Admin / HR</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Joining Date</label>
+                            <input type="date" id="emp-joining" class="form-control" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Save Employee Profile</button>
+                </form>
+            </div>
+
+            <div class="employee-grid" id="employee-grid"></div>
+        </div>
+
+        <!-- DOCUMENTS TAB (Person 2) -->
+        <div id="tab-documents" class="tab-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Employee Verification Documents</h1>
+                    <p class="page-subtitle">Upload, classify, and verify contracts, ID proofs, and certificates</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1.25rem;">Upload Employee Document</h3>
+                <form onsubmit="handleDocUpload(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Document Title</label>
+                            <input type="text" id="doc-title" class="form-control" placeholder="e.g. Passport ID Copy" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Employee</label>
+                            <select id="doc-employee" class="form-control" required>
+                                <option value="John Doe">John Doe</option>
+                                <option value="Jane Smith">Jane Smith</option>
+                                <option value="Robert Taylor">Robert Taylor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Document Category</label>
+                            <select id="doc-type" class="form-control" required>
+                                <option value="id_proof">ID Proof</option>
+                                <option value="contract">Contract</option>
+                                <option value="certificate">Certificate</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Attachment File Name</label>
+                            <input type="text" id="doc-filename" class="form-control" placeholder="e.g. passport_scan.pdf" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload Verification Document</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Document Attachment Library</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Document Title</th>
+                                <th>Employee</th>
+                                <th>Classification</th>
+                                <th>File Name</th>
+                                <th>Upload Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="document-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAYROLL PLACEHOLDER (Person 4) -->
+        <div id="tab-payroll" class="tab-content">
+            <div class="card">
+                <h2>Payroll & Salary Management</h2>
+                <p style="color:var(--text-secondary); margin-top:0.5rem;">Managed by Person 4 (Base salary, allowances, deductions, net salary).</p>
+            </div>
+        </div>
+
     </div>
 
-    <!-- JAVASCRIPT STATE & LOGIC -->
     <script>
-        let currentRole = 'employee'; // 'employee' or 'admin'
-
-        // Sample Attendance Data
-        let attendances = [
-            { id: 1, date: '2025-10-22', employee: 'John Doe', checkIn: '09:00 AM', checkOut: '--', status: 'Present', worked: '4.2h', effective: '4.2h', extra: '0.0h' },
-            { id: 2, date: '2025-10-21', employee: 'John Doe', checkIn: '08:50 AM', checkOut: '06:10 PM', status: 'Present', worked: '9.3h', effective: '9.3h', extra: '1.3h' },
-            { id: 3, date: '2025-10-20', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', status: 'Half-day', worked: '3.7h', effective: '3.7h', extra: '0.0h' },
-            { id: 4, date: '2025-10-19', employee: 'Parzival', checkIn: '09:05 AM', checkOut: '05:30 PM', status: 'Present', worked: '8.4h', effective: '8.4h', extra: '0.4h' },
-            { id: 5, date: '2025-10-18', employee: 'Subhadeep Mistry', checkIn: '--', checkOut: '--', status: 'Leave', worked: '0.0h', effective: '0.0h', extra: '0.0h' }
+        const DEFAULT_ATTENDANCE = [
+            { id: 1, date: '2026-08-21', employee: 'John Doe', checkIn: '09:00 AM', checkOut: '05:30 PM', status: 'present', workedHours: 8.5, effectiveHours: 8.5, extraHours: 0.5 },
+            { id: 2, date: '2026-08-20', employee: 'John Doe', checkIn: '08:50 AM', checkOut: '06:10 PM', status: 'present', workedHours: 9.3, effectiveHours: 9.3, extraHours: 1.3 },
+            { id: 3, date: '2026-08-19', employee: 'John Doe', checkIn: '09:15 AM', checkOut: '01:00 PM', status: 'half_day', workedHours: 3.75, effectiveHours: 3.75, extraHours: 0.0 },
+            { id: 4, date: '2026-08-21', employee: 'Jane Smith', checkIn: '08:55 AM', checkOut: '05:00 PM', status: 'present', workedHours: 8.08, effectiveHours: 8.08, extraHours: 0.08 }
         ];
 
-        // Sample Leave Requests
-        let leaveRequests = [
-            { id: 101, employee: 'John Doe', type: 'Paid Time Off', start: '2025-10-25', end: '2025-10-26', days: 2, status: 'Pending', remarks: 'Attending family wedding', adminComment: '' },
-            { id: 102, employee: 'John Doe', type: 'Sick Leave', start: '2025-10-10', end: '2025-10-10', days: 1, status: 'Approved', remarks: 'Flu recovery', adminComment: 'Get well soon. Approved.' },
-            { id: 103, employee: 'Parzival', type: 'Unpaid Leaves', start: '2025-10-28', end: '2025-10-29', days: 2, status: 'Pending', remarks: 'Personal project work', adminComment: '' },
-            { id: 104, employee: 'Subhadeep Mistry', type: 'Paid Time Off', start: '2025-10-18', end: '2025-10-18', days: 1, status: 'Approved', remarks: 'Personal errand', adminComment: 'Approved by HR.' }
+        const DEFAULT_LEAVE = [
+            { id: 101, employee: 'John Doe', type: 'sick', startDate: '2026-08-25', endDate: '2026-08-26', days: 2, remarks: 'Fever and rest recommended', status: 'pending', adminComments: '' },
+            { id: 102, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', status: 'approved', adminComments: 'Approved by HR' }
         ];
 
-        function renderAttendanceTable() {
-            const tbody = document.getElementById('attendanceTableBody');
-            tbody.innerHTML = '';
+        const DEFAULT_EMPLOYEES = [
+            { id: 1, name: 'John Doe', email: 'john.doe@company.com', job: 'Senior Software Engineer', dept: 'Engineering', role: 'Employee', joining: '2024-03-15', loginId: 'DAYFLOW-JOHN-2024-00001', provisioned: true },
+            { id: 2, name: 'Jane Smith', email: 'jane.smith@company.com', job: 'HR Specialist', dept: 'Human Resources', role: 'Admin / HR', joining: '2023-01-10', loginId: 'DAYFLOW-JANE-2023-00002', provisioned: true },
+            { id: 3, name: 'Robert Taylor', email: 'robert.t@company.com', job: 'Product Manager', dept: 'Product', role: 'Employee', joining: '2025-06-01', loginId: '', provisioned: false }
+        ];
 
-            let list = attendances;
-            if (currentRole === 'employee') {
-                list = attendances.filter(a => a.employee === 'John Doe');
-                document.getElementById('attendanceSubtext').innerText = 'Showing your personal attendance logs (Record Rule Protected)';
-            } else {
-                document.getElementById('attendanceSubtext').innerText = 'Admin / HR Overview: Viewing all organization attendance logs';
-            }
+        const DEFAULT_DOCUMENTS = [
+            { id: 1, title: 'Passport Verification ID', employee: 'John Doe', type: 'id_proof', filename: 'john_passport.pdf', date: '2026-08-10' },
+            { id: 2, title: 'Employment Contract 2026', employee: 'Jane Smith', type: 'contract', filename: 'jane_contract_2026.pdf', date: '2026-08-01' }
+        ];
 
-            list.forEach(item => {
-                let badgeClass = 'badge-success';
-                if (item.status === 'Half-day') badgeClass = 'badge-warning';
-                if (item.status === 'Absent') badgeClass = 'badge-danger';
-                if (item.status === 'Leave') badgeClass = 'badge-info';
+        let state = {
+            role: 'employee',
+            currentEmployee: 'John Doe',
+            isCheckedIn: false,
+            activeCheckInTime: null,
+            checkInTimestamp: null,
+            tickerInterval: null,
+            attendances: JSON.parse(localStorage.getItem('df_attendances')) || DEFAULT_ATTENDANCE,
+            leaves: JSON.parse(localStorage.getItem('df_leaves')) || DEFAULT_LEAVE,
+            employees: JSON.parse(localStorage.getItem('df_employees')) || DEFAULT_EMPLOYEES,
+            documents: JSON.parse(localStorage.getItem('df_documents')) || DEFAULT_DOCUMENTS
+        };
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${item.date}</strong></td>
-                        <td>${item.employee}</td>
-                        <td>${item.checkIn}</td>
-                        <td>${item.checkOut}</td>
-                        <td><span class="badge ${badgeClass}">${item.status}</span></td>
-                        <td>${item.worked}</td>
-                        <td>${item.effective}</td>
-                        <td style="color: ${parseFloat(item.extra) > 0 ? '#10b981' : 'inherit'}">${item.extra}</td>
-                    </tr>
-                `;
-            });
+        function saveState() {
+            localStorage.setItem('df_attendances', JSON.stringify(state.attendances));
+            localStorage.setItem('df_leaves', JSON.stringify(state.leaves));
+            localStorage.setItem('df_employees', JSON.stringify(state.employees));
+            localStorage.setItem('df_documents', JSON.stringify(state.documents));
         }
 
-        function renderLeaveTable() {
-            const tbody = document.getElementById('leaveTableBody');
-            tbody.innerHTML = '';
-
-            let list = leaveRequests;
-            if (currentRole === 'employee') {
-                list = leaveRequests.filter(l => l.employee === 'John Doe');
-            }
-
-            list.forEach(req => {
-                let badgeClass = 'badge-warning';
-                if (req.status === 'Approved') badgeClass = 'badge-success';
-                if (req.status === 'Rejected') badgeClass = 'badge-danger';
-
-                let actionHtml = '--';
-                if (currentRole === 'admin' && req.status === 'Pending') {
-                    actionHtml = `
-                        <div style="display: flex; gap: 0.35rem;">
-                            <button class="btn btn-success" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="approveLeave(${req.id})">Approve</button>
-                            <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="rejectLeave(${req.id})">Reject</button>
-                        </div>
-                    `;
-                } else if (req.status === 'Approved') {
-                    actionHtml = '<span style="color: #10b981; font-size: 0.8rem; font-weight: 600;">✓ Synced to Attendance</span>';
-                }
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${req.employee}</strong></td>
-                        <td>${req.type}</td>
-                        <td>${req.start}</td>
-                        <td>${req.end}</td>
-                        <td>${req.days} Day(s)</td>
-                        <td><span class="badge ${badgeClass}">${req.status}</span></td>
-                        <td>${req.remarks || '--'}</td>
-                        <td style="color: var(--text-secondary);">${req.adminComment || '--'}</td>
-                        <td>${actionHtml}</td>
-                    </tr>
-                `;
-            });
+        function resetAttendanceData() {
+            localStorage.clear();
+            state.attendances = JSON.parse(JSON.stringify(DEFAULT_ATTENDANCE));
+            state.leaves = JSON.parse(JSON.stringify(DEFAULT_LEAVE));
+            state.employees = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
+            state.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
+            state.isCheckedIn = false;
+            if (state.tickerInterval) clearInterval(state.tickerInterval);
+            renderAll();
         }
 
-        function toggleRole(role) {
-            currentRole = role;
-            if (role === 'admin') {
-                document.getElementById('employeeCheckinBanner').classList.add('hidden');
-            } else {
-                document.getElementById('employeeCheckinBanner').classList.remove('hidden');
-            }
-            renderAttendanceTable();
-            renderLeaveTable();
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         }
 
-        function switchTab(tabName) {
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function switchTab(tabId) {
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
 
-            ['attendance', 'timeoff', 'employees', 'payroll', 'documents'].forEach(t => {
-                const sec = document.getElementById('section-' + t);
-                if (sec) sec.classList.add('hidden');
-            });
-
-            const activeSec = document.getElementById('section-' + tabName);
-            if (activeSec) activeSec.classList.remove('hidden');
+            const targetNav = document.getElementById('nav-' + tabId);
+            if (targetNav) targetNav.classList.add('active');
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) targetTab.classList.add('active');
         }
 
-        function toggleAttendanceView(view) {
-            if (view === 'weekly') {
-                document.getElementById('weeklyViewBox').classList.remove('hidden');
-                document.getElementById('dailyViewBox').classList.add('hidden');
-            } else {
-                document.getElementById('weeklyViewBox').classList.add('hidden');
-                document.getElementById('dailyViewBox').classList.remove('hidden');
-            }
+        function onRoleChange(role) {
+            state.role = role;
+            renderAll();
         }
 
         function handleCheckIn() {
-            alert('Check-in recorded! Timestamp saved to Attendance log.');
-            attendances.unshift({
+            if (state.isCheckedIn) return;
+            const now = new Date();
+            state.isCheckedIn = true;
+            state.activeCheckInTime = formatTime(now);
+            state.checkInTimestamp = now.getTime();
+
+            state.tickerInterval = setInterval(updateLiveTicker, 1000);
+
+            const newRecord = {
                 id: Date.now(),
-                date: new Date().toISOString().split('T')[0],
-                employee: 'John Doe',
-                checkIn: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: formatDate(now),
+                employee: state.currentEmployee,
+                checkIn: state.activeCheckInTime,
                 checkOut: '--',
-                status: 'Present',
-                worked: '0.0h',
-                effective: '0.0h',
-                extra: '0.0h'
-            });
-            renderAttendanceTable();
+                status: 'present',
+                workedHours: 0.0,
+                effectiveHours: 0.0,
+                extraHours: 0.0,
+                isActive: true
+            };
+
+            state.attendances.unshift(newRecord);
+            saveState();
+            renderAttendance();
+        }
+
+        function updateLiveTicker() {
+            if (!state.isCheckedIn || !state.checkInTimestamp) return;
+
+            const diffMs = Date.now() - state.checkInTimestamp;
+            const diffSec = Math.floor(diffMs / 1000);
+            const hrs = Math.floor(diffSec / 3600);
+            const mins = Math.floor((diffSec % 3600) / 60);
+            const secs = diffSec % 60;
+
+            document.getElementById('banner-worked-hours').innerText = `${hrs}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+
+            const activeRec = state.attendances.find(a => a.isActive);
+            if (activeRec) {
+                const workedHrs = parseFloat((diffSec / 3600).toFixed(2));
+                activeRec.workedHours = workedHrs;
+                activeRec.effectiveHours = workedHrs;
+                activeRec.extraHours = workedHrs > 8.0 ? parseFloat((workedHrs - 8.0).toFixed(2)) : 0.0;
+                renderAttendanceTable();
+            }
         }
 
         function handleCheckOut() {
-            alert('Check-out recorded! Working hours calculated.');
-            if (attendances[0] && attendances[0].checkOut === '--') {
-                attendances[0].checkOut = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                attendances[0].worked = '8.2h';
-                attendances[0].effective = '8.2h';
-                attendances[0].extra = '0.2h';
+            if (!state.isCheckedIn) return;
+
+            const now = new Date();
+            const checkOutStr = formatTime(now);
+
+            if (state.tickerInterval) clearInterval(state.tickerInterval);
+
+            const activeRec = state.attendances.find(a => a.isActive);
+            if (activeRec) {
+                activeRec.checkOut = checkOutStr;
+                activeRec.isActive = false;
+                const diffMs = state.checkInTimestamp ? (now.getTime() - state.checkInTimestamp) : 0;
+                const diffSec = Math.floor(diffMs / 1000);
+                const workedHrs = parseFloat((diffSec / 3600).toFixed(2));
+
+                activeRec.workedHours = workedHrs > 0 ? workedHrs : 0.1;
+                activeRec.effectiveHours = activeRec.workedHours;
+                activeRec.extraHours = activeRec.workedHours > 8.0 ? parseFloat((activeRec.workedHours - 8.0).toFixed(2)) : 0.0;
+                activeRec.status = 'present';
             }
-            renderAttendanceTable();
+
+            state.isCheckedIn = false;
+            state.activeCheckInTime = null;
+            state.checkInTimestamp = null;
+
+            saveState();
+            renderAttendance();
         }
 
-        function openLeaveModal() {
-            document.getElementById('leaveModal').style.display = 'flex';
-        }
+        function handleLeaveSubmit(e) {
+            e.preventDefault();
+            const type = document.getElementById('leave-type').value;
+            const startDate = document.getElementById('leave-start-date').value;
+            const endDate = document.getElementById('leave-end-date').value;
+            const remarks = document.getElementById('leave-remarks').value;
 
-        function closeLeaveModal() {
-            document.getElementById('leaveModal').style.display = 'none';
-        }
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (end < start) {
+                alert('End Date cannot be earlier than Start Date.');
+                return;
+            }
 
-        function submitLeaveRequest() {
-            const type = document.getElementById('leaveTypeInput').value;
-            const start = document.getElementById('startDateInput').value;
-            const end = document.getElementById('endDateInput').value;
-            const days = document.getElementById('allocationDaysInput').value;
-            const remarks = document.getElementById('remarksInput').value;
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
 
-            leaveRequests.unshift({
+            state.leaves.unshift({
                 id: Date.now(),
-                employee: 'John Doe',
+                employee: state.currentEmployee,
                 type: type,
-                start: start,
-                end: end,
-                days: parseFloat(days),
-                status: 'Pending',
+                startDate: startDate,
+                endDate: endDate,
+                days: days,
                 remarks: remarks,
-                adminComment: ''
+                status: 'pending',
+                adminComments: ''
             });
 
-            closeLeaveModal();
-            renderLeaveTable();
-            alert('Time off application submitted with status: Pending. Awaiting HR approval.');
+            saveState();
+            renderLeaves();
+            e.target.reset();
+            alert('Leave application submitted!');
         }
 
-        function approveLeave(id) {
-            const req = leaveRequests.find(l => l.id === id);
-            if (req) {
-                req.status = 'Approved';
-                req.adminComment = 'Approved by HR Manager.';
+        function handleApproveLeave(leaveId) {
+            const commentsInput = document.getElementById('hr-comments-' + leaveId);
+            const comments = commentsInput ? commentsInput.value : 'Approved by HR';
 
-                // Integrate with Attendance! Add record with status = 'Leave'
-                attendances.unshift({
-                    id: Date.now(),
-                    date: req.start,
-                    employee: req.employee,
-                    checkIn: '09:00 AM',
-                    checkOut: '05:00 PM',
-                    status: 'Leave',
-                    worked: '0.0h',
-                    effective: '0.0h',
-                    extra: '0.0h'
-                });
+            const leave = state.leaves.find(l => l.id === leaveId);
+            if (leave) {
+                leave.status = 'approved';
+                leave.adminComments = comments;
 
-                renderLeaveTable();
-                renderAttendanceTable();
-                alert(`Approved leave for ${req.employee}. Attendance for ${req.start} automatically updated with status: Leave!`);
+                let current = new Date(leave.startDate);
+                const end = new Date(leave.endDate);
+
+                while (current <= end) {
+                    if (current.getDay() !== 0 && current.getDay() !== 6) {
+                        const dStr = formatDate(current);
+                        const existingAtt = state.attendances.find(a => a.date === dStr && a.employee === leave.employee);
+                        if (existingAtt) {
+                            existingAtt.status = 'leave';
+                            existingAtt.remarks = `Approved ${leave.type} Leave`;
+                        } else {
+                            state.attendances.unshift({
+                                id: Date.now() + Math.random(),
+                                date: dStr,
+                                employee: leave.employee,
+                                checkIn: '09:00 AM',
+                                checkOut: '05:00 PM',
+                                status: 'leave',
+                                workedHours: 8.0,
+                                effectiveHours: 8.0,
+                                extraHours: 0.0
+                            });
+                        }
+                    }
+                    current.setDate(current.getDate() + 1);
+                }
+
+                saveState();
+                renderAll();
+                alert('Leave request approved!');
             }
         }
 
-        function rejectLeave(id) {
-            const comment = prompt('Enter HR rejection comment:', 'Operational requirements during project deadline.');
-            const req = leaveRequests.find(l => l.id === id);
-            if (req) {
-                req.status = 'Rejected';
-                req.adminComment = comment || 'Rejected by HR.';
-                renderLeaveTable();
+        function handleRejectLeave(leaveId) {
+            const commentsInput = document.getElementById('hr-comments-' + leaveId);
+            const comments = commentsInput ? commentsInput.value : 'Rejected by HR';
+            const leave = state.leaves.find(l => l.id === leaveId);
+            if (leave) {
+                leave.status = 'rejected';
+                leave.adminComments = comments;
+                saveState();
+                renderLeaves();
+                alert('Leave request rejected.');
             }
         }
 
-        // Initial render
-        renderAttendanceTable();
-        renderLeaveTable();
+        function toggleAddEmpForm() {
+            const card = document.getElementById('add-emp-card');
+            card.style.display = card.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleAddEmployee(e) {
+            e.preventDefault();
+            const name = document.getElementById('emp-name').value;
+            const email = document.getElementById('emp-email').value;
+            const job = document.getElementById('emp-job').value;
+            const dept = document.getElementById('emp-dept').value;
+            const role = document.getElementById('emp-role').value;
+            const joining = document.getElementById('emp-joining').value;
+
+            state.employees.unshift({
+                id: Date.now(),
+                name: name,
+                email: email,
+                job: job,
+                dept: dept,
+                role: role,
+                joining: joining,
+                loginId: '',
+                provisioned: false
+            });
+
+            saveState();
+            renderEmployees();
+            e.target.reset();
+            toggleAddEmpForm();
+            alert('Employee profile created successfully!');
+        }
+
+        function handleProvisionAccount(empId) {
+            const emp = state.employees.find(e => e.id === empId);
+            if (emp) {
+                const year = emp.joining ? emp.joining.split('-')[0] : '2026';
+                const nameComp = emp.name.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+                const loginId = `DAYFLOW-${nameComp}-${year}-000${Math.floor(Math.random() * 90 + 10)}`;
+
+                emp.provisioned = true;
+                emp.loginId = loginId;
+
+                saveState();
+                renderEmployees();
+                alert(`Account Provisioned Successfully!\n\nLogin ID: ${loginId}\nInitial Password: ${Math.random().toString(36).substring(2, 10)}`);
+            }
+        }
+
+        function handleDocUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('doc-title').value;
+            const employee = document.getElementById('doc-employee').value;
+            const type = document.getElementById('doc-type').value;
+            const filename = document.getElementById('doc-filename').value;
+
+            state.documents.unshift({
+                id: Date.now(),
+                title: title,
+                employee: employee,
+                type: type,
+                filename: filename,
+                date: formatDate(new Date())
+            });
+
+            saveState();
+            renderDocuments();
+            e.target.reset();
+            alert('Employee verification document uploaded successfully!');
+        }
+
+        function renderAttendanceBanner() {
+            const statusDot = document.getElementById('banner-status-dot');
+            const statusText = document.getElementById('banner-status-text');
+            const checkInTime = document.getElementById('banner-checkin-time');
+            const workedHours = document.getElementById('banner-worked-hours');
+            const btnIn = document.getElementById('btn-check-in');
+            const btnOut = document.getElementById('btn-check-out');
+
+            if (state.isCheckedIn) {
+                statusDot.className = 'status-dot green';
+                statusText.innerText = 'Present (Checked In)';
+                checkInTime.innerText = state.activeCheckInTime || '--:--';
+                btnIn.disabled = true;
+                btnOut.disabled = false;
+            } else {
+                statusDot.className = 'status-dot red';
+                statusText.innerText = 'Not Checked In';
+                checkInTime.innerText = '--:--';
+                workedHours.innerText = '0h 00m';
+                btnIn.disabled = false;
+                btnOut.disabled = true;
+            }
+        }
+
+        function renderAttendanceTable() {
+            const tbody = document.getElementById('attendance-table-body');
+            const tag = document.getElementById('record-rule-tag');
+
+            let filtered = state.attendances;
+            if (state.role === 'employee') {
+                filtered = state.attendances.filter(a => a.employee === state.currentEmployee);
+                tag.innerText = 'Showing personal attendance logs (Record Rule Protected)';
+            } else {
+                tag.innerText = 'Showing all organization attendance logs (HR / Admin Access)';
+            }
+
+            tbody.innerHTML = filtered.map(a => {
+                const badgeClass = a.status === 'present' ? 'badge-present' :
+                                   a.status === 'half_day' ? 'badge-halfday' :
+                                   a.status === 'leave' ? 'badge-leave' : 'badge-absent';
+                return `
+                    <tr>
+                        <td><strong>${a.date}</strong></td>
+                        <td>${a.employee}</td>
+                        <td>${a.checkIn}</td>
+                        <td>${a.checkOut}</td>
+                        <td><span class="badge ${badgeClass}">${a.status.toUpperCase().replace('_', ' ')}</span></td>
+                        <td>${a.workedHours}h</td>
+                        <td>${a.effectiveHours}h</td>
+                        <td style="color: ${a.extraHours > 0 ? 'var(--accent-green)' : 'inherit'}; font-weight: ${a.extraHours > 0 ? '700' : 'normal'};">${a.extraHours}h</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderLeaves() {
+            const tbody = document.getElementById('leave-table-body');
+            let filtered = state.leaves;
+            if (state.role === 'employee') {
+                filtered = state.leaves.filter(l => l.employee === state.currentEmployee);
+            }
+
+            tbody.innerHTML = filtered.map(l => {
+                const badgeClass = l.status === 'approved' ? 'badge-present' :
+                                   l.status === 'rejected' ? 'badge-absent' : 'badge-pending';
+                const typeLabel = l.type === 'paid' ? 'Paid Time Off' : l.type === 'sick' ? 'Sick Leave' : 'Unpaid Leave';
+
+                let actionCol = '';
+                if (state.role === 'admin' && l.status === 'pending') {
+                    actionCol = `
+                        <div style="display:flex; flex-direction:column; gap:0.4rem;">
+                            <input type="text" id="hr-comments-${l.id}" class="form-control" style="font-size:0.75rem; padding:0.3rem;" placeholder="HR comment...">
+                            <div style="display:flex; gap:0.4rem;">
+                                <button class="btn btn-success" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="handleApproveLeave(${l.id})">Approve</button>
+                                <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="handleRejectLeave(${l.id})">Reject</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    actionCol = `<span style="font-size:0.8rem; color:var(--text-secondary);">${l.adminComments || 'No HR comments'}</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td><strong>${l.employee}</strong></td>
+                        <td>${typeLabel}</td>
+                        <td>${l.startDate}</td>
+                        <td>${l.endDate}</td>
+                        <td>${l.days} day(s)</td>
+                        <td>${l.remarks}</td>
+                        <td><span class="badge ${badgeClass}">${l.status.toUpperCase()}</span></td>
+                        <td>${actionCol}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderEmployees() {
+            const grid = document.getElementById('employee-grid');
+            grid.innerHTML = state.employees.map(e => `
+                <div class="employee-card">
+                    <div class="emp-header">
+                        <div class="emp-avatar">${e.name.split(' ').map(n=>n[0]).join('')}</div>
+                        <div class="emp-info">
+                            <h4>${e.name}</h4>
+                            <p>${e.job}</p>
+                        </div>
+                    </div>
+                    <div class="emp-meta">
+                        <div><strong>Dept:</strong> ${e.dept}</div>
+                        <div><strong>Email:</strong> ${e.email}</div>
+                        <div><strong>Joined:</strong> ${e.joining}</div>
+                        <div style="margin-top:0.3rem;">
+                            <span class="badge badge-role">${e.role}</span>
+                        </div>
+                        ${e.provisioned ? `
+                            <div style="margin-top:0.5rem; font-size:0.75rem; color:#34d399;">
+                                🔒 Account Provisioned<br><code style="color:var(--text-primary);">${e.loginId}</code>
+                            </div>
+                        ` : `
+                            <button class="btn btn-secondary" style="margin-top:0.5rem; font-size:0.75rem; padding:0.3rem 0.6rem;" onclick="handleProvisionAccount(${e.id})">
+                                Provision User Account
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderDocuments() {
+            const tbody = document.getElementById('document-table-body');
+            tbody.innerHTML = state.documents.map(d => `
+                <tr>
+                    <td><strong>${d.title}</strong></td>
+                    <td>${d.employee}</td>
+                    <td><span class="badge badge-role">${d.type.toUpperCase().replace('_', ' ')}</span></td>
+                    <td><code>${d.filename}</code></td>
+                    <td>${d.date}</td>
+                    <td><span class="badge badge-present">VERIFIED</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAll() {
+            renderAttendanceBanner();
+            renderAttendanceTable();
+            renderLeaves();
+            renderEmployees();
+            renderDocuments();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
     </script>
 </body>
 </html>
 """
 
-class PreviewHandler(BaseHTTPRequestHandler):
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html; charset=utf-8')
         self.end_headers()
         self.wfile.write(HTML_CONTENT.encode('utf-8'))
 
-def run_server():
-    port = 8069
-    server = HTTPServer(('127.0.0.1', port), PreviewHandler)
-    print(f"==================================================")
-    print(f" Dayflow HRMS Live Preview Server Running at:")
-    print(f" http://localhost:{port}")
-    print(f" Open this link in your browser to view the UI!")
-    print(f"==================================================")
-    server.serve_forever()
+def run_server(port=8000):
+    server_address = ('', port)
+    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+    print("==================================================")
+    print(" Dayflow HRMS - Interactive Live UI Preview Server")
+    print(" Running at: http://localhost:%d" % port)
+    print(" Press Ctrl+C to stop the server.")
+    print("==================================================")
+    webbrowser.open("http://localhost:%d" % port)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nStopping preview server...")
+        httpd.server_close()
 
 if __name__ == '__main__':
     run_server()
