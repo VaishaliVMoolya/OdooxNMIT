@@ -8,6 +8,7 @@
     'website': 'https://github.com/VaishaliVMoolya/OdooxNMIT',
     'depends': [
         'base',
+        'mail',
         'hr',
         'hr_attendance',
         'hr_holidays',
@@ -18,6 +19,7 @@
         'security/ir.model.access.csv',
         'data/dayflow_sequence.xml',
         'data/leave_data.xml',
+        'data/mail_template_data.xml',
         'views/menu_views.xml',
         'views/auth_login_templates.xml',
         'views/account_provision_wizard_views.xml',

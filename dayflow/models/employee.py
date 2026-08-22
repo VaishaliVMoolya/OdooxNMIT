@@ -1,9 +1,11 @@
-# -*- coding: utf-8 -*-
+import logging
 import re
 import secrets
 
-from odoo import fields, models
+from odoo import fields, models, _
 from odoo.exceptions import AccessError, UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class HrEmployee(models.Model):
@@ -137,6 +139,7 @@ class HrEmployee(models.Model):
         user_values = {
             'name': self.name,
             'login': login,
+            'email': self.work_email or self.personal_email or False,
             'password': initial_password,
             'company_id': self.company_id.id,
             'company_ids': [(6, 0, [self.company_id.id])],
@@ -144,6 +147,9 @@ class HrEmployee(models.Model):
         }
         user = user_model.with_context(no_reset_password=True).create(user_values)
         self.write({'user_id': user.id})
+
+        # Send welcome email notification to the newly created employee account
+        self._send_dayflow_account_creation_alert(user)
 
         return {
             'type': 'ir.actions.client',
@@ -153,3 +159,25 @@ class HrEmployee(models.Model):
                 'temporary_password': initial_password,
             },
         }
+
+    def _send_dayflow_account_creation_alert(self, user=None):
+        """Send an email alert to the employee when their Dayflow account is created."""
+        self.ensure_one()
+        target_email = self.work_email or self.personal_email or (user.email if user else False)
+        if not target_email:
+            _logger.info("Dayflow account creation email skipped for employee %s (no email on record)", self.name)
+            return
+
+        try:
+            template = self.env.ref('dayflow.email_template_dayflow_account_created', raise_if_not_found=False)
+            if template:
+                base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', '')
+                login_url = f"{base_url}/web/login" if base_url else "/web/login"
+                template.with_context(
+                    login_url=login_url,
+                ).send_mail(self.id, force_send=False, raise_exception=False)
+                _logger.info("Dayflow account creation alert queued for employee: %s (%s)", self.name, target_email)
+        except Exception as e:
+            # Must not crash account creation if email delivery is unavailable
+            _logger.warning("Could not send Dayflow account creation email for employee %s: %s", self.name, e)
+

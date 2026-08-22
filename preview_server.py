@@ -2,7 +2,7 @@
 """
 Dayflow HRMS - Unified Live UI Preview Server
 Odoo x NMIT Hackathon
-All-in-One Dashboard, Employees, Attendance, Time Off (with Role-Based Access: Calendar for Employees only, HR Decision Hub & Details Modal for Admin), Documents, Payroll, and Admin Profile
+All-in-One Dashboard, Employees, Attendance, Time Off, Documents, Payroll, Admin Profile, and Email & Notification Alert System
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -14,7 +14,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow HRMS — Workspace & Time Off Console</title>
+    <title>Dayflow HRMS — Workspace & Notification System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -109,7 +109,40 @@ HTML_CONTENT = """<!DOCTYPE html>
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.85rem;
+        }
+
+        .nav-btn-icon {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-line);
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        .nav-btn-icon:hover {
+            border-color: var(--accent-purple);
+            background-color: rgba(113, 75, 103, 0.2);
+        }
+
+        .notif-badge-count {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: var(--accent-red);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.1rem 0.35rem;
+            border-radius: 10px;
+            border: 2px solid var(--bg-surface);
         }
 
         .user-pill {
@@ -333,7 +366,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             .two-col-grid { grid-template-columns: 1fr; }
         }
 
-        /* Interactive Calendar Grid (Employee Only) */
+        /* Interactive Calendar Grid */
         .cal-layout {
             display: grid;
             grid-template-columns: 2.2fr 1fr;
@@ -426,7 +459,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             border: 1px solid rgba(59, 130, 246, 0.4);
         }
 
-        /* Holiday List on Side */
+        /* Holiday List */
         .holiday-list {
             display: flex;
             flex-direction: column;
@@ -706,32 +739,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             margin-top: 0.25rem;
         }
 
-        /* Filter Pills */
-        .filter-group {
-            display: flex;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-        }
-
-        .pill-btn {
-            padding: 0.3rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            background-color: var(--bg-card);
-            color: var(--text-muted);
-            border: 1px solid var(--border-line);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .pill-btn.active {
-            background-color: var(--accent-purple);
-            color: #fff;
-            border-color: var(--accent-purple);
-        }
-
-        /* Modal */
+        /* Modals */
         .modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -751,6 +759,38 @@ HTML_CONTENT = """<!DOCTYPE html>
             padding: 1.5rem;
             max-height: 88vh;
             overflow-y: auto;
+        }
+
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .toast-msg {
+            background: linear-gradient(135deg, #181b24, #202433);
+            border: 1px solid var(--accent-purple);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 0.9rem 1.25rem;
+            color: #fff;
+            max-width: 380px;
+            pointer-events: auto;
+            animation: slideInRight 0.3s ease-out;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
         .tab-panel { display: none; }
@@ -774,6 +814,11 @@ HTML_CONTENT = """<!DOCTYPE html>
             <li class="nav-tab" id="tab-btn-profile" onclick="openTab('profile')">Admin Profile</li>
         </ul>
         <div class="nav-right">
+            <!-- In-App Notification Bell -->
+            <div class="nav-btn-icon" onclick="toggleNotificationModal()" title="View Email & In-App Notifications">
+                <span>🔔</span>
+                <span class="notif-badge-count" id="notif-count">3</span>
+            </div>
             <div class="user-pill">
                 <span>Role:</span>
                 <select id="user-role-select" onchange="onRoleChange(this.value)">
@@ -787,6 +832,9 @@ HTML_CONTENT = """<!DOCTYPE html>
         </div>
     </nav>
 
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
     <div class="container">
 
         <!-- DASHBOARD TAB -->
@@ -794,11 +842,30 @@ HTML_CONTENT = """<!DOCTYPE html>
             <div class="header-row">
                 <div>
                     <h1 class="header-title">Dayflow HRMS Management Console</h1>
-                    <p class="header-sub">Live organizational metrics, pending approvals, and executive summary</p>
+                    <p class="header-sub">Live organizational metrics, pending approvals, and email alert activity</p>
                 </div>
                 <div style="display:flex; gap:0.5rem;">
-                    <button class="btn btn-primary" onclick="openTab('profile')">👤 Admin Profile</button>
+                    <button class="btn btn-primary" onclick="toggleNotificationModal()">🔔 Notification Center</button>
                     <button class="btn btn-secondary" onclick="resetData()">↺ Refresh</button>
+                </div>
+            </div>
+
+            <!-- Email & System Health Banner -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(32, 36, 51, 0.95)); border: 1px solid rgba(16, 185, 129, 0.35); padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:0.85rem;">
+                        <div style="font-size:1.5rem;">✉️</div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.95rem; color:#fff; display:flex; align-items:center; gap:0.5rem;">
+                                <span>Dayflow Email & Notification Engine:</span>
+                                <span class="badge badge-green">ACTIVE (Odoo Mail Server / Fallback Safe)</span>
+                            </div>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                                Automated alerts active for: <strong>Login Security Alerts</strong>, <strong>Account Creation Invites</strong>, and <strong>Time Off Decision Workflow</strong>.
+                            </p>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" style="font-size:0.75rem; padding:0.3rem 0.75rem;" onclick="toggleNotificationModal()">View Sent Logs (3)</button>
                 </div>
             </div>
 
@@ -846,7 +913,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
                     <div>
                         <h3 style="font-size: 1.05rem;">Pending Leave Requests (Decision Hub)</h3>
-                        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Review and take immediate action on employee time off applications</p>
+                        <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Review applications and send automatic email notifications upon decision</p>
                     </div>
                     <span class="badge badge-amber" id="dash-badge-pending-count">0 Pending</span>
                 </div>
@@ -866,7 +933,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- 2-Column: Today's Attendance Summary & Employee Overview -->
+            <!-- 2-Column: Today's Attendance & Directory -->
             <div class="two-col-grid">
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
@@ -912,7 +979,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- TIME OFF / LEAVE TAB (Role-Based Access) -->
+        <!-- TIME OFF / LEAVE TAB -->
         <div id="panel-leave" class="tab-panel">
             <div class="header-row">
                 <div>
@@ -942,7 +1009,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- Admin HR Decision Banner (Visible Only to Admin) -->
+            <!-- Admin HR Decision Banner -->
             <div id="leave-admin-banner" class="card" style="display:none; background: linear-gradient(135deg, rgba(113, 75, 103, 0.22), rgba(32, 36, 51, 0.95)); border: 1px solid rgba(113, 75, 103, 0.45); margin-bottom: 1.25rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
@@ -951,15 +1018,14 @@ HTML_CONTENT = """<!DOCTYPE html>
                             <span class="badge badge-purple">Admin Mode</span>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-                            Review all employee leave applications, view request details, verify attachments, and record official approval/rejection decisions.
+                            Review all employee leave applications. Decisions trigger automated email alerts to the applicant.
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Calendar & National Holidays Layout (Role-Protected: Visible Only to Employees) -->
+            <!-- Calendar & National Holidays (Employee View) -->
             <div class="cal-layout" id="leave-cal-container">
-                <!-- Left: Interactive Calendar Grid -->
                 <div class="card" style="margin-bottom: 0;">
                     <div class="cal-header-bar">
                         <div style="display:flex; align-items:center; gap: 0.75rem;">
@@ -973,7 +1039,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                         </div>
                     </div>
 
-                    <!-- 7-Day Columns -->
                     <div class="cal-grid-days" style="margin-bottom: 0.4rem;">
                         <div class="cal-day-name">Mon</div>
                         <div class="cal-day-name">Tue</div>
@@ -984,7 +1049,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                         <div class="cal-day-name" style="color:#f87171;">Sun</div>
                     </div>
 
-                    <!-- Dynamic Calendar Tiles -->
                     <div class="cal-grid-days" id="cal-grid-tiles"></div>
                     
                     <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.75rem; text-align:center;">
@@ -992,7 +1056,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                     </p>
                 </div>
 
-                <!-- Right: National & Public Holidays -->
                 <div class="card" style="margin-bottom: 0;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
                         <h3 style="font-size: 1.05rem; color: #fbbf24;">🗓️ National Holidays 2026</h3>
@@ -1281,7 +1344,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                         <div class="field"><label>Role</label><select id="emp-role" class="input" required><option value="Employee">Employee</option><option value="Admin / HR">Admin / HR</option></select></div>
                         <div class="field"><label>Joining Date</label><input type="date" id="emp-joining" class="input" required></div>
                     </div>
-                    <button type="submit" class="btn btn-success">Save Profile</button>
+                    <button type="submit" class="btn btn-success">Save Profile &amp; Send Account Email</button>
                 </form>
             </div>
 
@@ -1368,6 +1431,30 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
         </div>
 
+    </div>
+
+    <!-- NOTIFICATION CENTER MODAL -->
+    <div id="modal-notifications" class="modal" style="display: none;">
+        <div class="modal-card" style="max-width: 620px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <div style="background:rgba(113,75,103,0.3); border:1px solid var(--accent-purple); padding:0.35rem 0.6rem; border-radius:6px; font-size:1.1rem;">🔔</div>
+                    <div>
+                        <h3 style="font-size: 1.15rem;">Email & In-App Notification Center</h3>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Live audit log of sent Dayflow security alerts and transactional emails</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="toggleNotificationModal()">✕</button>
+            </div>
+
+            <div id="notif-list-container" style="display:flex; flex-direction:column; gap:0.75rem; max-height:420px; overflow-y:auto; padding-right:4px;">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items:center; margin-top: 1.25rem; border-top: 1px solid var(--border-line); padding-top: 0.75rem;">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">🔒 Native Odoo Outgoing Mail Queue Active (TLS/SSL)</span>
+                <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="clearNotifications()">Clear Log</button>
+            </div>
+        </div>
     </div>
 
     <!-- NEW LEAVE REQUEST MODAL (Employee View) -->
@@ -1599,6 +1686,12 @@ HTML_CONTENT = """<!DOCTYPE html>
             { id: 3, ref: 'PAY/2026/003', employee: 'Robert Taylor', structure: 'Product Lead', period: 'August 2026', base: 58000, allow: 9000, deduct: 3800, status: 'draft' }
         ];
 
+        const DEFAULT_NOTIFICATIONS = [
+            { id: 1, title: 'Security: New Login Alert', recipient: 'jane.smith@dayflow.org', type: 'login', time: '2 mins ago', body: 'Security notification: Successful login from IP 192.168.1.10. No action required.' },
+            { id: 2, title: 'Welcome: Account Created', recipient: 'john.doe@company.com', type: 'account', time: '1 hour ago', body: 'Your Dayflow account (OIJODO20240001) has been created. Login access granted.' },
+            { id: 3, title: 'Time Off: Application Approved', recipient: 'john.doe@company.com', type: 'leave_approved', time: 'Yesterday', body: 'Your Paid Time Off request for 10 Aug 2026 has been approved by HR.' }
+        ];
+
         const HOLIDAYS_AUG_2026 = {
             15: '🇮🇳 Independence Day',
             19: '🌸 Raksha Bandhan',
@@ -1618,6 +1711,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             employees: JSON.parse(localStorage.getItem('df_employees')) || DEFAULT_EMPLOYEES,
             documents: JSON.parse(localStorage.getItem('df_documents')) || DEFAULT_DOCUMENTS,
             payrolls: JSON.parse(localStorage.getItem('df_payrolls')) || DEFAULT_PAYROLL,
+            notifications: JSON.parse(localStorage.getItem('df_notifications')) || DEFAULT_NOTIFICATIONS,
             adminProfile: JSON.parse(localStorage.getItem('df_admin_profile')) || {
                 name: 'Jane Smith',
                 role: 'Admin / HR',
@@ -1655,6 +1749,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             localStorage.setItem('df_employees', JSON.stringify(state.employees));
             localStorage.setItem('df_documents', JSON.stringify(state.documents));
             localStorage.setItem('df_payrolls', JSON.stringify(state.payrolls));
+            localStorage.setItem('df_notifications', JSON.stringify(state.notifications));
             localStorage.setItem('df_admin_profile', JSON.stringify(state.adminProfile));
         }
 
@@ -1665,9 +1760,84 @@ HTML_CONTENT = """<!DOCTYPE html>
             state.employees = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
             state.documents = JSON.parse(JSON.stringify(DEFAULT_DOCUMENTS));
             state.payrolls = JSON.parse(JSON.stringify(DEFAULT_PAYROLL));
+            state.notifications = JSON.parse(JSON.stringify(DEFAULT_NOTIFICATIONS));
             state.isCheckedIn = false;
             if (state.tickerInterval) clearInterval(state.tickerInterval);
             renderAll();
+        }
+
+        function triggerNotification(title, recipient, type, body) {
+            const notif = {
+                id: Date.now(),
+                title: title,
+                recipient: recipient,
+                type: type,
+                time: 'Just now',
+                body: body
+            };
+            state.notifications.unshift(notif);
+            saveState();
+            renderNotifications();
+            showToast(title, `${body} (Sent to: ${recipient})`);
+        }
+
+        function showToast(title, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-msg';
+            toast.innerHTML = `
+                <div style="font-size: 1.3rem;">✉️</div>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">${title}</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; line-height: 1.4;">${message}</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 5500);
+        }
+
+        function toggleNotificationModal() {
+            const modal = document.getElementById('modal-notifications');
+            modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function clearNotifications() {
+            state.notifications = [];
+            saveState();
+            renderNotifications();
+        }
+
+        function renderNotifications() {
+            const countEl = document.getElementById('notif-count');
+            countEl.innerText = state.notifications.length;
+
+            const listEl = document.getElementById('notif-list-container');
+            if (state.notifications.length === 0) {
+                listEl.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">No notifications yet.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = state.notifications.map(n => {
+                const icon = n.type.includes('leave_approved') ? '✅' : n.type.includes('leave_rejected') ? '❌' : n.type.includes('leave') ? '📅' : n.type.includes('login') ? '🔑' : '👤';
+                return `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-line); border-radius: 8px; padding: 0.85rem 1rem; display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <div style="font-size: 1.25rem;">${icon}</div>
+                        <div style="flex: 1;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <strong style="font-size:0.88rem; color:#fff;">${n.title}</strong>
+                                <span style="font-size:0.72rem; color:var(--text-muted);">${n.time}</span>
+                            </div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">${n.body}</div>
+                            <div style="font-size:0.72rem; color:#60a5fa; margin-top:4px;">Recipient: <code>${n.recipient}</code></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function formatCurrency(val) {
@@ -1721,9 +1891,21 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (role === 'admin') {
                 state.currentEmployee = 'Jane Smith';
                 document.getElementById('nav-avatar').innerText = 'JS';
+                triggerNotification(
+                    'Security: Login Alert (Admin)',
+                    'jane.smith@dayflow.org',
+                    'login',
+                    'Your Dayflow account was successfully logged into at ' + new Date().toLocaleTimeString()
+                );
             } else {
                 state.currentEmployee = 'John Doe';
                 document.getElementById('nav-avatar').innerText = 'JD';
+                triggerNotification(
+                    'Security: Login Alert (Employee)',
+                    'john.doe@company.com',
+                    'login',
+                    'Your Dayflow account was successfully logged into at ' + new Date().toLocaleTimeString()
+                );
             }
             renderAll();
         }
@@ -1866,7 +2048,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             closeLeaveModal();
             renderLeaves();
             renderDashboard();
-            alert('🎉 Leave application submitted successfully! Status set to Pending.');
+
+            // Trigger Outgoing Leave Submission Notification to HR
+            triggerNotification(
+                'Time Off: Application Submitted',
+                'admin@dayflow.org',
+                'leave_submitted',
+                `New ${type.toUpperCase()} request from ${emp} (${start} to ${end}, ${days} days). Pending review.`
+            );
         }
 
         function openLeaveDetailModal(id) {
@@ -1903,7 +2092,21 @@ HTML_CONTENT = """<!DOCTYPE html>
                 saveState();
                 closeLeaveDetailModal();
                 renderAll();
-                alert(`Leave request has been ${newStatus.toUpperCase()}!`);
+
+                // Trigger Outgoing Decision Email Notification to Employee
+                const empObj = state.employees.find(e => e.name === leave.employee);
+                const recipientEmail = empObj ? empObj.email : 'employee@company.com';
+                const notifTitle = newStatus === 'approved' ? 'Time Off: Request Approved' : 'Time Off: Request Rejected';
+                const notifBody = newStatus === 'approved' ? 
+                    `Your ${leave.type.toUpperCase()} request for ${leave.startDate} to ${leave.endDate} has been approved by HR.` :
+                    `Your ${leave.type.toUpperCase()} request was rejected. Remarks: ${leave.adminComments}`;
+
+                triggerNotification(
+                    notifTitle,
+                    recipientEmail,
+                    newStatus === 'approved' ? 'leave_approved' : 'leave_rejected',
+                    notifBody
+                );
             }
         }
 
@@ -1914,6 +2117,14 @@ HTML_CONTENT = """<!DOCTYPE html>
                 leave.adminComments = 'Approved by HR';
                 saveState();
                 renderAll();
+
+                const empObj = state.employees.find(e => e.name === leave.employee);
+                triggerNotification(
+                    'Time Off: Request Approved',
+                    empObj ? empObj.email : 'employee@company.com',
+                    'leave_approved',
+                    `Your leave request for ${leave.startDate} to ${leave.endDate} has been approved by HR.`
+                );
             }
         }
 
@@ -1924,10 +2135,18 @@ HTML_CONTENT = """<!DOCTYPE html>
                 leave.adminComments = 'Rejected by HR';
                 saveState();
                 renderAll();
+
+                const empObj = state.employees.find(e => e.name === leave.employee);
+                triggerNotification(
+                    'Time Off: Request Rejected',
+                    empObj ? empObj.email : 'employee@company.com',
+                    'leave_rejected',
+                    `Your leave request for ${leave.startDate} to ${leave.endDate} has been rejected by HR.`
+                );
             }
         }
 
-        /* Calendar Render (August 2026) */
+        /* Calendar Render */
         function renderCalendar() {
             const container = document.getElementById('cal-grid-tiles');
             if (!container) return;
@@ -1996,8 +2215,8 @@ HTML_CONTENT = """<!DOCTYPE html>
                 dept: document.getElementById('emp-dept').value,
                 role: document.getElementById('emp-role').value,
                 joining: document.getElementById('emp-joining').value,
-                loginId: '',
-                provisioned: false
+                loginId: `OI${document.getElementById('emp-name').value.replace(/[^A-Z]/gi, '').slice(0,4).toUpperCase()}2026000${state.employees.length + 1}`,
+                provisioned: true
             };
             state.employees.unshift(newEmp);
 
@@ -2017,6 +2236,14 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderAll();
             e.target.reset();
             toggleEmpForm();
+
+            // Trigger Outgoing Account Creation Welcome Email
+            triggerNotification(
+                'Welcome: Dayflow Account Created',
+                newEmp.email,
+                'account_created',
+                `Hello ${newEmp.name}, your Dayflow account (${newEmp.loginId}) has been created. Login link sent (no plaintext passwords emailed).`
+            );
         }
 
         function handleProvision(id) {
@@ -2028,6 +2255,13 @@ HTML_CONTENT = """<!DOCTYPE html>
                 saveState();
                 renderEmployees();
                 renderDashboard();
+
+                triggerNotification(
+                    'Welcome: Account Provisioned',
+                    emp.email,
+                    'account_created',
+                    `Hello ${emp.name}, your Dayflow credentials have been provisioned (${emp.loginId}).`
+                );
             }
         }
 
@@ -2419,7 +2653,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             `).join('');
         }
 
-        /* Render Leaves with Strict Role-Based Views */
+        /* Render Leaves */
         function renderLeaves() {
             const calContainer = document.getElementById('leave-cal-container');
             const adminBanner = document.getElementById('leave-admin-banner');
@@ -2467,7 +2701,6 @@ HTML_CONTENT = """<!DOCTYPE html>
                     </tr>
                 `;
 
-                // Filter to logged in employee
                 const myLeaves = state.leaves.filter(l => l.employee === state.currentEmployee);
                 if (myLeaves.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1.5rem;">You have not applied for any leaves yet. Click <strong>+ NEW</strong> to apply.</td></tr>`;
@@ -2500,7 +2733,6 @@ HTML_CONTENT = """<!DOCTYPE html>
 
                 const totalPending = state.leaves.filter(l => l.status === 'pending').length;
                 const totalApproved = state.leaves.filter(l => l.status === 'approved').length;
-                const totalLeaves = state.leaves.length;
 
                 if (lbl1) lbl1.innerText = 'Paid Time Off Available';
                 if (val1) { val1.innerText = '24 Days Standard'; val1.style.color = '#34d399'; }
@@ -2696,6 +2928,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderEmployees();
             renderDocuments();
             renderPayroll();
+            renderNotifications();
         }
 
         window.addEventListener('DOMContentLoaded', () => {

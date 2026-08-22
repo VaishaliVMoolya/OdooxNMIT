@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 1. Successful Login Alert Email Template -->
+        <record id="email_template_dayflow_login_alert" model="mail.template">
+            <field name="name">Dayflow: Successful Login Alert</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="subject">New Login to Your Dayflow Account</field>
+            <field name="email_to">${(object.email or object.login) | safe}</field>
+            <field name="email_from">${(object.company_id.email or user.email or 'notifications@dayflow.org') | safe}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #714b67, #8b5cf6); padding: 20px 24px; color: #ffffff;">
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">Dayflow HRMS</h2>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9; color: #e9d5ff;">Security Notification</p>
+                    </div>
+                    <div style="padding: 24px; color: #334155; line-height: 1.6; font-size: 15px;">
+                        <p style="margin-top: 0;">Hello <strong>${object.name or 'Employee'}</strong>,</p>
+                        <p>Your Dayflow account was successfully logged into.</p>
+                        
+                        <div style="background-color: #f8fafc; border-left: 4px solid #714b67; padding: 14px 18px; margin: 18px 0; border-radius: 4px;">
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Login time:</strong> ${ctx.get('login_time') or 'Just now'}</p>
+                            <p style="margin: 0; font-size: 14px;"><strong>Account:</strong> ${object.email or object.login}</p>
+                        </div>
+                        
+                        <p style="font-size: 14px;">If this was you, no action is required.</p>
+                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">If you did not perform this login, please contact your HR/Admin immediately.</p>
+                        
+                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8;">Regards,<br/><strong style="color: #714b67;">Dayflow HRMS Team</strong></p>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <!-- 2. Admin Account Creation Email Template -->
+        <record id="email_template_dayflow_account_created" model="mail.template">
+            <field name="name">Dayflow: Account Created Notification</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="subject">Your Dayflow Account Has Been Created</field>
+            <field name="email_to">${(object.work_email or object.personal_email or (object.user_id and object.user_id.email)) | safe}</field>
+            <field name="email_from">${(object.company_id.email or user.email or 'admin@dayflow.org') | safe}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #714b67, #8b5cf6); padding: 20px 24px; color: #ffffff;">
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">Dayflow HRMS</h2>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9; color: #e9d5ff;">Welcome to Dayflow</p>
+                    </div>
+                    <div style="padding: 24px; color: #334155; line-height: 1.6; font-size: 15px;">
+                        <p style="margin-top: 0;">Hello <strong>${object.name}</strong>,</p>
+                        <p>Your Dayflow account has been created by the HR/Admin team.</p>
+                        
+                        <div style="background-color: #f8fafc; border-left: 4px solid #10b981; padding: 14px 18px; margin: 18px 0; border-radius: 4px;">
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Employee ID / Login:</strong> ${object.user_id.login if object.user_id else (object.work_email or object.name)}</p>
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Email:</strong> ${object.work_email or object.personal_email or '--'}</p>
+                            <p style="margin: 0; font-size: 14px;"><strong>Role:</strong> ${'Admin / HR' if object.dayflow_role == 'hr' else 'Employee'}</p>
+                        </div>
+                        
+                        <p style="font-size: 14px;">You can now access Dayflow using your registered email/login credentials.</p>
+                        
+                        <div style="text-align: center; margin: 24px 0;">
+                            <a href="${ctx.get('login_url') or '/web/login'}" style="background-color: #714b67; color: #ffffff; padding: 11px 26px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block; box-shadow: 0 2px 4px rgba(113, 75, 103, 0.2);">Log In to Dayflow</a>
+                        </div>
+                        
+                        <p style="color: #64748b; font-size: 13px; margin-bottom: 24px;">For security, do not share your account credentials with anyone.</p>
+                        
+                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8;">Regards,<br/><strong style="color: #714b67;">Dayflow HRMS Team</strong></p>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <!-- 3. Leave Request Submitted Notification (To HR/Admin) -->
+        <record id="email_template_dayflow_leave_submitted" model="mail.template">
+            <field name="name">Dayflow: Leave Request Submitted</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="subject">New Leave Request Submitted: ${object.employee_id.name} - ${object.dayflow_leave_type.capitalize() if object.dayflow_leave_type else 'Time Off'}</field>
+            <field name="email_to">${(object.company_id.email or 'admin@dayflow.org') | safe}</field>
+            <field name="email_from">${(object.employee_id.work_email or 'notifications@dayflow.org') | safe}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #714b67, #8b5cf6); padding: 20px 24px; color: #ffffff;">
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">Dayflow HRMS</h2>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9; color: #e9d5ff;">Time Off Review Notification</p>
+                    </div>
+                    <div style="padding: 24px; color: #334155; line-height: 1.6; font-size: 15px;">
+                        <p style="margin-top: 0;">Hello HR Team,</p>
+                        <p>A new leave application has been submitted by <strong>${object.employee_id.name}</strong> for your review and approval.</p>
+                        
+                        <div style="background-color: #f8fafc; border-left: 4px solid #f59e0b; padding: 14px 18px; margin: 18px 0; border-radius: 4px;">
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Employee:</strong> ${object.employee_id.name}</p>
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Category:</strong> ${'Paid Time Off' if object.dayflow_leave_type == 'paid' else ('Sick Leave' if object.dayflow_leave_type == 'sick' else 'Unpaid Leave')}</p>
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Period:</strong> ${object.request_date_from} to ${object.request_date_to} (${object.number_of_days} Days)</p>
+                            <p style="margin: 0; font-size: 14px;"><strong>Reason / Remarks:</strong> ${object.remarks or 'None'}</p>
+                        </div>
+                        
+                        <p style="font-size: 14px;">Please log in to the Dayflow Admin Decision Hub to approve or reject this request.</p>
+                        
+                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8;">Regards,<br/><strong style="color: #714b67;">Dayflow HRMS</strong></p>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <!-- 4. Leave Request Approved Notification (To Employee) -->
+        <record id="email_template_dayflow_leave_approved" model="mail.template">
+            <field name="name">Dayflow: Leave Request Approved</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="subject">Your Leave Request Has Been Approved</field>
+            <field name="email_to">${(object.employee_id.work_email or object.employee_id.personal_email or (object.employee_id.user_id and object.employee_id.user_id.email)) | safe}</field>
+            <field name="email_from">${(object.company_id.email or user.email or 'admin@dayflow.org') | safe}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #10b981, #059669); padding: 20px 24px; color: #ffffff;">
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">Dayflow HRMS</h2>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9; color: #d1fae5;">Time Off Approved</p>
+                    </div>
+                    <div style="padding: 24px; color: #334155; line-height: 1.6; font-size: 15px;">
+                        <p style="margin-top: 0;">Hello <strong>${object.employee_id.name}</strong>,</p>
+                        <p>Your time off request has been <strong style="color: #10b981;">APPROVED</strong> by the HR / Admin team.</p>
+                        
+                        <div style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 14px 18px; margin: 18px 0; border-radius: 4px;">
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Time Off Category:</strong> ${'Paid Time Off' if object.dayflow_leave_type == 'paid' else ('Sick Leave' if object.dayflow_leave_type == 'sick' else 'Unpaid Leave')}</p>
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Validity Period:</strong> ${object.request_date_from} to ${object.request_date_to} (${object.number_of_days} Days)</p>
+                            <p style="margin: 0; font-size: 14px;"><strong>HR Comments:</strong> ${object.admin_comments or 'Approved'}</p>
+                        </div>
+                        
+                        <p style="font-size: 14px;">Your attendance records have been automatically synchronized.</p>
+                        
+                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8;">Regards,<br/><strong style="color: #10b981;">Dayflow HRMS</strong></p>
+                    </div>
+                </div>
+            </field>
+        </record>
+
+        <!-- 5. Leave Request Rejected Notification (To Employee) -->
+        <record id="email_template_dayflow_leave_rejected" model="mail.template">
+            <field name="name">Dayflow: Leave Request Rejected</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="subject">Your Leave Request Has Been Rejected</field>
+            <field name="email_to">${(object.employee_id.work_email or object.employee_id.personal_email or (object.employee_id.user_id and object.employee_id.user_id.email)) | safe}</field>
+            <field name="email_from">${(object.company_id.email or user.email or 'admin@dayflow.org') | safe}</field>
+            <field name="body_html" type="html">
+                <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #ef4444, #dc2626); padding: 20px 24px; color: #ffffff;">
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">Dayflow HRMS</h2>
+                        <p style="margin: 4px 0 0 0; font-size: 13px; opacity: 0.9; color: #fee2e2;">Time Off Decision</p>
+                    </div>
+                    <div style="padding: 24px; color: #334155; line-height: 1.6; font-size: 15px;">
+                        <p style="margin-top: 0;">Hello <strong>${object.employee_id.name}</strong>,</p>
+                        <p>Your time off request has been <strong style="color: #ef4444;">REJECTED</strong>.</p>
+                        
+                        <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 14px 18px; margin: 18px 0; border-radius: 4px;">
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Time Off Category:</strong> ${'Paid Time Off' if object.dayflow_leave_type == 'paid' else ('Sick Leave' if object.dayflow_leave_type == 'sick' else 'Unpaid Leave')}</p>
+                            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Validity Period:</strong> ${object.request_date_from} to ${object.request_date_to} (${object.number_of_days} Days)</p>
+                            <p style="margin: 0; font-size: 14px;"><strong>Reason / Decision Comments:</strong> ${object.admin_comments or 'No additional remarks provided'}</p>
+                        </div>
+                        
+                        <p style="font-size: 14px;">If you have any questions or require clarification, please reach out to your HR/Admin team.</p>
+                        
+                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                        <p style="margin: 0; font-size: 13px; color: #94a3b8;">Regards,<br/><strong style="color: #ef4444;">Dayflow HRMS</strong></p>
+                    </div>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

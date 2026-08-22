@@ -1,7 +1,9 @@
-# -*- coding: utf-8 -*-
+import logging
+from datetime import datetime, timedelta, time
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
-from datetime import datetime, timedelta, time
+
+_logger = logging.getLogger(__name__)
 
 
 class HrLeave(models.Model):
@@ -43,8 +45,9 @@ class HrLeave(models.Model):
         for record in self:
             record.write({
                 'dayflow_status': 'pending',
-                'state': 'confirm',
+                'state': 'confirm' if hasattr(record, 'state') else False,
             })
+            record._send_dayflow_leave_notification('submitted')
         return True
 
     def action_dayflow_approve(self):
@@ -61,6 +64,9 @@ class HrLeave(models.Model):
 
             # Integrate with Attendance: generate/update attendance records with status = 'leave'
             record._integrate_leave_with_attendance()
+
+            # Send approval email notification & in-app message to employee
+            record._send_dayflow_leave_notification('approved')
         return True
 
     def action_dayflow_reject(self):
@@ -74,6 +80,9 @@ class HrLeave(models.Model):
                 'approved_by_id': self.env.user.id,
                 'state': 'refuse' if hasattr(record, 'state') else False,
             })
+
+            # Send rejection email notification & in-app message to employee
+            record._send_dayflow_leave_notification('rejected')
         return True
 
     def action_dayflow_reset_pending(self):
@@ -85,6 +94,42 @@ class HrLeave(models.Model):
                 'state': 'confirm' if hasattr(record, 'state') else False,
             })
         return True
+
+    def _send_dayflow_leave_notification(self, event_type):
+        """Send email alert and in-app chatter notification on leave events."""
+        self.ensure_one()
+        xmlid_map = {
+            'submitted': 'dayflow.email_template_dayflow_leave_submitted',
+            'approved': 'dayflow.email_template_dayflow_leave_approved',
+            'rejected': 'dayflow.email_template_dayflow_leave_rejected',
+        }
+        xmlid = xmlid_map.get(event_type)
+        if not xmlid:
+            return
+
+        try:
+            template = self.env.ref(xmlid, raise_if_not_found=False)
+            if template:
+                template.send_mail(self.id, force_send=False, raise_exception=False)
+                _logger.info("Dayflow leave notification '%s' queued for leave ID %s", event_type, self.id)
+        except Exception as e:
+            # Must not crash leave action if email delivery fails
+            _logger.warning("Could not send Dayflow leave notification '%s' for leave ID %s: %s", event_type, self.id, e)
+
+        # In-app chatter message if mail.thread is enabled
+        try:
+            if hasattr(self, 'message_post'):
+                msg_map = {
+                    'submitted': _("Time off application submitted for review."),
+                    'approved': _("Time off request has been approved by HR."),
+                    'rejected': _("Time off request has been rejected. Reason: %s") % (self.admin_comments or _("None")),
+                }
+                body = msg_map.get(event_type)
+                if body:
+                    self.message_post(body=body, subtype_xmlid='mail.mt_note')
+        except Exception as e:
+            _logger.debug("Chatter message post skipped: %s", e)
+
 
     def _integrate_leave_with_attendance(self):
         """Creates or updates hr.attendance records for approved leave dates."""
