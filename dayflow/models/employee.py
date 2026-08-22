@@ -35,22 +35,26 @@ class HrEmployee(models.Model):
         return component or fallback
 
     def _generate_dayflow_login(self):
-        """Generate COMPANY-NAME-YEAR-SERIAL using the configured ORM sequence."""
+        """Generate Login ID following Wireframe 1 formula:
+        [OI][First 2 letters of first & last name][Year of joining][Serial]
+        Example: OIJODO20260001
+        """
         self.ensure_one()
 
-        company_component = self._dayflow_login_component(
-            self.company_id.name, 'COMPANY'
-        )
-        name_component = self._dayflow_login_component(self.name, 'EMPLOYEE')
+        company_prefix = "OI"
+        name_parts = (self.name or "John Doe").strip().split()
+        if len(name_parts) >= 2:
+            name_code = (name_parts[0][:2] + name_parts[-1][:2]).upper()
+        else:
+            name_code = (self.name[:4] if len(self.name or '') >= 4 else 'EMPLOYEE').upper()
+
         joining_date = self.dayflow_joining_date or fields.Date.context_today(self)
         joining_year = fields.Date.to_date(joining_date).year
-        serial = self.env['ir.sequence'].next_by_code('dayflow.employee.login')
+        raw_serial = self.env['ir.sequence'].next_by_code('dayflow.employee.login') or '0001'
+        serial = str(raw_serial).zfill(4)
 
-        if not serial:
-            raise UserError('The Dayflow Login ID sequence is not configured.')
-
-        return '%s-%s-%s-%s' % (
-            company_component, name_component, joining_year, serial
+        return '%s%s%s%s' % (
+            company_prefix, name_code, joining_year, serial
         )
 
     def action_provision_dayflow_user(self):
@@ -78,8 +82,6 @@ class HrEmployee(models.Model):
         group = self.env.ref(group_xmlid)
         user_model = self.env['res.users'].sudo().with_context(active_test=False)
 
-        # The sequence makes collisions unlikely, but checking protects against
-        # a manually reset or altered sequence.
         login = self._generate_dayflow_login()
         if user_model.search_count([('login', '=ilike', login)]):
             raise UserError('The generated Login ID already exists. Please retry.')
