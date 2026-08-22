@@ -2,7 +2,7 @@
 """
 Dayflow HRMS - Unified Live UI Preview Server
 Odoo x NMIT Hackathon
-All-in-One Dashboard, Employees, Attendance, Time Off (with Role-Based Access: Calendar for Employees only, HR Decision Hub for Admin), Documents, Payroll, and Admin Profile
+All-in-One Dashboard, Employees, Attendance, Time Off (with Role-Based Access: Calendar for Employees only, HR Decision Hub & Details Modal for Admin), Documents, Payroll, and Admin Profile
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -14,7 +14,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dayflow HRMS — Workspace & Admin Console</title>
+    <title>Dayflow HRMS — Workspace & Time Off Console</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -912,32 +912,32 @@ HTML_CONTENT = """<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- TIME OFF / LEAVE TAB (Role-Based: Calendar for Employees Only) -->
+        <!-- TIME OFF / LEAVE TAB (Role-Based Access) -->
         <div id="panel-leave" class="tab-panel">
             <div class="header-row">
                 <div>
-                    <h1 class="header-title" id="leave-header-title">Time Off & Leave Management</h1>
-                    <p class="header-sub" id="leave-header-sub">Plan time off, view official national holidays, and track leave balances</p>
+                    <h1 class="header-title" id="leave-header-title">Time Off</h1>
+                    <p class="header-sub" id="leave-header-sub">Manage time off, view official company holidays, and track leave balances</p>
                 </div>
-                <button class="btn btn-primary" id="btn-leave-new" style="font-size: 0.95rem; padding: 0.5rem 1.3rem;" onclick="openLeaveModal(null)">+ New</button>
+                <button class="btn btn-primary" id="btn-leave-new" style="font-size: 0.95rem; padding: 0.5rem 1.3rem;" onclick="openLeaveModal(null)">+ NEW</button>
             </div>
 
-            <!-- Balance Metric Cards (Role-Sensitive) -->
+            <!-- Leave Summary Cards -->
             <div class="stats-grid" id="leave-metrics-grid">
                 <div class="stat-box">
-                    <div class="metric-label" id="leave-lbl-p1">Paid Time Off (PTO)</div>
-                    <div class="num" style="color: #34d399;" id="leave-val-p1">14 Days Available</div>
+                    <div class="metric-label" id="leave-lbl-p1">Paid Time Off</div>
+                    <div class="num" style="color: #34d399;" id="leave-val-p1">24 Days Available</div>
                 </div>
                 <div class="stat-box">
-                    <div class="metric-label" id="leave-lbl-p2">Sick Leave</div>
+                    <div class="metric-label" id="leave-lbl-p2">Sick Time Off</div>
                     <div class="num" style="color: #fbbf24;" id="leave-val-p2">07 Days Available</div>
                 </div>
                 <div class="stat-box">
-                    <div class="metric-label" id="leave-lbl-p3">Unpaid Leave</div>
+                    <div class="metric-label" id="leave-lbl-p3">Unpaid Leaves</div>
                     <div class="num" style="color: #60a5fa;" id="leave-val-p3">Unlimited</div>
                 </div>
                 <div class="stat-box">
-                    <div class="metric-label" id="leave-lbl-p4">Upcoming National Holidays</div>
+                    <div class="metric-label" id="leave-lbl-p4">Upcoming Holidays</div>
                     <div class="num" style="color: var(--accent-purple-hover);" id="leave-val-p4">4 This Year</div>
                 </div>
             </div>
@@ -947,25 +947,24 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <div style="display:flex; align-items:center; gap:0.5rem;">
-                            <h3 style="font-size: 1.1rem; color: #fff;">🛡️ HR Leave Management & Decision Console</h3>
+                            <h3 style="font-size: 1.1rem; color: #fff;">🛡️ HR Time Off Management & Decision Hub</h3>
                             <span class="badge badge-purple">Admin Mode</span>
                         </div>
                         <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
-                            Review all pending applications from employees across the company. The calendar view is reserved for employee self-service.
+                            Review all employee leave applications, view request details, verify attachments, and record official approval/rejection decisions.
                         </p>
                     </div>
-                    <button class="btn btn-primary" onclick="openLeaveModal(null)">+ Create Leave for Employee</button>
                 </div>
             </div>
 
-            <!-- Calendar & National Holidays Layout (Role-Protected: VISIBLE ONLY TO EMPLOYEES) -->
+            <!-- Calendar & National Holidays Layout (Role-Protected: Visible Only to Employees) -->
             <div class="cal-layout" id="leave-cal-container">
                 <!-- Left: Interactive Calendar Grid -->
                 <div class="card" style="margin-bottom: 0;">
                     <div class="cal-header-bar">
                         <div style="display:flex; align-items:center; gap: 0.75rem;">
                             <h3 style="font-size: 1.1rem; color: #fff;">August 2026</h3>
-                            <span class="badge badge-purple">Employee Work Calendar</span>
+                            <span class="badge badge-purple">My Work Calendar</span>
                         </div>
                         <div style="display:flex; gap:0.4rem;">
                             <button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;">&lt;</button>
@@ -989,7 +988,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="cal-grid-days" id="cal-grid-tiles"></div>
                     
                     <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.75rem; text-align:center;">
-                        💡 Click on any date tile above or click <strong>+ New</strong> to apply for leave.
+                        💡 Click on any date tile above or click <strong>+ NEW</strong> to apply for leave.
                     </p>
                 </div>
 
@@ -1051,30 +1050,21 @@ HTML_CONTENT = """<!DOCTYPE html>
                     </div>
 
                     <div style="background-color: var(--bg-card); border: 1px solid var(--border-line); border-radius: 6px; padding: 0.65rem; margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
-                        📌 <em>Company policy: Official national holidays are 100% paid and do not count against your annual PTO balance.</em>
+                        📌 <em>Official national holidays are fully paid and do not consume annual PTO balance.</em>
                     </div>
                 </div>
             </div>
 
-            <!-- Time Off Requests & Review History Table -->
+            <!-- Time Off Applications & Review Table -->
             <div class="card" style="margin-top: 1.25rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.9rem;">
-                    <h3 style="font-size: 1.05rem;" id="leave-table-title">Time Off Requests History</h3>
-                    <span class="badge badge-purple" id="leave-table-tag">HR Governance</span>
+                    <h3 style="font-size: 1.05rem;" id="leave-table-title">My Time Off</h3>
+                    <span class="badge badge-purple" id="leave-table-tag">Personal Log</span>
                 </div>
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Type</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Days</th>
-                                <th>Reason / Remarks</th>
-                                <th>Status</th>
-                                <th>HR Decision</th>
-                            </tr>
+                            <tr id="leave-table-head"></tr>
                         </thead>
                         <tbody id="tbl-leave"></tbody>
                     </table>
@@ -1380,7 +1370,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
     </div>
 
-    <!-- LEAVE APPLICATION POP-UP MODAL -->
+    <!-- NEW LEAVE REQUEST MODAL (Employee View) -->
     <div id="modal-leave-app" class="modal" style="display: none;">
         <div class="modal-card" style="max-width: 560px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
@@ -1388,7 +1378,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div style="background:rgba(113,75,103,0.3); border:1px solid var(--accent-purple); padding:0.35rem 0.6rem; border-radius:6px; font-size:1.1rem;">📅</div>
                     <div>
                         <h3 style="font-size: 1.15rem;">New Time Off Application</h3>
-                        <p style="font-size: 0.78rem; color: var(--text-muted);">Submit leave request for HR / Admin review</p>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Submit leave request for review</p>
                     </div>
                 </div>
                 <button class="btn btn-secondary" onclick="closeLeaveModal()">✕</button>
@@ -1397,20 +1387,15 @@ HTML_CONTENT = """<!DOCTYPE html>
             <form onsubmit="handleLeaveModalSubmit(event)">
                 <div class="field" style="margin-bottom: 0.85rem;">
                     <label>Employee Name</label>
-                    <select id="mleave-emp" class="input" required>
-                        <option value="John Doe">John Doe (Senior Software Engineer)</option>
-                        <option value="Jane Smith">Jane Smith (Head of HR)</option>
-                        <option value="Robert Taylor">Robert Taylor (Product Manager)</option>
-                    </select>
+                    <input type="text" id="mleave-emp-name" class="input" value="John Doe" readonly>
                 </div>
 
                 <div class="field" style="margin-bottom: 0.85rem;">
-                    <label>Time Off Category</label>
+                    <label>Time Off Type</label>
                     <select id="mleave-type" class="input" required>
-                        <option value="paid">Paid Time Off (PTO)</option>
+                        <option value="paid">Paid Time Off</option>
                         <option value="sick">Sick Leave</option>
                         <option value="unpaid">Unpaid Leave</option>
-                        <option value="casual">Casual / Optional Leave</option>
                     </select>
                 </div>
 
@@ -1426,25 +1411,77 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
 
                 <div class="stat-box" style="background: var(--bg-card); padding: 0.65rem 1rem; margin-bottom: 0.85rem;">
-                    <div class="metric-label">Calculated Duration</div>
-                    <div style="font-size: 1.05rem; font-weight: 700; color: #60a5fa;" id="mleave-duration-preview">1 Working Day</div>
+                    <div class="metric-label">Allocation / Duration</div>
+                    <div style="font-size: 1.05rem; font-weight: 700; color: #60a5fa;" id="mleave-duration-preview">1 Day</div>
                 </div>
 
                 <div class="field" style="margin-bottom: 0.85rem;">
-                    <label>Reason / Remarks</label>
-                    <textarea id="mleave-reason" class="input" rows="2" placeholder="Explain the reason for your time off request..." required></textarea>
+                    <label>Remarks / Reason</label>
+                    <textarea id="mleave-reason" class="input" rows="2" placeholder="State reason for your time off..." required></textarea>
                 </div>
 
                 <div class="field" style="margin-bottom: 1.25rem;">
-                    <label>Supporting Document / Medical Note (Optional)</label>
+                    <label>Attachment (Medical Certificate / Note)</label>
                     <input type="file" id="mleave-file" class="input" accept="image/*,.pdf,.doc,.docx">
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.6rem;">
                     <button type="button" class="btn btn-secondary" onclick="closeLeaveModal()">Discard</button>
-                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.4rem;">Submit Application</button>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1.4rem;">Submit</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- LEAVE REQUEST DETAILS MODAL (Admin Review) -->
+    <div id="modal-leave-detail" class="modal" style="display: none;">
+        <div class="modal-card" style="max-width: 580px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <div>
+                    <h3 style="font-size: 1.2rem;">Leave Request Details</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Admin Review & Governance Decision</p>
+                </div>
+                <button class="btn btn-secondary" onclick="closeLeaveDetailModal()">✕</button>
+            </div>
+
+            <input type="hidden" id="ld-id">
+            <div class="info-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+                <div class="info-item">
+                    <div class="lbl">Employee</div>
+                    <div class="val" id="ld-emp">John Doe</div>
+                </div>
+                <div class="info-item">
+                    <div class="lbl">Time Off Type</div>
+                    <div class="val" id="ld-type">Paid Time Off</div>
+                </div>
+                <div class="info-item">
+                    <div class="lbl">Validity Period</div>
+                    <div class="val" id="ld-dates">25 Aug 2026 → 27 Aug 2026</div>
+                </div>
+                <div class="info-item">
+                    <div class="lbl">Allocation / Duration</div>
+                    <div class="val" id="ld-days">3 Days</div>
+                </div>
+            </div>
+
+            <div class="card" style="background: var(--bg-card); margin-bottom: 1rem;">
+                <div class="lbl" style="margin-bottom: 0.25rem;">Employee Remarks</div>
+                <div style="font-size: 0.9rem; color: #fff;" id="ld-remarks">Fever and rest recommended</div>
+                <div style="margin-top: 0.6rem; font-size: 0.8rem; color: #34d399;" id="ld-attachment">📄 Attachment Attached</div>
+            </div>
+
+            <div class="field" style="margin-bottom: 1.25rem;">
+                <label>Admin Decision Comments</label>
+                <textarea id="ld-admin-comment" class="input" rows="2" placeholder="Add decision remarks or approval notes..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div id="ld-status-badge"><span class="badge badge-amber">PENDING</span></div>
+                <div style="display: flex; gap: 0.6rem;">
+                    <button class="btn btn-danger" onclick="submitLeaveDecision('rejected')">Reject</button>
+                    <button class="btn btn-success" onclick="submitLeaveDecision('approved')">Approve</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1539,9 +1576,10 @@ HTML_CONTENT = """<!DOCTYPE html>
         ];
 
         const DEFAULT_LEAVE = [
-            { id: 101, employee: 'John Doe', type: 'sick', startDate: '2026-08-25', endDate: '2026-08-26', days: 2, remarks: 'Fever and rest recommended', status: 'pending', adminComments: '' },
-            { id: 102, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', status: 'approved', adminComments: 'Approved by HR' },
-            { id: 103, employee: 'Robert Taylor', type: 'paid', startDate: '2026-08-23', endDate: '2026-08-24', days: 2, remarks: 'Attending developer conference', status: 'pending', adminComments: '' }
+            { id: 101, employee: 'John Doe', type: 'sick', startDate: '2026-08-25', endDate: '2026-08-27', days: 3, remarks: 'High fever and doctor prescribed rest', hasAttachment: true, status: 'pending', adminComments: '' },
+            { id: 102, employee: 'Jane Smith', type: 'paid', startDate: '2026-08-28', endDate: '2026-08-30', days: 3, remarks: 'Family vacation', hasAttachment: false, status: 'approved', adminComments: 'Approved by HR Director' },
+            { id: 103, employee: 'Robert Taylor', type: 'paid', startDate: '2026-08-23', endDate: '2026-08-24', days: 2, remarks: 'Attending Odoo Developers Conference', hasAttachment: false, status: 'pending', adminComments: '' },
+            { id: 104, employee: 'John Doe', type: 'paid', startDate: '2026-08-10', endDate: '2026-08-10', days: 1, remarks: 'Personal domestic work', hasAttachment: false, status: 'approved', adminComments: 'Approved' }
         ];
 
         const DEFAULT_EMPLOYEES = [
@@ -1568,8 +1606,8 @@ HTML_CONTENT = """<!DOCTYPE html>
         };
 
         let state = {
-            role: 'employee',
-            currentEmployee: 'John Doe',
+            role: 'admin',
+            currentEmployee: 'Jane Smith',
             isCheckedIn: false,
             activeCheckInTime: null,
             checkInTimestamp: null,
@@ -1764,11 +1802,11 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         /* Leave Modal & Calendar actions */
         function openLeaveModal(prefilledDate) {
-            document.getElementById('mleave-emp').value = state.currentEmployee;
+            document.getElementById('mleave-emp-name').value = state.currentEmployee;
             document.getElementById('mleave-type').value = 'paid';
 
             const defaultStart = prefilledDate || '2026-08-25';
-            const defaultEnd = prefilledDate || '2026-08-26';
+            const defaultEnd = prefilledDate || '2026-08-27';
             document.getElementById('mleave-start').value = defaultStart;
             document.getElementById('mleave-end').value = defaultEnd;
             document.getElementById('mleave-reason').value = '';
@@ -1791,17 +1829,23 @@ HTML_CONTENT = """<!DOCTYPE html>
                 const e = new Date(endVal);
                 let diffDays = Math.ceil((e - s) / (1000 * 60 * 60 * 24)) + 1;
                 if (diffDays <= 0) diffDays = 1;
-                document.getElementById('mleave-duration-preview').innerText = `${diffDays} Working Day${diffDays > 1 ? 's' : ''}`;
+                document.getElementById('mleave-duration-preview').innerText = `${diffDays} Day${diffDays > 1 ? 's' : ''}`;
             }
         }
 
         function handleLeaveModalSubmit(e) {
             e.preventDefault();
-            const emp = document.getElementById('mleave-emp').value;
+            const emp = state.currentEmployee;
             const type = document.getElementById('mleave-type').value;
             const start = document.getElementById('mleave-start').value;
             const end = document.getElementById('mleave-end').value;
             const reason = document.getElementById('mleave-reason').value;
+            const fileInput = document.getElementById('mleave-file');
+
+            if (new Date(end) < new Date(start)) {
+                alert('End Date cannot be earlier than Start Date.');
+                return;
+            }
 
             const days = Math.max(1, Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1);
 
@@ -1813,6 +1857,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 endDate: end,
                 days: days,
                 remarks: reason,
+                hasAttachment: fileInput.files && fileInput.files.length > 0,
                 status: 'pending',
                 adminComments: ''
             });
@@ -1821,34 +1866,68 @@ HTML_CONTENT = """<!DOCTYPE html>
             closeLeaveModal();
             renderLeaves();
             renderDashboard();
-            alert('🎉 Time off request submitted successfully! Pending HR approval.');
+            alert('🎉 Leave application submitted successfully! Status set to Pending.');
         }
 
-        function handleApproveLeave(id) {
-            const commentInput = document.getElementById('hr-leave-comment-' + id);
-            const comment = commentInput ? commentInput.value : 'Approved by HR';
+        function openLeaveDetailModal(id) {
+            const leave = state.leaves.find(l => l.id === id);
+            if (!leave) return;
+
+            document.getElementById('ld-id').value = leave.id;
+            document.getElementById('ld-emp').innerText = leave.employee;
+            document.getElementById('ld-type').innerText = leave.type === 'paid' ? 'Paid Time Off' : leave.type === 'sick' ? 'Sick Leave' : 'Unpaid Leave';
+            document.getElementById('ld-dates').innerText = `${leave.startDate} → ${leave.endDate}`;
+            document.getElementById('ld-days').innerText = `${leave.days} Day${leave.days > 1 ? 's' : ''}`;
+            document.getElementById('ld-remarks').innerText = leave.remarks || '--';
+            document.getElementById('ld-attachment').innerText = leave.hasAttachment ? '📄 Document / Certificate Attached' : 'No attachment provided';
+            document.getElementById('ld-admin-comment').value = leave.adminComments || '';
+
+            const badgeClass = leave.status === 'approved' ? 'badge-green' : leave.status === 'rejected' ? 'badge-red' : 'badge-amber';
+            document.getElementById('ld-status-badge').innerHTML = `<span class="badge ${badgeClass}">${leave.status.toUpperCase()}</span>`;
+
+            document.getElementById('modal-leave-detail').style.display = 'flex';
+        }
+
+        function closeLeaveDetailModal() {
+            document.getElementById('modal-leave-detail').style.display = 'none';
+        }
+
+        function submitLeaveDecision(newStatus) {
+            const id = parseInt(document.getElementById('ld-id').value);
+            const comment = document.getElementById('ld-admin-comment').value;
+            const leave = state.leaves.find(l => l.id === id);
+
+            if (leave) {
+                leave.status = newStatus;
+                leave.adminComments = comment || (newStatus === 'approved' ? 'Approved by HR' : 'Rejected by HR');
+                saveState();
+                closeLeaveDetailModal();
+                renderAll();
+                alert(`Leave request has been ${newStatus.toUpperCase()}!`);
+            }
+        }
+
+        function handleQuickApprove(id) {
             const leave = state.leaves.find(l => l.id === id);
             if (leave) {
                 leave.status = 'approved';
-                leave.adminComments = comment || 'Approved by HR';
+                leave.adminComments = 'Approved by HR';
                 saveState();
                 renderAll();
             }
         }
 
-        function handleRejectLeave(id) {
-            const commentInput = document.getElementById('hr-leave-comment-' + id);
-            const comment = commentInput ? commentInput.value : 'Rejected by HR';
+        function handleQuickReject(id) {
             const leave = state.leaves.find(l => l.id === id);
             if (leave) {
                 leave.status = 'rejected';
-                leave.adminComments = comment || 'Rejected by HR';
+                leave.adminComments = 'Rejected by HR';
                 saveState();
                 renderAll();
             }
         }
 
-        /* Calendar Render (August 2026 - Role Protected for Employees) */
+        /* Calendar Render (August 2026) */
         function renderCalendar() {
             const container = document.getElementById('cal-grid-tiles');
             if (!container) return;
@@ -1871,7 +1950,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 const matchedLeave = state.leaves.find(l => {
                     const s = l.startDate;
                     const e = l.endDate;
-                    return dateStr >= s && dateStr <= e && (state.role === 'admin' || l.employee === state.currentEmployee);
+                    return dateStr >= s && dateStr <= e && l.employee === state.currentEmployee;
                 });
 
                 let cellClasses = 'cal-cell';
@@ -1884,7 +1963,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     tagHtml = `<span class="cal-tag tag-holiday" title="${holidayName}">${holidayName}</span>`;
                 } else if (matchedLeave) {
                     const tagStyle = matchedLeave.status === 'approved' ? 'tag-leave' : 'tag-holiday';
-                    tagHtml = `<span class="cal-tag ${tagStyle}" title="${matchedLeave.employee} (${matchedLeave.type})">✈️ ${matchedLeave.type.toUpperCase()}</span>`;
+                    tagHtml = `<span class="cal-tag ${tagStyle}" title="${matchedLeave.type.toUpperCase()}">${matchedLeave.type.toUpperCase()}</span>`;
                 }
 
                 html += `
@@ -2260,8 +2339,8 @@ HTML_CONTENT = """<!DOCTYPE html>
                         <td style="color:var(--text-muted);">${l.remarks}</td>
                         <td style="text-align: right;">
                             <div style="display:inline-flex; gap:0.35rem;">
-                                <button class="btn btn-success" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="handleApproveLeave(${l.id})">Approve</button>
-                                <button class="btn btn-danger" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="handleRejectLeave(${l.id})">Reject</button>
+                                <button class="btn btn-success" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="handleQuickApprove(${l.id})">Approve</button>
+                                <button class="btn btn-danger" style="padding:0.25rem 0.55rem; font-size:0.75rem;" onclick="handleQuickReject(${l.id})">Reject</button>
                             </div>
                         </td>
                     </tr>
@@ -2340,14 +2419,15 @@ HTML_CONTENT = """<!DOCTYPE html>
             `).join('');
         }
 
-        /* Render Leaves with Strict Role-Based RBAC for Calendar */
+        /* Render Leaves with Strict Role-Based Views */
         function renderLeaves() {
             const calContainer = document.getElementById('leave-cal-container');
             const adminBanner = document.getElementById('leave-admin-banner');
-            const btnNew = document.getElementById('btn-leave-new');
             const headerSub = document.getElementById('leave-header-sub');
             const tblTitle = document.getElementById('leave-table-title');
             const tblTag = document.getElementById('leave-table-tag');
+            const thead = document.getElementById('leave-table-head');
+            const tbody = document.getElementById('tbl-leave');
 
             const lbl1 = document.getElementById('leave-lbl-p1');
             const val1 = document.getElementById('leave-val-p1');
@@ -2359,84 +2439,128 @@ HTML_CONTENT = """<!DOCTYPE html>
             const val4 = document.getElementById('leave-val-p4');
 
             if (state.role === 'employee') {
-                // EMPLOYEE VIEW: Calendar & Holidays VISIBLE!
+                // EMPLOYEE VIEW
                 if (calContainer) calContainer.style.display = 'grid';
                 if (adminBanner) adminBanner.style.display = 'none';
-                if (btnNew) btnNew.style.display = 'inline-flex';
-                if (headerSub) headerSub.innerText = 'Plan time off, view official national holidays, and track your leave balance';
-                if (tblTitle) tblTitle.innerText = 'My Time Off Requests';
-                if (tblTag) tblTag.innerText = 'Showing your personal leave records';
+                if (headerSub) headerSub.innerText = 'Manage your time off, view official company holidays, and track leave balances';
+                if (tblTitle) tblTitle.innerText = 'My Time Off';
+                if (tblTag) tblTag.innerText = 'Personal Leave Log';
 
-                if (lbl1) lbl1.innerText = 'Paid Time Off (PTO)';
-                if (val1) val1.innerText = '14 Days Available';
-                if (lbl2) lbl2.innerText = 'Sick Leave';
-                if (val2) val2.innerText = '07 Days Available';
-                if (lbl3) lbl3.innerText = 'Unpaid Leave';
-                if (val3) val3.innerText = 'Unlimited';
-                if (lbl4) lbl4.innerText = 'Upcoming National Holidays';
-                if (val4) val4.innerText = '4 This Year';
+                if (lbl1) lbl1.innerText = 'Paid Time Off';
+                if (val1) { val1.innerText = '24 Days Available'; val1.style.color = '#34d399'; }
+                if (lbl2) lbl2.innerText = 'Sick Time Off';
+                if (val2) { val2.innerText = '07 Days Available'; val2.style.color = '#fbbf24'; }
+                if (lbl3) lbl3.innerText = 'Unpaid Leaves';
+                if (val3) { val3.innerText = 'Unlimited'; val3.style.color = '#60a5fa'; }
+                if (lbl4) lbl4.innerText = 'Upcoming Holidays';
+                if (val4) { val4.innerText = '4 This Year'; val4.style.color = 'var(--accent-purple-hover)'; }
+
+                thead.innerHTML = `
+                    <tr>
+                        <th>Type</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration</th>
+                        <th>Remarks</th>
+                        <th>Status</th>
+                        <th>HR Comments</th>
+                    </tr>
+                `;
+
+                // Filter to logged in employee
+                const myLeaves = state.leaves.filter(l => l.employee === state.currentEmployee);
+                if (myLeaves.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1.5rem;">You have not applied for any leaves yet. Click <strong>+ NEW</strong> to apply.</td></tr>`;
+                } else {
+                    tbody.innerHTML = myLeaves.map(l => {
+                        const badge = l.status === 'approved' ? 'badge-green' : l.status === 'rejected' ? 'badge-red' : 'badge-amber';
+                        const typeLabel = l.type === 'paid' ? 'Paid Time Off' : l.type === 'sick' ? 'Sick Leave' : 'Unpaid Leave';
+                        return `
+                            <tr>
+                                <td><strong>${typeLabel}</strong></td>
+                                <td>${l.startDate}</td>
+                                <td>${l.endDate}</td>
+                                <td>${l.days} Day${l.days>1?'s':''}</td>
+                                <td style="color:var(--text-muted);">${l.remarks}</td>
+                                <td><span class="badge ${badge}">${l.status.toUpperCase()}</span></td>
+                                <td style="color:var(--text-muted); font-size:0.8rem;">${l.adminComments || '--'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
 
                 renderCalendar();
             } else {
-                // ADMIN / HR VIEW: Calendar HIDDEN! Admin Decision Hub Shown.
+                // ADMIN / HR VIEW
                 if (calContainer) calContainer.style.display = 'none';
                 if (adminBanner) adminBanner.style.display = 'block';
-                if (btnNew) btnNew.style.display = 'inline-flex';
                 if (headerSub) headerSub.innerText = 'Review, approve, or reject employee time off applications across the organization';
                 if (tblTitle) tblTitle.innerText = 'All Employee Time Off Applications (HR Decision Hub)';
-                if (tblTag) tblTag.innerText = 'Showing organization-wide leave requests (Admin / HR Review)';
+                if (tblTag) tblTag.innerText = 'Organization-Wide Queue';
 
                 const totalPending = state.leaves.filter(l => l.status === 'pending').length;
                 const totalApproved = state.leaves.filter(l => l.status === 'approved').length;
                 const totalLeaves = state.leaves.length;
 
-                if (lbl1) lbl1.innerText = 'Total Pending Requests';
-                if (val1) { val1.innerText = `${totalPending} Pending`; val1.style.color = '#f87171'; }
-                if (lbl2) lbl2.innerText = 'Approved Applications';
-                if (val2) { val2.innerText = `${totalApproved} Approved`; val2.style.color = '#34d399'; }
-                if (lbl3) lbl3.innerText = 'Total Applications';
-                if (val3) { val3.innerText = `${totalLeaves} Total`; val3.style.color = '#60a5fa'; }
-                if (lbl4) lbl4.innerText = 'Active on Leave Today';
-                if (val4) { val4.innerText = '1 Employee'; val4.style.color = '#fbbf24'; }
-            }
+                if (lbl1) lbl1.innerText = 'Paid Time Off Available';
+                if (val1) { val1.innerText = '24 Days Standard'; val1.style.color = '#34d399'; }
+                if (lbl2) lbl2.innerText = 'Sick Leave Available';
+                if (val2) { val2.innerText = '07 Days Standard'; val2.style.color = '#fbbf24'; }
+                if (lbl3) lbl3.innerText = 'Total Pending Requests';
+                if (val3) { val3.innerText = `${totalPending} Pending`; val3.style.color = '#f87171'; }
+                if (lbl4) lbl4.innerText = 'Total Approved Leaves';
+                if (val4) { val4.innerText = `${totalApproved} Approved`; val4.style.color = '#60a5fa'; }
 
-            const tbody = document.getElementById('tbl-leave');
-            let data = state.role === 'employee' ? state.leaves.filter(l => l.employee === state.currentEmployee) : state.leaves;
-
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No leave requests found.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = data.map(l => {
-                const badge = l.status === 'approved' ? 'badge-green' : l.status === 'rejected' ? 'badge-red' : 'badge-amber';
-                let action = '';
-
-                if (state.role === 'admin' && l.status === 'pending') {
-                    action = `
-                        <div style="display:flex; gap:0.3rem;">
-                            <input type="text" id="hr-leave-comment-${l.id}" class="input" style="font-size:0.75rem; padding:0.25rem 0.5rem;" placeholder="Remarks...">
-                            <button class="btn btn-success" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleApproveLeave(${l.id})">Approve</button>
-                            <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleRejectLeave(${l.id})">Reject</button>
-                        </div>
-                    `;
-                } else {
-                    action = `<span style="font-size:0.8rem; color:var(--text-muted);">${l.adminComments || '--'}</span>`;
-                }
-
-                return `
+                thead.innerHTML = `
                     <tr>
-                        <td><strong>${l.employee}</strong></td>
-                        <td><span class="badge badge-purple">${l.type.toUpperCase()}</span></td>
-                        <td>${l.startDate}</td>
-                        <td>${l.endDate}</td>
-                        <td>${l.days}d</td>
-                        <td>${l.remarks}</td>
-                        <td><span class="badge ${badge}">${l.status.toUpperCase()}</span></td>
-                        <td>${action}</td>
+                        <th>Employee</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Duration</th>
+                        <th>Time Off Type</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Actions</th>
                     </tr>
                 `;
-            }).join('');
+
+                if (state.leaves.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No leave requests found.</td></tr>`;
+                } else {
+                    tbody.innerHTML = state.leaves.map(l => {
+                        const badge = l.status === 'approved' ? 'badge-green' : l.status === 'rejected' ? 'badge-red' : 'badge-amber';
+                        const typeLabel = l.type === 'paid' ? 'Paid Time Off' : l.type === 'sick' ? 'Sick Leave' : 'Unpaid Leave';
+                        
+                        let actionsHtml = '';
+                        if (l.status === 'pending') {
+                            actionsHtml = `
+                                <div style="display:inline-flex; gap:0.35rem; justify-content:flex-end;">
+                                    <button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="openLeaveDetailModal(${l.id})">👁️ Details</button>
+                                    <button class="btn btn-success" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleQuickApprove(${l.id})">Approve</button>
+                                    <button class="btn btn-danger" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="handleQuickReject(${l.id})">Reject</button>
+                                </div>
+                            `;
+                        } else {
+                            actionsHtml = `
+                                <div style="display:inline-flex; gap:0.35rem; justify-content:flex-end;">
+                                    <button class="btn btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.75rem;" onclick="openLeaveDetailModal(${l.id})">👁️ View Details</button>
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <tr>
+                                <td><strong>${l.employee}</strong></td>
+                                <td>${l.startDate}</td>
+                                <td>${l.endDate}</td>
+                                <td>${l.days} Day${l.days>1?'s':''}</td>
+                                <td><span class="badge badge-purple">${typeLabel}</span></td>
+                                <td><span class="badge ${badge}">${l.status.toUpperCase()}</span></td>
+                                <td style="text-align: right;">${actionsHtml}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
         }
 
         function renderEmployees() {
