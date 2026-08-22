@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
-from datetime import datetime, time
 
 
 class HrAttendance(models.Model):
@@ -21,32 +20,42 @@ class HrAttendance(models.Model):
         compute='_compute_hours_breakdown',
         store=True,
         default=0.0,
-        help='Overtime / extra hours worked beyond standard 8 hours'
+        help='Extra hours worked beyond standard 8 hours'
     )
     effective_hours = fields.Float(
         string='Effective Hours',
         compute='_compute_hours_breakdown',
         store=True,
         default=0.0,
-        help='Effective productive working hours'
+        help='Effective worked hours after break deduction'
+    )
+    break_hours = fields.Float(
+        string='Break Duration (Hours)',
+        default=0.0,
+        help='Total break duration taken during the workday'
+    )
+    is_on_break = fields.Boolean(
+        string='Currently On Break',
+        default=False,
+        help='Indicates whether employee is currently on break'
     )
     remarks = fields.Text(string='Remarks')
 
-    @api.depends('worked_hours', 'check_in', 'check_out')
+    @api.depends('worked_hours', 'break_hours', 'check_in', 'check_out')
     def _compute_hours_breakdown(self):
         for record in self:
-            hours = record.worked_hours or 0.0
-            record.effective_hours = round(hours, 2)
-            # Standard working day = 8.0 hours
-            if hours > 8.0:
-                record.extra_hours = round(hours - 8.0, 2)
+            total_hours = record.worked_hours or 0.0
+            break_time = record.break_hours or 0.0
+            effective = max(0.0, total_hours - break_time)
+            record.effective_hours = round(effective, 2)
+            if effective > 8.0:
+                record.extra_hours = round(effective - 8.0, 2)
             else:
                 record.extra_hours = 0.0
 
     @api.depends('worked_hours', 'check_in', 'check_out')
     def _compute_dayflow_status(self):
         for record in self:
-            # If manually set to leave or marked via approved leave, preserve leave status
             if record.dayflow_status == 'leave':
                 continue
             if not record.check_in:
@@ -54,7 +63,6 @@ class HrAttendance(models.Model):
             elif not record.check_out:
                 record.dayflow_status = 'present'
             else:
-                # After checkout: determine full day or half day
                 if record.worked_hours >= 4.0:
                     record.dayflow_status = 'present'
                 elif record.worked_hours > 0.0:
@@ -79,7 +87,6 @@ class HrAttendance(models.Model):
         if not employee:
             raise UserError(_("No employee profile found linked to current user."))
 
-        # Check for open attendance
         open_attendance = self.search([
             ('employee_id', '=', employee.id),
             ('check_out', '=', False),
@@ -127,3 +134,15 @@ class HrAttendance(models.Model):
     def action_check_out(self):
         """Form view button trigger for Check Out."""
         return self.employee_check_out()
+
+    def action_start_break(self):
+        """Toggle break mode on active attendance."""
+        self.ensure_one()
+        self.write({'is_on_break': True})
+        return True
+
+    def action_end_break(self):
+        """End break mode on active attendance."""
+        self.ensure_one()
+        self.write({'is_on_break': False})
+        return True
