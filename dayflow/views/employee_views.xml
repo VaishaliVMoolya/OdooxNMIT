@@ -52,7 +52,29 @@
         <field name="inherit_id" ref="hr.view_employee_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='work_email']" position="after">
-                <field name="dayflow_role"/>
+                <field name="dayflow_role" widget="badge"
+                       decoration-info="dayflow_role == 'employee'"
+                       decoration-success="dayflow_role == 'hr'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Employee Inherited Search View -->
+    <record id="view_employee_filter_inherit_dayflow" model="ir.ui.view">
+        <field name="name">hr.employee.filter.inherit.dayflow</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="dayflow_role_employee" string="Role: Employee"
+                        domain="[('dayflow_role', '=', 'employee')]"/>
+                <filter name="dayflow_role_admin" string="Role: Admin / HR"
+                        domain="[('dayflow_role', '=', 'hr')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_dayflow_role" string="Dayflow Role"
+                            context="{'group_by': 'dayflow_role'}"/>
+                </group>
             </xpath>
         </field>
     </record>

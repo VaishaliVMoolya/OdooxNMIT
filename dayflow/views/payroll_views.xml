@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Dayflow Payroll Search View -->
+    <record id="view_dayflow_payroll_search" model="ir.ui.view">
+        <field name="name">dayflow.payroll.search</field>
+        <field name="model">dayflow.payroll</field>
+        <field name="arch" type="xml">
+            <search string="Search Payroll Records">
+                <field name="name" string="Reference"/>
+                <field name="employee_id" string="Employee"/>
+                <field name="pay_period" string="Pay Period"/>
+                <field name="salary_structure" string="Salary Structure"/>
+                <separator/>
+                <filter name="status_draft" string="Draft" domain="[('payroll_status', '=', 'draft')]"/>
+                <filter name="status_approved" string="Approved" domain="[('payroll_status', '=', 'approved')]"/>
+                <filter name="status_paid" string="Paid" domain="[('payroll_status', '=', 'paid')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_by_status" string="Status" context="{'group_by': 'payroll_status'}"/>
+                    <filter name="group_by_period" string="Pay Period" context="{'group_by': 'pay_period'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <!-- Dayflow Payroll Tree View -->
     <record id="view_dayflow_payroll_tree" model="ir.ui.view">
         <field name="name">dayflow.payroll.tree</field>
@@ -10,11 +33,14 @@
                 <field name="employee_id"/>
                 <field name="salary_structure"/>
                 <field name="pay_period"/>
-                <field name="base_salary"/>
-                <field name="allowances"/>
-                <field name="deductions"/>
-                <field name="net_salary"/>
-                <field name="payroll_status"/>
+                <field name="base_salary" widget="monetary"/>
+                <field name="allowances" widget="monetary"/>
+                <field name="deductions" widget="monetary"/>
+                <field name="net_salary" widget="monetary"/>
+                <field name="payroll_status" widget="badge"
+                       decoration-info="payroll_status == 'draft'"
+                       decoration-warning="payroll_status == 'approved'"
+                       decoration-success="payroll_status == 'paid'"/>
             </tree>
         </field>
     </record>
@@ -26,6 +52,17 @@
         <field name="arch" type="xml">
             <form string="Payroll Record">
                 <header>
+                    <button name="action_approve" string="Approve Payroll" type="object"
+                            class="oe_highlight"
+                            groups="dayflow.group_dayflow_admin"
+                            attrs="{'invisible': [('payroll_status', '!=', 'draft')]}"/>
+                    <button name="action_pay" string="Mark as Paid" type="object"
+                            class="oe_highlight"
+                            groups="dayflow.group_dayflow_admin"
+                            attrs="{'invisible': [('payroll_status', '!=', 'approved')]}"/>
+                    <button name="action_draft" string="Reset to Draft" type="object"
+                            groups="dayflow.group_dayflow_admin"
+                            attrs="{'invisible': [('payroll_status', '=', 'draft')]}"/>
                     <field name="payroll_status" widget="statusbar" statusbar_visible="draft,approved,paid"/>
                 </header>
                 <sheet>

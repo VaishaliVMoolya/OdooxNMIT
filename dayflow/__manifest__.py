@@ -24,6 +24,7 @@ Streamlined Human Resource Management System supporting:
     'data': [
         'security/dayflow_security.xml',
         'security/ir.model.access.csv',
+        'views/dashboard_views.xml',
         'views/menu_views.xml',
         'views/employee_views.xml',
         'views/attendance_views.xml',
@@ -31,6 +32,13 @@ Streamlined Human Resource Management System supporting:
         'views/payroll_views.xml',
         'views/document_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'dayflow/static/src/dashboard/dayflow_dashboard.scss',
+            'dayflow/static/src/dashboard/dayflow_dashboard.xml',
+            'dayflow/static/src/dashboard/dayflow_dashboard.js',
+        ],
+    },
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
