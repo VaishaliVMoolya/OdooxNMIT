@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Attendance Inherited Tree View -->
+    <record id="view_attendance_tree_inherit_dayflow" model="ir.ui.view">
+        <field name="name">hr.attendance.tree.inherit.dayflow</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='check_out']" position="after">
+                <field name="dayflow_status"/>
+                <field name="extra_hours"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Attendance Inherited Form View -->
+    <record id="view_attendance_form_inherit_dayflow" model="ir.ui.view">
+        <field name="name">hr.attendance.form.inherit.dayflow</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='check_out']" position="after">
+                <field name="dayflow_status"/>
+                <field name="extra_hours"/>
+                <field name="remarks"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

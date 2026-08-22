@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dayflow Document Tree View -->
+    <record id="view_dayflow_document_tree" model="ir.ui.view">
+        <field name="name">dayflow.document.tree</field>
+        <field name="model">dayflow.document</field>
+        <field name="arch" type="xml">
+            <tree string="Employee Documents">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="document_type"/>
+                <field name="file_name"/>
+                <field name="upload_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Dayflow Document Form View -->
+    <record id="view_dayflow_document_form" model="ir.ui.view">
+        <field name="name">dayflow.document.form</field>
+        <field name="model">dayflow.document</field>
+        <field name="arch" type="xml">
+            <form string="Employee Document">
+                <sheet>
+                    <group>
+                        <group string="Document Info">
+                            <field name="name"/>
+                            <field name="employee_id"/>
+                            <field name="document_type"/>
+                            <field name="upload_date"/>
+                        </group>
+                        <group string="Attachment">
+                            <field name="document_file" filename="file_name"/>
+                            <field name="file_name"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

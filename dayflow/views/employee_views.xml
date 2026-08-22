@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Employee Inherited Form View -->
+    <record id="view_employee_form_inherit_dayflow" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.dayflow</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_ids']" position="after">
+                <field name="dayflow_role" widget="radio"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Dayflow HRMS" name="dayflow_hrms">
+                    <group>
+                        <group string="Dayflow Information">
+                            <field name="dayflow_role"/>
+                            <field name="notes"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Documents" name="dayflow_documents">
+                            <field name="document_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="document_type"/>
+                                    <field name="file_name"/>
+                                    <field name="upload_date"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Payroll Records" name="dayflow_payroll">
+                            <field name="payroll_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="pay_period"/>
+                                    <field name="base_salary"/>
+                                    <field name="net_salary"/>
+                                    <field name="payroll_status"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Employee Inherited Tree View -->
+    <record id="view_employee_tree_inherit_dayflow" model="ir.ui.view">
+        <field name="name">hr.employee.tree.inherit.dayflow</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_email']" position="after">
+                <field name="dayflow_role"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
