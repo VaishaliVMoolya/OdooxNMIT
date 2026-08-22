@@ -1737,7 +1737,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="form-row">
                         <div class="field">
                             <label>Monthly Salary / Wage (₹)</label>
-                            <input type="number" id="emp-wage" class="input" placeholder="e.g. 60000" min="0" step="500">
+                            <input type="number" id="emp-wage" class="input" placeholder="e.g. 60000" min="0" step="any">
                         </div>
                         <div class="field">
                             <label>Salary Structure Title</label>
@@ -2033,9 +2033,9 @@ HTML_CONTENT = """<!DOCTYPE html>
                     <div class="field"><label>Salary Structure Title</label><input type="text" id="modal-pay-struct" class="input" placeholder="e.g. Executive Management Base"></div>
                 </div>
                 <div class="form-row">
-                    <div class="field"><label>Base Salary (₹)</label><input type="number" id="modal-pay-base" class="input" oninput="calcModalNetSalary()" required></div>
-                    <div class="field"><label>Allowances (₹)</label><input type="number" id="modal-pay-allow" class="input" oninput="calcModalNetSalary()" required></div>
-                    <div class="field"><label>Deductions (₹)</label><input type="number" id="modal-pay-deduct" class="input" oninput="calcModalNetSalary()" required></div>
+                    <div class="field"><label>Base Salary (₹)</label><input type="number" id="modal-pay-base" class="input" min="0" step="any" oninput="calcModalNetSalary()" required></div>
+                    <div class="field"><label>Allowances (₹)</label><input type="number" id="modal-pay-allow" class="input" min="0" step="any" oninput="calcModalNetSalary()" required></div>
+                    <div class="field"><label>Deductions (₹)</label><input type="number" id="modal-pay-deduct" class="input" min="0" step="any" oninput="calcModalNetSalary()" required></div>
                 </div>
                 <div class="stat-box" style="background: var(--bg-card); margin-bottom: 1rem;">
                     <div class="metric-label">Calculated Net Salary (Base + Allowances - Deductions)</div>
@@ -2783,7 +2783,13 @@ HTML_CONTENT = """<!DOCTYPE html>
                 activeRec.breakHours = breakHrs;
                 activeRec.effectiveHours = effectiveHrs;
                 activeRec.extraHours = effectiveHrs > 8.0 ? parseFloat((effectiveHrs - 8.0).toFixed(2)) : 0.0;
-                activeRec.status = effectiveHrs >= 4.0 ? 'present' : 'half_day';
+                if (effectiveHrs >= 4.0) {
+                    activeRec.status = 'present';
+                } else if (effectiveHrs >= 1.0) {
+                    activeRec.status = 'half_day';
+                } else {
+                    activeRec.status = 'absent';
+                }
                 activeRec.isActive = false;
             }
 
@@ -3133,7 +3139,15 @@ HTML_CONTENT = """<!DOCTYPE html>
             const reportingManager = (document.getElementById('emp-manager')?.value || '').trim() || 'Jane Smith (HR Head)';
 
             const wageVal = document.getElementById('emp-wage')?.value;
-            const wage = wageVal !== '' ? Number(wageVal) : 0;
+            let wage = 0;
+            if (wageVal !== '' && wageVal !== null && wageVal !== undefined) {
+                const parsedWage = Number(wageVal);
+                if (isNaN(parsedWage) || parsedWage < 0) {
+                    showCreateEmpError('Validation Error: Monthly Salary must be a valid non-negative number.');
+                    return;
+                }
+                wage = parsedWage;
+            }
             const struct = (document.getElementById('emp-struct')?.value || '').trim() || (wage > 0 ? 'Standard Base' : 'Unconfigured');
 
             // Validation 1: Required fields
@@ -3239,9 +3253,9 @@ HTML_CONTENT = """<!DOCTYPE html>
                     employee: newEmp.name,
                     structure: newEmp.struct,
                     period: 'August 2026',
-                    base: Math.round(wage * 0.8),
-                    allow: Math.round(wage * 0.2),
-                    deduct: Math.round(wage * 0.08),
+                    base: wage,
+                    allow: parseFloat((wage * 0.2).toFixed(2)),
+                    deduct: parseFloat((wage * 0.08).toFixed(2)),
                     status: 'draft'
                 });
             }
@@ -3426,9 +3440,19 @@ Role: ${newUser.role.toUpperCase()}`);
         function handleSaveSalary(e) {
             e.preventDefault();
             const idVal = document.getElementById('modal-pay-id').value;
-            const base = parseFloat(document.getElementById('modal-pay-base').value) || 0;
-            const allow = parseFloat(document.getElementById('modal-pay-allow').value) || 0;
-            const deduct = parseFloat(document.getElementById('modal-pay-deduct').value) || 0;
+            const baseVal = document.getElementById('modal-pay-base').value;
+            const allowVal = document.getElementById('modal-pay-allow').value;
+            const deductVal = document.getElementById('modal-pay-deduct').value;
+
+            const base = parseFloat(baseVal);
+            const allow = allowVal !== '' ? parseFloat(allowVal) : 0;
+            const deduct = deductVal !== '' ? parseFloat(deductVal) : 0;
+
+            if (isNaN(base) || base < 0 || isNaN(allow) || allow < 0 || isNaN(deduct) || deduct < 0) {
+                alert('Validation Error: Base salary, allowances, and deductions must be non-negative numbers.');
+                return;
+            }
+
             const struct = document.getElementById('modal-pay-struct').value || 'Standard Base';
             const empName = document.getElementById('modal-pay-emp').value;
 

@@ -53,7 +53,7 @@ class HrAttendance(models.Model):
             else:
                 record.extra_hours = 0.0
 
-    @api.depends('worked_hours', 'check_in', 'check_out')
+    @api.depends('worked_hours', 'effective_hours', 'check_in', 'check_out')
     def _compute_dayflow_status(self):
         for record in self:
             if record.dayflow_status == 'leave':
@@ -63,9 +63,10 @@ class HrAttendance(models.Model):
             elif not record.check_out:
                 record.dayflow_status = 'present'
             else:
-                if record.worked_hours >= 4.0:
+                effective = record.effective_hours if record.effective_hours is not False and record.effective_hours is not None else (record.worked_hours or 0.0)
+                if effective >= 4.0:
                     record.dayflow_status = 'present'
-                elif record.worked_hours > 0.0:
+                elif effective >= 1.0:
                     record.dayflow_status = 'half_day'
                 else:
                     record.dayflow_status = 'absent'
