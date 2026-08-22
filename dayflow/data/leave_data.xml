@@ -24,5 +24,23 @@
             <field name="employee_requests">yes</field>
             <field name="color_name">lightred</field>
         </record>
+
+        <!-- Persistent Base Allocation: Paid Time Off (24 Days) -->
+        <record id="allocation_paid_time_off" model="hr.leave.allocation">
+            <field name="name">Annual Paid Time Off Allocation (24 Days)</field>
+            <field name="holiday_status_id" ref="holiday_status_paid"/>
+            <field name="holiday_type">company</field>
+            <field name="number_of_days">24</field>
+            <field name="state">validate</field>
+        </record>
+
+        <!-- Persistent Base Allocation: Sick Leave (7 Days) -->
+        <record id="allocation_sick_leave" model="hr.leave.allocation">
+            <field name="name">Annual Sick Leave Allocation (7 Days)</field>
+            <field name="holiday_status_id" ref="holiday_status_sick"/>
+            <field name="holiday_type">company</field>
+            <field name="number_of_days">7</field>
+            <field name="state">validate</field>
+        </record>
     </data>
 </odoo>

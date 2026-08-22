@@ -1,9 +1,11 @@
-# -*- coding: utf-8 -*-
+import logging
 import re
 import secrets
 
-from odoo import fields, models
+from odoo import fields, models, _
 from odoo.exceptions import AccessError, UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class HrEmployee(models.Model):
@@ -28,6 +30,53 @@ class HrEmployee(models.Model):
         'dayflow.payroll', 'employee_id', string='Payroll Records'
     )
     notes = fields.Text(string='Dayflow Notes')
+
+    # Private Information
+    pan_no = fields.Char(string='PAN Number', help='Permanent Account Number')
+    aadhar_no = fields.Char(string='Aadhaar Number', help='12-digit Aadhaar UID')
+    passport_no = fields.Char(string='Passport Number')
+    bank_name = fields.Char(string='Bank Name', default='HDFC Bank')
+    bank_account_no = fields.Char(string='Bank Account Number')
+    ifsc_code = fields.Char(string='IFSC Code')
+    emergency_contact_name = fields.Char(string='Emergency Contact Name')
+    emergency_contact_phone = fields.Char(string='Emergency Contact Phone')
+    emergency_contact_relation = fields.Char(string='Relationship')
+    personal_email = fields.Char(string='Personal Email')
+    personal_phone = fields.Char(string='Personal Mobile')
+
+    # Salary & Compensation Structure
+    monthly_wage = fields.Float(string='Monthly Base Wage', default=50000.0)
+    salary_structure = fields.Char(string='Salary Structure', default='Standard Base')
+    basic_salary = fields.Float(string='Basic Salary (50%)', compute='_compute_salary_breakdown', store=True)
+    hra_allowance = fields.Float(string='HRA (50% of Basic)', compute='_compute_salary_breakdown', store=True)
+    standard_allowance = fields.Float(string='Standard Allowance', compute='_compute_salary_breakdown', store=True)
+    performance_bonus = fields.Float(string='Performance Bonus', compute='_compute_salary_breakdown', store=True)
+    lta_allowance = fields.Float(string='LTA', compute='_compute_salary_breakdown', store=True)
+    pf_deduction = fields.Float(string='PF Deduction (12% of Basic)', compute='_compute_salary_breakdown', store=True)
+    pt_deduction = fields.Float(string='Professional Tax', default=200.0)
+    net_take_home = fields.Float(string='Net Monthly Salary', compute='_compute_salary_breakdown', store=True)
+
+    def _compute_salary_breakdown(self):
+        for rec in self:
+            wage = rec.monthly_wage or 0.0
+            basic = round(wage * 0.50, 2)
+            hra = round(basic * 0.50, 2)
+            std_allow = round(wage * 0.1667, 2)
+            bonus = round(wage * 0.0833, 2)
+            lta = round(wage * 0.0833, 2)
+            pf = round(basic * 0.12, 2)
+            pt = rec.pt_deduction or 200.0
+
+            rec.basic_salary = basic
+            rec.hra_allowance = hra
+            rec.standard_allowance = std_allow
+            rec.performance_bonus = bonus
+            rec.lta_allowance = lta
+            rec.pf_deduction = pf
+
+            total_allowances = hra + std_allow + bonus + lta
+            total_deductions = pf + pt
+            rec.net_take_home = round(basic + total_allowances - total_deductions, 2)
 
     def _dayflow_login_component(self, value, fallback):
         """Return a login-safe uppercase component without punctuation."""
@@ -90,6 +139,7 @@ class HrEmployee(models.Model):
         user_values = {
             'name': self.name,
             'login': login,
+            'email': self.work_email or self.personal_email or False,
             'password': initial_password,
             'company_id': self.company_id.id,
             'company_ids': [(6, 0, [self.company_id.id])],
@@ -97,6 +147,9 @@ class HrEmployee(models.Model):
         }
         user = user_model.with_context(no_reset_password=True).create(user_values)
         self.write({'user_id': user.id})
+
+        # Send welcome email notification to the newly created employee account
+        self._send_dayflow_account_creation_alert(user)
 
         return {
             'type': 'ir.actions.client',
@@ -106,3 +159,25 @@ class HrEmployee(models.Model):
                 'temporary_password': initial_password,
             },
         }
+
+    def _send_dayflow_account_creation_alert(self, user=None):
+        """Send an email alert to the employee when their Dayflow account is created."""
+        self.ensure_one()
+        target_email = self.work_email or self.personal_email or (user.email if user else False)
+        if not target_email:
+            _logger.info("Dayflow account creation email skipped for employee %s (no email on record)", self.name)
+            return
+
+        try:
+            template = self.env.ref('dayflow.email_template_dayflow_account_created', raise_if_not_found=False)
+            if template:
+                base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', '')
+                login_url = f"{base_url}/web/login" if base_url else "/web/login"
+                template.with_context(
+                    login_url=login_url,
+                ).send_mail(self.id, force_send=False, raise_exception=False)
+                _logger.info("Dayflow account creation alert queued for employee: %s (%s)", self.name, target_email)
+        except Exception as e:
+            # Must not crash account creation if email delivery is unavailable
+            _logger.warning("Could not send Dayflow account creation email for employee %s: %s", self.name, e)
+
