@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inline SVG icons (lucide-equivalent, no external deps) -->
+    <template id="landing_icon_arrow" name="Dayflow Landing Icon Arrow">
+        <svg class="df-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14"/>
+            <path d="m12 5 7 7-7 7"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_sparkles" name="Dayflow Landing Icon Sparkles">
+        <svg class="df-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+            <path d="M20 3v4"/>
+            <path d="M22 5h-4"/>
+            <path d="M4 17v2"/>
+            <path d="M5 18H3"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_users" name="Dayflow Landing Icon Users">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_check" name="Dayflow Landing Icon Check">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_calendar" name="Dayflow Landing Icon Calendar">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 2v4"/>
+            <path d="M16 2v4"/>
+            <rect width="18" height="18" x="3" y="4" rx="2"/>
+            <path d="M3 10h18"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_wallet" name="Dayflow Landing Icon Wallet">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="20" height="14" x="2" y="5" rx="2"/>
+            <path d="M2 10h20"/>
+            <path d="M16 14h.01"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_shield" name="Dayflow Landing Icon Shield">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+            <path d="m9 12 2 2 4-4"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_chart" name="Dayflow Landing Icon Chart">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 3v16a2 2 0 0 0 2 2h16"/>
+            <path d="M18 17V9"/>
+            <path d="M13 17V5"/>
+            <path d="M8 17v-3"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_clock" name="Dayflow Landing Icon Clock">
+        <svg class="df-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_lock" name="Dayflow Landing Icon Lock">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="16" r="1"/>
+            <rect x="3" y="10" width="18" height="12" rx="2"/>
+            <path d="M7 10V7a5 5 0 0 1 10 0v3"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_cloud" name="Dayflow Landing Icon Cloud">
+        <svg class="df-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_menu" name="Dayflow Landing Icon Menu">
+        <svg class="df-icon df-menu-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="4" x2="20" y1="12" y2="12"/>
+            <line x1="4" x2="20" y1="6" y2="6"/>
+            <line x1="4" x2="20" y1="18" y2="18"/>
+        </svg>
+    </template>
+
+    <template id="landing_icon_close" name="Dayflow Landing Icon Close">
+        <svg class="df-icon df-menu-icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden="hidden">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+        </svg>
+    </template>
+
+    <template id="landing_cta_button" name="Dayflow Landing CTA Button">
+        <a t-attf-class="df-button #{'df-button-outline' if outline else ''}" t-att-href="href or '/web/login'">
+            <t t-esc="label"/>
+            <t t-call="dayflow.landing_icon_arrow"/>
+        </a>
+    </template>
+
+    <template id="landing_workflow" name="Dayflow Landing Workflow Visual">
+        <div class="df-workflow-visual" aria-label="HR data flow">
+            <svg class="df-workflow-svg" viewBox="0 0 560 300" aria-hidden="true">
+                <defs>
+                    <linearGradient id="flowGradient" x1="0" x2="1">
+                        <stop stop-color="#9a5cff" stop-opacity=".25"/>
+                        <stop offset=".5" stop-color="#b889ff"/>
+                        <stop offset="1" stop-color="#d7c2ff" stop-opacity=".55"/>
+                    </linearGradient>
+                    <filter id="flowGlow">
+                        <feGaussianBlur stdDeviation="3" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path d="M 178 46 C 270 46, 275 150, 386 150 S 450 150, 500 150" pathLength="1"/>
+                <path d="M 178 116 C 270 116, 275 150, 386 150 S 450 150, 500 150" pathLength="1"/>
+                <path d="M 178 186 C 270 186, 275 150, 386 150 S 450 150, 500 150" pathLength="1"/>
+                <path d="M 178 256 C 270 256, 275 150, 386 150 S 450 150, 500 150" pathLength="1"/>
+                <circle class="df-flow-dot dot-one" r="3" filter="url(#flowGlow)">
+                    <animateMotion dur="7s" repeatCount="indefinite" path="M 178 46 C 270 46, 275 150, 386 150 S 450 150, 500 150"/>
+                </circle>
+                <circle class="df-flow-dot dot-two" r="3" filter="url(#flowGlow)">
+                    <animateMotion dur="7s" begin="1.75s" repeatCount="indefinite" path="M 178 116 C 270 116, 275 150, 386 150 S 450 150, 500 150"/>
+                </circle>
+                <circle class="df-flow-dot dot-three" r="3" filter="url(#flowGlow)">
+                    <animateMotion dur="7s" begin="3.5s" repeatCount="indefinite" path="M 178 186 C 270 186, 275 150, 386 150 S 450 150, 500 150"/>
+                </circle>
+                <circle class="df-flow-dot dot-four" r="3" filter="url(#flowGlow)">
+                    <animateMotion dur="7s" begin="5.25s" repeatCount="indefinite" path="M 178 256 C 270 256, 275 150, 386 150 S 450 150, 500 150"/>
+                </circle>
+            </svg>
+            <div class="df-workflow-nodes">
+                <div class="df-node purple">
+                    <span><t t-call="dayflow.landing_icon_users"/></span>
+                    <div><b>Employees</b><small>Your people</small></div>
+                </div>
+                <div class="df-node green">
+                    <span><t t-call="dayflow.landing_icon_check"/></span>
+                    <div><b>Attendance</b><small>Show up</small></div>
+                </div>
+                <div class="df-node amber">
+                    <span><t t-call="dayflow.landing_icon_calendar"/></span>
+                    <div><b>Time Off</b><small>Take time</small></div>
+                </div>
+                <div class="df-node red">
+                    <span><t t-call="dayflow.landing_icon_wallet"/></span>
+                    <div><b>Payroll</b><small>Get paid</small></div>
+                </div>
+            </div>
+            <div class="df-flow-destination">
+                <span>One intelligent flow</span>
+                <small>All your HR operations connected in one place. Real-time. Simple. Always in sync.</small>
+            </div>
+        </div>
+    </template>
+
+    <template id="landing_mini_dashboard" name="Dayflow Landing Mini Dashboard">
+        <div t-attf-class="df-dashboard #{'df-dashboard-large' if large else ''}">
+            <div class="df-dash-top">
+                <span class="df-dots">•••</span>
+                <span class="df-mini-brand">DF</span>
+                <span class="df-dash-title">Dayflow HRMS Management Console</span>
+                <span class="df-avatar">JO</span>
+            </div>
+            <div class="df-metrics">
+                <div class="df-metric purple">
+                    <t t-call="dayflow.landing_icon_users"/>
+                    <strong>8</strong>
+                    <small>Total Employees</small>
+                </div>
+                <div class="df-metric green">
+                    <t t-call="dayflow.landing_icon_check"/>
+                    <strong>2</strong>
+                    <small>Present Today</small>
+                </div>
+                <div class="df-metric amber">
+                    <t t-call="dayflow.landing_icon_calendar"/>
+                    <strong>1</strong>
+                    <small>On Leave Today</small>
+                </div>
+                <div class="df-metric red">
+                    <t t-call="dayflow.landing_icon_clock"/>
+                    <strong>1</strong>
+                    <small>Pending Requests</small>
+                </div>
+            </div>
+            <div class="df-dash-grid">
+                <div class="df-panel">
+                    <h4>Today's Attendance <em>2 Active</em></h4>
+                    <div class="df-row"><span>John Doe</span><span>09:00 AM</span><b>Present</b></div>
+                    <div class="df-row"><span>Jane Smith</span><span>08:30 AM</span><b>Present</b></div>
+                    <a href="#features">View all attendance →</a>
+                </div>
+                <div class="df-panel">
+                    <h4>Pending Leave Request <em class="amber-text">1 Pending</em></h4>
+                    <div class="df-request">
+                        <b>John Doe</b>
+                        <span>Sick Leave<br/><small>Aug 25 - Aug 26 (2d)</small></span>
+                        <button type="button">Review</button>
+                    </div>
+                </div>
+            </div>
+            <div class="df-dash-grid bottom">
+                <div class="df-panel">
+                    <h4>Recent Activity</h4>
+                    <div class="df-activity"><span class="activity-dot d0"/>John Doe checked in<time>09:00 AM</time></div>
+                    <div class="df-activity"><span class="activity-dot d1"/>Leave request received<time>10:15 AM</time></div>
+                    <div class="df-activity"><span class="activity-dot d2"/>Payroll updated for August<time>Yesterday</time></div>
+                </div>
+                <div class="df-panel">
+                    <h4>Quick Actions</h4>
+                    <div class="df-action"><t t-call="dayflow.landing_icon_sparkles"/>Add Employee</div>
+                    <div class="df-action"><t t-call="dayflow.landing_icon_sparkles"/>Mark Attendance</div>
+                    <div class="df-action"><t t-call="dayflow.landing_icon_sparkles"/>Review Leave Requests</div>
+                    <div class="df-action"><t t-call="dayflow.landing_icon_sparkles"/>Run Payroll</div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="landing_page" name="Dayflow Landing Page">
+        <html lang="en" class="o_dayflow_landing_html">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <meta name="description" content="Dayflow brings your people, processes, and productivity into one intelligent HR flow."/>
+                <title>Dayflow — Every workday, perfectly aligned</title>
+                <t t-call-assets="dayflow.assets_landing" t-js="false"/>
+            </head>
+            <body class="o_dayflow_landing_body">
+                <main class="o_dayflow_landing dayflow" id="top">
+                    <nav class="df-nav">
+                        <div class="df-container df-nav-inner">
+                            <a class="df-brand" href="#top" aria-label="Dayflow home">
+                                <span class="df-logo">DF</span>
+                                <span>Dayflow</span>
+                            </a>
+                            <div class="df-links">
+                                <a href="#features">Features</a>
+                                <a href="#how">How it works</a>
+                                <a href="#teams">For Teams</a>
+                                <a href="#pricing">Pricing</a>
+                                <a href="#resources">Resources</a>
+                                <div class="df-mobile-actions">
+                                    <t t-set="label" t-value="'Sign In'"/>
+                                    <t t-set="outline" t-value="True"/>
+                                    <t t-set="href" t-value="'/web/login'"/>
+                                    <t t-call="dayflow.landing_cta_button"/>
+                                    <t t-set="label" t-value="'Get Started'"/>
+                                    <t t-set="outline" t-value="False"/>
+                                    <t t-set="href" t-value="'/web/login'"/>
+                                    <t t-call="dayflow.landing_cta_button"/>
+                                </div>
+                            </div>
+                            <div class="df-nav-actions">
+                                <t t-set="label" t-value="'Sign In'"/>
+                                <t t-set="outline" t-value="True"/>
+                                <t t-set="href" t-value="'/web/login'"/>
+                                <t t-call="dayflow.landing_cta_button"/>
+                                <t t-set="label" t-value="'Get Started'"/>
+                                <t t-set="outline" t-value="False"/>
+                                <t t-set="href" t-value="'/web/login'"/>
+                                <t t-call="dayflow.landing_cta_button"/>
+                            </div>
+                            <button class="df-menu" type="button" aria-label="Toggle menu" aria-expanded="false">
+                                <t t-call="dayflow.landing_icon_menu"/>
+                                <t t-call="dayflow.landing_icon_close"/>
+                            </button>
+                        </div>
+                    </nav>
+
+                    <section class="df-hero">
+                        <div class="df-grid-bg"/>
+                        <div class="df-container df-hero-inner">
+                            <div class="df-hero-copy">
+                                <div class="df-eyebrow">
+                                    <t t-call="dayflow.landing_icon_sparkles"/>
+                                    HRMS for modern teams
+                                </div>
+                                <h1>Every workday.<br/>Perfectly <span>aligned.</span></h1>
+                                <p>Dayflow HRMS brings your people, processes and productivity into one intelligent flow.</p>
+                                <div class="df-hero-buttons">
+                                    <t t-set="label" t-value="'Get Started'"/>
+                                    <t t-set="outline" t-value="False"/>
+                                    <t t-set="href" t-value="'/web/login'"/>
+                                    <t t-call="dayflow.landing_cta_button"/>
+                                    <t t-set="label" t-value="'Sign In'"/>
+                                    <t t-set="outline" t-value="True"/>
+                                    <t t-set="href" t-value="'/web/login'"/>
+                                    <t t-call="dayflow.landing_cta_button"/>
+                                </div>
+                                <div class="df-trust">
+                                    <div class="df-avatars">
+                                        <i>AK</i><i>JS</i><i>MP</i><i>RL</i>
+                                    </div>
+                                    <div>
+                                        <strong>★★★★★</strong>
+                                        <span>Trusted by 500+ teams</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="df-hero-visual">
+                                <t t-call="dayflow.landing_workflow"/>
+                            </div>
+                        </div>
+                        <div class="df-wave"/>
+                    </section>
+
+                    <section class="df-section" id="features">
+                        <div class="df-container">
+                            <div class="df-section-head">
+                                <span class="df-kicker">Everything you need, in one place</span>
+                                <h2>Everything HR, <span>connected.</span></h2>
+                            </div>
+                            <div class="df-feature-grid">
+                                <a class="df-feature" href="#how">
+                                    <span class="df-feature-icon purple"><t t-call="dayflow.landing_icon_users"/></span>
+                                    <h3>People</h3>
+                                    <p>Manage employee profiles, roles, and documents with ease.</p>
+                                    <span class="df-learn">Learn more <svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+                                </a>
+                                <a class="df-feature" href="#how">
+                                    <span class="df-feature-icon green"><t t-call="dayflow.landing_icon_check"/></span>
+                                    <h3>Attendance</h3>
+                                    <p>Track daily check-ins and weekly summaries with confidence.</p>
+                                    <span class="df-learn">Learn more <svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+                                </a>
+                                <a class="df-feature" href="#how">
+                                    <span class="df-feature-icon amber"><t t-call="dayflow.landing_icon_calendar"/></span>
+                                    <h3>Time Off</h3>
+                                    <p>Apply, approve, and manage leave seamlessly.</p>
+                                    <span class="df-learn">Learn more <svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+                                </a>
+                                <a class="df-feature" href="#how">
+                                    <span class="df-feature-icon red"><t t-call="dayflow.landing_icon_wallet"/></span>
+                                    <h3>Payroll</h3>
+                                    <p>Salary structures, payroll processing, and payslips.</p>
+                                    <span class="df-learn">Learn more <svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+                                </a>
+                                <a class="df-feature" href="#how">
+                                    <span class="df-feature-icon blue"><t t-call="dayflow.landing_icon_shield"/></span>
+                                    <h3>Access</h3>
+                                    <p>Role-based access for employees and HR teams.</p>
+                                    <span class="df-learn">Learn more <svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+                                </a>
+                                <a class="df-feature" href="#how">
+                                    <span class="df-feature-icon purple"><t t-call="dayflow.landing_icon_chart"/></span>
+                                    <h3>Insights</h3>
+                                    <p>Reports and analytics that help you make better decisions.</p>
+                                    <span class="df-learn">Learn more <svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="df-section df-teams" id="teams">
+                        <div class="df-container">
+                            <div class="df-section-head">
+                                <span class="df-kicker">One system. Two experiences.</span>
+                            </div>
+                            <div class="df-team-split">
+                                <div class="df-team-card employee">
+                                    <div class="df-team-copy">
+                                        <span class="df-team-label"><t t-call="dayflow.landing_icon_users"/> For Employees</span>
+                                        <h3>Your workday, simplified.</h3>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>View personal profile</p>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Track attendance</p>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Apply for leave</p>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>View salary details</p>
+                                    </div>
+                                    <div class="df-product-card employee-preview">
+                                        <div class="df-product-head">
+                                            <span class="df-avatar large">AS</span>
+                                            <div><strong>Alex Stone</strong><small>Product Designer</small></div>
+                                            <span class="df-status">Active</span>
+                                        </div>
+                                        <div class="df-product-row"><span>Attendance</span><b>Present · 09:02 AM</b></div>
+                                        <div class="df-product-row"><span>Leave balance</span><b>12 days</b></div>
+                                        <div class="df-product-row"><span>Next payday</span><b>Aug 30</b></div>
+                                    </div>
+                                </div>
+                                <div class="df-team-card admin">
+                                    <div class="df-team-copy">
+                                        <span class="df-team-label"><t t-call="dayflow.landing_icon_users"/> For HR &amp; Admin</span>
+                                        <h3>Your workforce, under control.</h3>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Manage employees</p>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Approve leaves</p>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Monitor attendance</p>
+                                        <p><svg class="df-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Run payroll &amp; reports</p>
+                                    </div>
+                                    <div class="df-product-card admin-preview">
+                                        <div class="df-product-head">
+                                            <strong>Workforce overview</strong>
+                                            <span class="df-status violet">Live</span>
+                                        </div>
+                                        <div class="df-admin-stats">
+                                            <b>124<small>Employees</small></b>
+                                            <b>96%<small>Attendance</small></b>
+                                            <b>7<small>Pending</small></b>
+                                        </div>
+                                        <div class="df-chart"><span/><span/><span/><span/><span/><span/><span/></div>
+                                    </div>
+                                </div>
+                                <div class="df-split-or">↔</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="df-section df-action-section" id="how">
+                        <div class="df-container df-action-inner">
+                            <div class="df-action-copy">
+                                <h2>See Dayflow<br/><span>in action.</span></h2>
+                                <p>From attendance to approvals, everything flows in real-time so you can focus on what matters most — your people.</p>
+                                <div class="df-stat-row">
+                                    <div class="df-stat"><strong>8</strong><span>Employees</span></div>
+                                    <div class="df-stat"><strong>2</strong><span>Active</span></div>
+                                    <div class="df-stat"><strong>1</strong><span>On Leave</span></div>
+                                    <div class="df-stat"><strong>1</strong><span>Pending</span></div>
+                                </div>
+                            </div>
+                            <t t-set="large" t-value="True"/>
+                            <t t-call="dayflow.landing_mini_dashboard"/>
+                        </div>
+                    </section>
+
+                    <section class="df-security">
+                        <div class="df-container df-security-grid">
+                            <div class="df-security-item">
+                                <span><t t-call="dayflow.landing_icon_lock"/></span>
+                                <div>
+                                    <h3>Secure by design</h3>
+                                    <p>End-to-end security to keep your data and people safe.</p>
+                                </div>
+                            </div>
+                            <div class="df-security-item">
+                                <span><t t-call="dayflow.landing_icon_shield"/></span>
+                                <div>
+                                    <h3>Role-based access</h3>
+                                    <p>Granular permissions for employees, HR and administrators.</p>
+                                </div>
+                            </div>
+                            <div class="df-security-item">
+                                <span><t t-call="dayflow.landing_icon_cloud"/></span>
+                                <div>
+                                    <h3>Always available</h3>
+                                    <p>Reliable, cloud-powered and always up-to-date.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="df-cta" id="pricing">
+                        <div class="df-wave df-wave-bottom"/>
+                        <div class="df-container">
+                            <h2>Bring your workplace into <span>flow.</span></h2>
+                            <p>Everything your people need. Everything your HR team needs. One place.</p>
+                            <div class="df-hero-buttons">
+                                <t t-set="label" t-value="'Get Started'"/>
+                                <t t-set="outline" t-value="False"/>
+                                <t t-set="href" t-value="'/web/login'"/>
+                                <t t-call="dayflow.landing_cta_button"/>
+                                <t t-set="label" t-value="'Sign In'"/>
+                                <t t-set="outline" t-value="True"/>
+                                <t t-set="href" t-value="'/web/login'"/>
+                                <t t-call="dayflow.landing_cta_button"/>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer class="df-footer" id="resources">
+                        <div class="df-container df-footer-inner">
+                            <a class="df-brand" href="#top" aria-label="Dayflow home">
+                                <span class="df-logo">DF</span>
+                                <span>Dayflow</span>
+                            </a>
+                            <span>© 2026 Dayflow. The intelligent flow of work.</span>
+                            <div>
+                                <a href="#features">Features</a>
+                                <a href="#teams">Teams</a>
+                                <a href="#pricing">Pricing</a>
+                            </div>
+                        </div>
+                    </footer>
+                </main>
+                <t t-call-assets="dayflow.assets_landing" t-css="false"/>
+            </body>
+        </html>
+    </template>
+
+</odoo>
