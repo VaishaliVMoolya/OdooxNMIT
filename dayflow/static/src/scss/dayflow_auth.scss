@@ -1,0 +1,178 @@
+$dayflow-bg: #101116;
+$dayflow-surface: #181b25;
+$dayflow-surface-strong: #1c2332;
+$dayflow-border: #32394c;
+$dayflow-text: #f6f3f8;
+$dayflow-muted: #99a9c3;
+$dayflow-purple: #895579;
+$dayflow-purple-hover: #a46591;
+
+.o_dayflow_login_container {
+    align-items: center;
+    background: $dayflow-bg;
+    display: grid;
+    justify-items: center;
+    min-height: 100vh;
+    padding: clamp(1.25rem, 5vw, 4rem) 1rem !important;
+
+    .o_dayflow_login_brand {
+        align-items: center;
+        color: $dayflow-text;
+        display: flex;
+        font-size: clamp(1.15rem, 2vw, 1.45rem);
+        font-weight: 700;
+        gap: .75rem;
+        letter-spacing: -.02em;
+        margin-bottom: 1.5rem;
+    }
+
+    .o_dayflow_login_mark {
+        align-items: center;
+        background: #8f3fd3;
+        border-radius: .4rem;
+        display: inline-flex;
+        font-size: .83rem;
+        font-weight: 800;
+        height: 2.25rem;
+        justify-content: center;
+        letter-spacing: .02em;
+        width: 2.75rem;
+    }
+
+    .o_dayflow_login_card {
+        background: $dayflow-surface !important;
+        border: 1px solid $dayflow-border !important;
+        border-radius: .65rem !important;
+        box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, .28);
+        color: $dayflow-text;
+        max-width: 29rem !important;
+        width: min(100%, 29rem);
+    }
+
+    .card-body { padding: clamp(1.5rem, 5vw, 2.4rem); }
+    .card-body > .text-center:first-child {
+        border: 0 !important;
+        margin-bottom: 1.75rem !important;
+        padding-bottom: 0 !important;
+    }
+
+    .o_dayflow_login_heading h1 {
+        color: $dayflow-text;
+        font-size: clamp(1.45rem, 4vw, 1.9rem);
+        font-weight: 750;
+        margin: 0 0 .35rem;
+    }
+    .o_dayflow_login_heading p,
+    .o_dayflow_login_help,
+    .text-muted { color: $dayflow-muted !important; }
+    .form-label { color: #d8deea; font-size: .88rem; font-weight: 600; }
+    .form-control {
+        background: #111521;
+        border: 1px solid #3a4358;
+        border-radius: .45rem;
+        color: $dayflow-text;
+        min-height: 2.8rem;
+    }
+    .form-control::placeholder { color: #7e8da7; }
+    .form-control:focus {
+        background: #111521;
+        border-color: #a66f98;
+        box-shadow: 0 0 0 .2rem rgba(137, 85, 121, .25);
+        color: $dayflow-text;
+    }
+
+    .o_dayflow_password_input { position: relative; }
+    .o_dayflow_password_input .form-control { padding-right: 3rem; }
+    .o_dayflow_password_toggle {
+        background: transparent;
+        border: 0;
+        color: $dayflow-muted;
+        min-height: 2.75rem;
+        position: absolute;
+        right: .25rem;
+        top: 0;
+        width: 2.75rem;
+    }
+    .o_dayflow_password_toggle:focus-visible,
+    .o_dayflow_credential button:focus-visible,
+    .o_dayflow_done_button:focus-visible {
+        border-radius: .35rem;
+        outline: 2px solid #c788b4;
+        outline-offset: 2px;
+    }
+
+    .o_dayflow_login_submit,
+    .o_dayflow_done_button {
+        background: $dayflow-purple !important;
+        border-color: $dayflow-purple !important;
+        color: #fff !important;
+        font-weight: 700;
+        min-height: 2.85rem;
+    }
+    .o_dayflow_login_submit:hover:not(:disabled),
+    .o_dayflow_done_button:hover { background: $dayflow-purple-hover !important; }
+    .o_dayflow_login_submit:disabled { cursor: wait; opacity: .78; }
+    .alert-danger { background: #422330; border-color: #a9536a; color: #ffe3e9; }
+    .o_dayflow_login_help { font-size: .88rem; margin-top: 1.25rem; }
+    .o_dayflow_login_help a { color: #d09abc; font-weight: 600; }
+    .o_dayflow_login_help p { margin: 1.35rem 0 0; }
+    .o_dayflow_login_help span { color: $dayflow-text; font-weight: 600; }
+    .card-body > .text-center.small { border-color: $dayflow-border !important; }
+}
+
+.o_dayflow_account_provision_form .oe_title { margin-bottom: 1.5rem; }
+
+.o_dayflow_account_success {
+    align-items: center;
+    background: $dayflow-bg;
+    display: flex;
+    justify-content: center;
+    min-height: 100%;
+    padding: clamp(1rem, 4vw, 3rem);
+}
+.o_dayflow_account_success_card {
+    background: $dayflow-surface;
+    border: 1px solid $dayflow-border;
+    border-radius: .7rem;
+    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, .28);
+    color: $dayflow-text;
+    max-width: 40rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    text-align: center;
+    width: min(100%, 40rem);
+}
+.o_dayflow_success_icon {
+    align-items: center;
+    background: #116b59;
+    border-radius: 50%;
+    display: inline-flex;
+    font-size: 1.5rem;
+    font-weight: 800;
+    height: 3.25rem;
+    justify-content: center;
+    width: 3.25rem;
+}
+.o_dayflow_success_eyebrow { color: #c997bd; font-size: .78rem; font-weight: 800; letter-spacing: .11em; margin: 1rem 0 .35rem; text-transform: uppercase; }
+.o_dayflow_account_success h1 { font-size: clamp(1.4rem, 4vw, 2rem); margin: 0; }
+.o_dayflow_success_intro { color: $dayflow-muted; line-height: 1.55; margin: .8rem auto 1.5rem; max-width: 32rem; }
+.o_dayflow_credential {
+    background: $dayflow-surface-strong;
+    border: 1px solid $dayflow-border;
+    border-radius: .5rem;
+    margin-top: .8rem;
+    padding: .8rem 1rem;
+    text-align: left;
+}
+.o_dayflow_credential > span { color: $dayflow-muted; display: block; font-size: .78rem; font-weight: 700; margin-bottom: .4rem; text-transform: uppercase; }
+.o_dayflow_credential > div { align-items: center; display: flex; gap: .75rem; justify-content: space-between; min-width: 0; }
+.o_dayflow_credential code { color: $dayflow-text; font-size: .9rem; overflow-wrap: anywhere; }
+.o_dayflow_credential button { background: transparent; border: 1px solid #695170; border-radius: .35rem; color: #e2b4d1; flex: 0 0 auto; font-weight: 700; min-height: 2.25rem; padding: .25rem .7rem; }
+.o_dayflow_done_button { border: 0; border-radius: .4rem; margin-top: 1.5rem; padding: .45rem 2rem; width: min(100%, 15rem); }
+
+@media (max-width: 575.98px) {
+    .o_dayflow_login_container { padding-inline: .75rem !important; }
+    .o_dayflow_login_container .card-body { padding: 1.3rem; }
+    .o_dayflow_login_container .o_dayflow_login_brand { margin-bottom: 1rem; }
+    .o_dayflow_credential > div { align-items: stretch; flex-direction: column; }
+    .o_dayflow_credential button { width: 100%; }
+}

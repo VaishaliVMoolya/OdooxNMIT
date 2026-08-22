@@ -100,14 +100,9 @@ class HrEmployee(models.Model):
 
         return {
             'type': 'ir.actions.client',
-            'tag': 'display_notification',
+            'tag': 'dayflow.account_provision_success',
             'params': {
-                'title': 'Dayflow account provisioned',
-                'message': (
-                    'Login ID: %s\nInitial password: %s\n'
-                    'Share this password securely and ask the employee to change it.'
-                ) % (login, initial_password),
-                'type': 'success',
-                'sticky': True,
+                'login': login,
+                'temporary_password': initial_password,
             },
         }

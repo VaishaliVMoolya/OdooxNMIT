@@ -76,6 +76,13 @@
               action="action_dayflow_employee"
               sequence="10"/>
 
+    <menuitem id="menu_dayflow_create_employee_account"
+              name="Create Employee Account"
+              parent="menu_dayflow_employee"
+              action="action_dayflow_account_provision"
+              groups="dayflow.group_dayflow_admin"
+              sequence="5"/>
+
     <menuitem id="menu_dayflow_attendance"
               name="Attendance"
               parent="menu_dayflow_root"
