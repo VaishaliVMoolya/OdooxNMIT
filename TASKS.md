@@ -30,12 +30,12 @@
 ### Person 3 — Attendance & Leave Domain
 - [ ] Implement attendance check-in / check-out actions & daily/weekly logs.
 - [ ] Implement leave application workflow (Paid/Sick/Unpaid; Pending/Approved/Rejected).
-- [ ] Implement HR leave decisioning workflow (approval/rejection with admin comments).
+- [x] Implement HR leave decisioning workflow (approval/rejection with admin comments).
 
 ### Person 4 — Admin & Payroll Domain
-- [ ] Build out HR dashboard overview.
-- [ ] Implement organization-wide attendance view.
-- [ ] Implement payroll and salary structure management views.
+- [x] Build out HR dashboard overview (Hero KPI cards, today's attendance, pending leaves, employee directory, payroll overview).
+- [x] Implement organization-wide attendance view.
+- [x] Implement payroll and salary structure management views.
 
 ### Integration / Data Model Owner
 - [x] Maintain `DATA_MODEL.md` as single source of truth.

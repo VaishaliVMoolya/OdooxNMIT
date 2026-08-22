@@ -50,13 +50,13 @@ class HrLeave(models.Model):
     def action_dayflow_approve(self):
         """Admin / HR approves the time off request and creates attendance records with Leave status."""
         for record in self:
-            if not self.env.user.has_group('dayflow.group_dayflow_admin') and not self.env.is_superuser():
+            if hasattr(self.env.user, 'has_group') and not self.env.user.has_group('dayflow.group_dayflow_admin') and not self.env.is_superuser():
                 raise UserError(_("Only HR / Admin managers can approve time off requests."))
 
             record.write({
                 'dayflow_status': 'approved',
                 'approved_by_id': self.env.user.id,
-                'state': 'validate',
+                'state': 'validate' if hasattr(record, 'state') else False,
             })
 
             # Integrate with Attendance: generate/update attendance records with status = 'leave'
@@ -66,13 +66,23 @@ class HrLeave(models.Model):
     def action_dayflow_reject(self):
         """Admin / HR rejects the time off request."""
         for record in self:
-            if not self.env.user.has_group('dayflow.group_dayflow_admin') and not self.env.is_superuser():
+            if hasattr(self.env.user, 'has_group') and not self.env.user.has_group('dayflow.group_dayflow_admin') and not self.env.is_superuser():
                 raise UserError(_("Only HR / Admin managers can reject time off requests."))
 
             record.write({
                 'dayflow_status': 'rejected',
                 'approved_by_id': self.env.user.id,
-                'state': 'refuse',
+                'state': 'refuse' if hasattr(record, 'state') else False,
+            })
+        return True
+
+    def action_dayflow_reset_pending(self):
+        """Reset Dayflow leave request back to pending."""
+        for record in self:
+            record.write({
+                'dayflow_status': 'pending',
+                'approved_by_id': False,
+                'state': 'confirm' if hasattr(record, 'state') else False,
             })
         return True
 

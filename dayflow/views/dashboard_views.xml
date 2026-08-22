@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="dayflow_dashboard_main" model="dayflow.dashboard"/>
+
+    <!-- Native Dashboard Form View -->
+    <record id="view_dayflow_dashboard_form" model="ir.ui.view">
+        <field name="name">dayflow.dashboard.form</field>
+        <field name="model">dayflow.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Dayflow HR Dashboard" create="false" edit="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Dayflow HRMS Management Console</h1>
+                        <p class="text-muted">Centralized Human Resource Overview &amp; Controls</p>
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_employees" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="total_employees" widget="statinfo" string="Employees"/>
+                        </button>
+                        <button name="action_open_attendance" type="object" class="oe_stat_button" icon="fa-calendar-check-o">
+                            <field name="present_today" widget="statinfo" string="Present Today"/>
+                        </button>
+                        <button name="action_open_leave_requests" type="object" class="oe_stat_button" icon="fa-calendar-minus-o">
+                            <field name="on_leave_today" widget="statinfo" string="On Leave Today"/>
+                        </button>
+                        <button name="action_open_pending_leaves" type="object" class="oe_stat_button" icon="fa-clock-o">
+                            <field name="pending_leave_requests" widget="statinfo" string="Pending Leaves"/>
+                        </button>
+                    </div>
+
+                    <!-- Pending Leave Requests Section -->
+                    <div class="mt-4 mb-2 d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0 text-primary"><i class="fa fa-hourglass-half mr-2"/>Pending Leave Requests</h3>
+                        <button name="action_open_pending_leaves" type="object" string="Review All Requests" class="btn btn-outline-primary btn-sm"/>
+                    </div>
+                    <field name="pending_leave_ids" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="employee_id"/>
+                            <field name="dayflow_leave_type" widget="badge"/>
+                            <field name="request_date_from"/>
+                            <field name="request_date_to"/>
+                            <field name="number_of_days"/>
+                            <field name="remarks"/>
+                            <field name="dayflow_status" widget="badge"
+                                   decoration-warning="dayflow_status == 'pending'"
+                                   decoration-success="dayflow_status == 'approved'"
+                                   decoration-danger="dayflow_status == 'rejected'"/>
+                        </tree>
+                    </field>
+
+                    <!-- Today's Attendance Section -->
+                    <div class="mt-4 mb-2 d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0 text-success"><i class="fa fa-calendar-check-o mr-2"/>Today's Attendance</h3>
+                        <button name="action_open_attendance" type="object" string="View Full Attendance" class="btn btn-outline-success btn-sm"/>
+                    </div>
+                    <field name="attendance_ids" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="employee_id"/>
+                            <field name="check_in"/>
+                            <field name="check_out"/>
+                            <field name="dayflow_status" widget="badge"
+                                   decoration-success="dayflow_status == 'present'"
+                                   decoration-danger="dayflow_status == 'absent'"
+                                   decoration-warning="dayflow_status in ('half_day', 'leave')"/>
+                            <field name="worked_hours"/>
+                            <field name="extra_hours"/>
+                        </tree>
+                    </field>
+
+                    <!-- Employee Overview Section -->
+                    <div class="mt-4 mb-2 d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0 text-info"><i class="fa fa-id-card-o mr-2"/>Employee Overview</h3>
+                        <button name="action_open_employees" type="object" string="View Employee Directory" class="btn btn-outline-info btn-sm"/>
+                    </div>
+                    <field name="employee_ids" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="name"/>
+                            <field name="department_id"/>
+                            <field name="job_id" string="Designation"/>
+                            <field name="work_email"/>
+                            <field name="work_phone"/>
+                            <field name="dayflow_role" widget="badge"
+                                   decoration-info="dayflow_role == 'employee'"
+                                   decoration-success="dayflow_role == 'hr'"/>
+                        </tree>
+                    </field>
+
+                    <!-- Payroll Overview Section -->
+                    <div class="mt-4 mb-2 d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0 text-dark"><i class="fa fa-money mr-2"/>Payroll &amp; Salary Overview</h3>
+                        <button name="action_open_payroll" type="object" string="Manage All Payroll" class="btn btn-outline-dark btn-sm"/>
+                    </div>
+                    <field name="payroll_ids" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="name"/>
+                            <field name="employee_id"/>
+                            <field name="salary_structure"/>
+                            <field name="pay_period"/>
+                            <field name="base_salary" widget="monetary"/>
+                            <field name="allowances" widget="monetary"/>
+                            <field name="deductions" widget="monetary"/>
+                            <field name="net_salary" widget="monetary"/>
+                            <field name="payroll_status" widget="badge"
+                                   decoration-info="payroll_status == 'draft'"
+                                   decoration-warning="payroll_status == 'approved'"
+                                   decoration-success="payroll_status == 'paid'"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Client Action for Interactive OWL Dashboard -->
+    <record id="action_dayflow_dashboard" model="ir.actions.client">
+        <field name="name">Admin / HR Dashboard</field>
+        <field name="tag">dayflow.dashboard</field>
+        <field name="target">main</field>
+    </record>
+
+    <!-- Native Act Window Action (Fallback / Backend View) -->
+    <record id="action_dayflow_dashboard_form" model="ir.actions.act_window">
+        <field name="name">Admin Overview</field>
+        <field name="res_model">dayflow.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="res_id" ref="dayflow_dashboard_main"/>
+        <field name="target">current</field>
+    </record>
+</odoo>

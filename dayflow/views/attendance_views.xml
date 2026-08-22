@@ -7,14 +7,13 @@
         <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='check_out']" position="after">
+                <field name="effective_hours"/>
+                <field name="extra_hours"/>
                 <field name="dayflow_status" widget="badge"
                        decoration-success="dayflow_status == 'present'"
                        decoration-warning="dayflow_status == 'half_day'"
                        decoration-danger="dayflow_status == 'absent'"
                        decoration-info="dayflow_status == 'leave'"/>
-                <field name="effective_hours" widget="float_time" optional="show"/>
-                <field name="extra_hours" widget="float_time" optional="show"/>
-                <field name="remarks" optional="hide"/>
             </xpath>
         </field>
     </record>
@@ -33,16 +32,16 @@
                 </header>
             </xpath>
             <xpath expr="//field[@name='check_out']" position="after">
-                <field name="effective_hours" widget="float_time"/>
-                <field name="extra_hours" widget="float_time"/>
-                <field name="remarks"/>
+                <field name="effective_hours"/>
+                <field name="extra_hours"/>
+                <field name="remarks" placeholder="Notes, reasons for late check-in or early departure..."/>
             </xpath>
         </field>
     </record>
 
-    <!-- Attendance Dedicated Dayflow Search View with Filters & Group By -->
-    <record id="hr_attendance_view_filter_dayflow" model="ir.ui.view">
-        <field name="name">hr.attendance.filter.dayflow</field>
+    <!-- Attendance Search View Extension -->
+    <record id="view_attendance_search_inherit_dayflow" model="ir.ui.view">
+        <field name="name">hr.attendance.search.inherit.dayflow</field>
         <field name="model">hr.attendance</field>
         <field name="inherit_id" ref="hr_attendance.hr_attendance_view_filter"/>
         <field name="arch" type="xml">
@@ -51,14 +50,26 @@
                 <filter string="Today" name="today" domain="[('check_in', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('check_in', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
                 <separator/>
                 <filter string="Present" name="status_present" domain="[('dayflow_status', '=', 'present')]"/>
+                <filter string="Absent" name="status_absent" domain="[('dayflow_status', '=', 'absent')]"/>
                 <filter string="Half-Day" name="status_half_day" domain="[('dayflow_status', '=', 'half_day')]"/>
                 <filter string="On Leave" name="status_leave" domain="[('dayflow_status', '=', 'leave')]"/>
-                <filter string="Absent" name="status_absent" domain="[('dayflow_status', '=', 'absent')]"/>
             </xpath>
             <xpath expr="//group" position="inside">
                 <filter string="Dayflow Status" name="group_by_dayflow_status" context="{'group_by': 'dayflow_status'}"/>
-                <filter string="Check In Date" name="group_by_check_in_date" context="{'group_by': 'check_in:day'}"/>
             </xpath>
+        </field>
+    </record>
+
+    <!-- Action: Today's Attendance -->
+    <record id="action_dayflow_attendance_today" model="ir.actions.act_window">
+        <field name="name">Today's Attendance</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('check_in', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('check_in', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No attendance logs for today yet!
+            </p>
         </field>
     </record>
 </odoo>
