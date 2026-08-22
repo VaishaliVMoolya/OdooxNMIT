@@ -6,26 +6,23 @@
         <field name="model">hr.leave</field>
         <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button name="action_dayflow_approve" string="Approve (Dayflow)" type="object"
-                        class="oe_highlight"
-                        groups="dayflow.group_dayflow_admin"
-                        attrs="{'invisible': [('dayflow_status', '!=', 'pending')]}"/>
-                <button name="action_dayflow_reject" string="Reject (Dayflow)" type="object"
-                        class="btn-danger"
-                        groups="dayflow.group_dayflow_admin"
-                        attrs="{'invisible': [('dayflow_status', '!=', 'pending')]}"/>
-                <button name="action_dayflow_reset_pending" string="Reset to Pending" type="object"
-                        groups="dayflow.group_dayflow_admin"
-                        attrs="{'invisible': [('dayflow_status', '=', 'pending')]}"/>
-                <field name="dayflow_status" widget="statusbar" statusbar_visible="pending,approved,rejected"/>
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_dayflow_submit" string="Submit for Approval" type="object" class="oe_highlight" attrs="{'invisible': [('dayflow_status', '!=', 'pending')]}"/>
+                    <button name="action_dayflow_approve" string="Approve" type="object" class="btn-success" groups="dayflow.group_dayflow_admin" attrs="{'invisible': [('dayflow_status', '=', 'approved')]}"/>
+                    <button name="action_dayflow_reject" string="Reject" type="object" class="btn-danger" groups="dayflow.group_dayflow_admin" attrs="{'invisible': [('dayflow_status', '=', 'rejected')]}"/>
+                    <button name="action_dayflow_reset_pending" string="Reset to Pending" type="object" groups="dayflow.group_dayflow_admin" attrs="{'invisible': [('dayflow_status', '=', 'pending')]}"/>
+                    <field name="dayflow_status" widget="statusbar" statusbar_visible="pending,approved,rejected"/>
+                </header>
             </xpath>
             <xpath expr="//field[@name='holiday_status_id']" position="after">
                 <field name="dayflow_leave_type"/>
+                <field name="attachment_submitted"/>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
-                <field name="remarks" placeholder="Employee reason or remarks for leave request..."/>
-                <field name="admin_comments" placeholder="HR / Admin decision notes and feedback..."/>
+                <field name="remarks" placeholder="Enter reason for time off request..."/>
+                <field name="admin_comments" placeholder="HR / Admin decision notes or comments..."/>
+                <field name="approved_by_id" readonly="1"/>
             </xpath>
         </field>
     </record>

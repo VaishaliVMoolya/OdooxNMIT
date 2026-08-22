@@ -15,7 +15,8 @@
     <record id="action_dayflow_attendance" model="ir.actions.act_window">
         <field name="name">Attendance</field>
         <field name="res_model">hr.attendance</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="hr_attendance.hr_attendance_view_filter"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Track daily employee check-in and check-out logs.

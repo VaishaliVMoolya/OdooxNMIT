@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Default Leave Type: Paid Time Off -->
+        <record id="holiday_status_paid" model="hr.leave.type">
+            <field name="name">Paid Time Off</field>
+            <field name="requires_allocation">yes</field>
+            <field name="employee_requests">yes</field>
+            <field name="color_name">lightgreen</field>
+        </record>
+
+        <!-- Default Leave Type: Sick Leave -->
+        <record id="holiday_status_sick" model="hr.leave.type">
+            <field name="name">Sick Leave</field>
+            <field name="requires_allocation">yes</field>
+            <field name="employee_requests">yes</field>
+            <field name="color_name">lightyellow</field>
+        </record>
+
+        <!-- Default Leave Type: Unpaid Leaves -->
+        <record id="holiday_status_unpaid" model="hr.leave.type">
+            <field name="name">Unpaid Leaves</field>
+            <field name="requires_allocation">no</field>
+            <field name="employee_requests">yes</field>
+            <field name="color_name">lightred</field>
+        </record>
+    </data>
+</odoo>
