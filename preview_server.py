@@ -1146,6 +1146,14 @@ HTML_CONTENT = """<!DOCTYPE html>
 
         <!-- PROFILE TAB (Admin & Employee) -->
         <div id="panel-profile" class="tab-panel">
+            <!-- Employee Directory Inspection Banner -->
+            <div id="prof-inspection-banner" style="display:none; justify-content:space-between; align-items:center; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 8px; padding: 0.75rem 1.25rem; margin-bottom: 1.25rem;">
+                <div style="font-size:0.9rem; color:#93c5fd;" id="prof-inspection-text">
+                    👥 <strong>Employee Directory Inspection:</strong> Viewing profile
+                </div>
+                <button type="button" class="btn btn-secondary" style="font-size:0.8rem; padding:0.3rem 0.75rem;" onclick="openTab('employees')">← Back to Employee Directory</button>
+            </div>
+
             <div class="profile-hero">
                 <div class="profile-hero-left">
                     <div class="profile-avatar-lg" id="prof-hero-avatar">--</div>
@@ -2130,6 +2138,83 @@ HTML_CONTENT = """<!DOCTYPE html>
             localStorage.setItem('df_users', JSON.stringify(state.users));
         }
 
+        function sanitizeLegacySeedData() {
+            const LEGACY_NAMES = ['john doe', 'robert taylor', 'damodar nayak'];
+            const LEGACY_EMAILS = ['john.doe@dayflow.org', 'robert.taylor@dayflow.org', 'damodar.nayak@dayflow.org', 'john@dayflow.org', 'robert@dayflow.org', 'damodar@dayflow.org'];
+            const LEGACY_LOGINS = ['john', 'robert', 'damodar'];
+
+            const isLegacy = (obj) => {
+                if (!obj) return false;
+                const name = (obj.name || obj.employee || '').trim().toLowerCase();
+                const email = (obj.email || obj.recipient || '').trim().toLowerCase();
+                const login = (obj.loginId || obj.code || '').trim().toLowerCase();
+                return LEGACY_NAMES.includes(name) || LEGACY_EMAILS.includes(email) || LEGACY_LOGINS.includes(login);
+            };
+
+            let modified = false;
+
+            if (Array.isArray(state.employees)) {
+                const cleaned = state.employees.filter(e => !isLegacy(e));
+                if (cleaned.length !== state.employees.length) {
+                    state.employees = cleaned;
+                    modified = true;
+                }
+            }
+
+            if (Array.isArray(state.users)) {
+                const cleaned = state.users.filter(u => u.loginId === 'admin' || !isLegacy(u));
+                if (cleaned.length !== state.users.length) {
+                    state.users = cleaned;
+                    modified = true;
+                }
+            }
+
+            if (Array.isArray(state.attendances)) {
+                const cleaned = state.attendances.filter(a => !isLegacy(a));
+                if (cleaned.length !== state.attendances.length) {
+                    state.attendances = cleaned;
+                    modified = true;
+                }
+            }
+
+            if (Array.isArray(state.leaves)) {
+                const cleaned = state.leaves.filter(l => !isLegacy(l));
+                if (cleaned.length !== state.leaves.length) {
+                    state.leaves = cleaned;
+                    modified = true;
+                }
+            }
+
+            if (Array.isArray(state.documents)) {
+                const cleaned = state.documents.filter(d => !isLegacy(d));
+                if (cleaned.length !== state.documents.length) {
+                    state.documents = cleaned;
+                    modified = true;
+                }
+            }
+
+            if (Array.isArray(state.payrolls)) {
+                const cleaned = state.payrolls.filter(p => !isLegacy(p));
+                if (cleaned.length !== state.payrolls.length) {
+                    state.payrolls = cleaned;
+                    modified = true;
+                }
+            }
+
+            if (Array.isArray(state.notifications)) {
+                const cleaned = state.notifications.filter(n => !isLegacy(n));
+                if (cleaned.length !== state.notifications.length) {
+                    state.notifications = cleaned;
+                    modified = true;
+                }
+            }
+
+            if (modified) {
+                saveState();
+            }
+        }
+        sanitizeLegacySeedData();
+
         function resetData() {
             // Restore seed dataset into localStorage
             localStorage.setItem('df_users', JSON.stringify(DEFAULT_USERS));
@@ -2422,6 +2507,10 @@ HTML_CONTENT = """<!DOCTYPE html>
             // Access control: enforce admin-only tabs
             if (!guardAdminTab(tabId)) return;
 
+            if (tabId === 'profile') {
+                state.viewingEmployeeId = null;
+            }
+
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
 
@@ -2440,10 +2529,30 @@ HTML_CONTENT = """<!DOCTYPE html>
             if (tabId === 'payroll') renderPayroll();
         }
 
-        // CRITICAL: Robust Profile Routing using Persistent Employee ID
+        // CRITICAL: Distinct Employee Profile Inspection vs My Profile
+        function openEmployeeProfile(empId) {
+            if (empId === null || empId === undefined || empId === 'admin' || empId === 'u_admin') {
+                state.viewingEmployeeId = null;
+                document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
+                const btn = document.getElementById('tab-btn-profile');
+                if (btn) btn.classList.add('active');
+            } else {
+                state.viewingEmployeeId = Number(empId);
+                document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
+                const btn = document.getElementById('tab-btn-employees');
+                if (btn) btn.classList.add('active');
+            }
+
+            const panel = document.getElementById('panel-profile');
+            if (panel) panel.classList.add('active');
+
+            renderAdminProfile();
+        }
+
         function viewEmployeeProfile(empId) {
-            state.viewingEmployeeId = Number(empId);
-            openTab('profile');
+            openEmployeeProfile(empId);
         }
 
         function toggleEmployeeSuspension(empId) {
@@ -3343,13 +3452,29 @@ Role: ${newUser.role.toUpperCase()}`);
                 // Admin role
                 if (state.viewingEmployeeId) {
                     // Admin viewing selected employee
-                    p = state.employees.find(e => e.id === state.viewingEmployeeId);
-                    if (!p) p = state.employees[0] || state.adminProfile;
-                    isViewingSelf = false;
+                    p = state.employees.find(e => e.id === state.viewingEmployeeId || String(e.id) === String(state.viewingEmployeeId));
+                    if (!p) {
+                        p = state.adminProfile;
+                        isViewingSelf = true;
+                    } else {
+                        isViewingSelf = false;
+                    }
                 } else {
                     // Admin viewing her own profile
                     p = state.adminProfile;
                     isViewingSelf = true;
+                }
+            }
+
+            // Inspection Banner
+            const inspBanner = document.getElementById('prof-inspection-banner');
+            const inspText = document.getElementById('prof-inspection-text');
+            if (inspBanner) {
+                if (!isViewingSelf && state.viewingEmployeeId) {
+                    inspBanner.style.display = 'flex';
+                    if (inspText) inspText.innerHTML = `👥 <strong>Employee Directory Inspection:</strong> Viewing record for <strong>${p.name}</strong> (ID: <code>${p.code || p.loginId || ('EMP' + p.id)}</code>)`;
+                } else {
+                    inspBanner.style.display = 'none';
                 }
             }
 
@@ -3536,13 +3661,18 @@ Role: ${newUser.role.toUpperCase()}`);
         function filterDashboardEmployees() {
             const query = (document.getElementById('dash-search-emp')?.value || '').toLowerCase();
             const tbodyEmp = document.getElementById('dash-tbl-employees');
-            const filtered = state.employees.filter(e => e.name.toLowerCase().includes(query) || (e.job && e.job.toLowerCase().includes(query)) || (e.dept && e.dept.toLowerCase().includes(query)));
+            const adminName = state.adminProfile.name || 'Jane Smith';
+            const allList = [
+                { id: null, name: adminName, job: state.adminProfile.title || 'Head of Human Resources', dept: state.adminProfile.dept || 'Human Resources', role: state.adminProfile.role || 'Admin / HR', joining: '2025-01-01' },
+                ...state.employees
+            ];
+            const filtered = allList.filter(e => e.name.toLowerCase().includes(query) || (e.job && e.job.toLowerCase().includes(query)) || (e.dept && e.dept.toLowerCase().includes(query)));
 
             if (filtered.length === 0) {
-                tbodyEmp.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:1rem;">No employees registered.</td></tr>`;
+                tbodyEmp.innerHTML = `<tr><td colspan="3" style="text-align:center; color:var(--text-muted); padding:1rem;">No matching employees found.</td></tr>`;
             } else {
                 tbodyEmp.innerHTML = filtered.map(e => `
-                    <tr onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer;" title="Click to view profile">
+                    <tr onclick="openEmployeeProfile(${e.id ? e.id : 'null'})" style="cursor:pointer;" title="Click to view profile">
                         <td>
                             <strong>${e.name}</strong>
                             <div style="font-size:0.75rem; color:var(--text-muted);">${e.job || 'Staff'}</div>
@@ -3751,22 +3881,36 @@ Role: ${newUser.role.toUpperCase()}`);
         function renderEmployees() {
             const grid = document.getElementById('grid-employees');
             if (!grid) return;
-            if (state.employees.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align:center; padding:3rem; color:var(--text-muted); background:var(--bg-surface); border:1px dashed var(--border-line); border-radius:8px;">
-                        <div style="font-size:2rem; margin-bottom:0.5rem;">👥</div>
-                        <strong style="font-size:1rem; color:#fff;">No employees registered yet.</strong>
-                        <p style="font-size:0.85rem; margin-top:0.35rem;">Click <strong>+ Add Employee</strong> above to create a real employee account.</p>
-                    </div>
-                `;
-                return;
-            }
 
-            grid.innerHTML = state.employees.map(e => {
+            const adminInitials = (state.adminProfile.name || 'Jane Smith').split(' ').map(n=>n[0]).join('').toUpperCase();
+
+            // Admin / HR Card (Jane Smith)
+            const adminCardHtml = `
+                <div class="emp-card" onclick="openEmployeeProfile(null)" style="cursor:pointer; border-left: 3px solid var(--accent-purple);" title="Click to view Admin profile">
+                    <div class="emp-head">
+                        <div class="avatar" style="background:var(--accent-purple);">${adminInitials}</div>
+                        <div>
+                            <div class="emp-name">${state.adminProfile.name || 'Jane Smith'}</div>
+                            <div class="emp-job">${state.adminProfile.title || 'Head of Human Resources'} • ${state.adminProfile.dept || 'Human Resources'}</div>
+                        </div>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; gap:0.25rem;">
+                        <div><strong>ID:</strong> <code>${state.adminProfile.loginId || 'admin'}</code></div>
+                        <div><strong>Email:</strong> ${state.adminProfile.email || 'admin@dayflow.org'}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.25rem;">
+                            <span>Role: <span class="badge badge-purple">${state.adminProfile.role || 'Admin / HR'}</span></span>
+                            <span class="badge badge-green">ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Employee Cards from Persistent Storage
+            const employeeCardsHtml = state.employees.map(e => {
                 const initials = (e.name || 'U').split(' ').map(n=>n[0]).join('').toUpperCase();
                 const isSuspended = (e.status === 'suspended');
                 return `
-                    <div class="emp-card" onclick="viewEmployeeProfile(${e.id})" style="cursor:pointer; opacity:${isSuspended ? '0.75' : '1'}; border-color:${isSuspended ? 'var(--accent-red)' : 'var(--border-line)'};" title="Click to view full profile">
+                    <div class="emp-card" onclick="openEmployeeProfile(${e.id})" style="cursor:pointer; opacity:${isSuspended ? '0.75' : '1'}; border-color:${isSuspended ? 'var(--accent-red)' : 'var(--border-line)'};" title="Click to view full profile">
                         <div class="emp-head">
                             <div class="avatar">${initials}</div>
                             <div>
@@ -3785,6 +3929,8 @@ Role: ${newUser.role.toUpperCase()}`);
                     </div>
                 `;
             }).join('');
+
+            grid.innerHTML = adminCardHtml + employeeCardsHtml;
         }
 
         function renderDocuments() {
