@@ -8,7 +8,7 @@ class HrEmployee(models.Model):
     dayflow_role = fields.Selection([
         ('employee', 'Employee'),
         ('hr', 'Admin / HR'),
-    ], string='Dayflow Role', default='employee', help='Role access within Dayflow HRMS')
+    ], string='Dayflow Role', default='employee', help='Informational metadata only. Odoo res.groups (RBAC) determines actual access permissions.')
 
     document_ids = fields.One2many(
         'dayflow.document', 'employee_id', string='Documents'

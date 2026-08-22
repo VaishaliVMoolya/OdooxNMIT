@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class DayflowPayroll(models.Model):
@@ -12,7 +13,7 @@ class DayflowPayroll(models.Model):
     base_salary = fields.Float(string='Base Salary', required=True, default=0.0)
     allowances = fields.Float(string='Allowances', default=0.0)
     deductions = fields.Float(string='Deductions', default=0.0)
-    net_salary = fields.Float(string='Net Salary', compute='_compute_net_salary', store=True)
+    net_salary = fields.Float(string='Net Salary', compute='_compute_net_salary', store=True, readonly=True)
     payroll_status = fields.Selection([
         ('draft', 'Draft'),
         ('approved', 'Approved'),
@@ -25,3 +26,14 @@ class DayflowPayroll(models.Model):
     def _compute_net_salary(self):
         for record in self:
             record.net_salary = record.base_salary + record.allowances - record.deductions
+
+    @api.constrains('base_salary', 'allowances', 'deductions')
+    def _check_non_negative_amounts(self):
+        for record in self:
+            if record.base_salary < 0:
+                raise ValidationError(_('Base salary cannot be negative.'))
+            if record.allowances < 0:
+                raise ValidationError(_('Allowances cannot be negative.'))
+            if record.deductions < 0:
+                raise ValidationError(_('Deductions cannot be negative.'))
+

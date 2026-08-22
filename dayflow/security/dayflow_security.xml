@@ -23,5 +23,127 @@
             <field name="implied_ids" eval="[(4, ref('group_dayflow_employee'))]"/>
             <field name="comment">Full Dayflow HR/Admin management access: employee management, leave approvals, payroll setup.</field>
         </record>
+
+        <!-- ================= RECORD RULES (ROW-LEVEL SECURITY) ================= -->
+
+        <!-- Rule: Attendance (Employee - Own Records Only) -->
+        <record id="rule_hr_attendance_employee" model="ir.rule">
+            <field name="name">Dayflow Attendance: Employee Own Records</field>
+            <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_employee'))]"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Attendance (Admin - All Records) -->
+        <record id="rule_hr_attendance_admin" model="ir.rule">
+            <field name="name">Dayflow Attendance: Admin All Records</field>
+            <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Leave (Employee - Own Records Only) -->
+        <record id="rule_hr_leave_employee" model="ir.rule">
+            <field name="name">Dayflow Leave: Employee Own Records</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_employee'))]"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Leave (Admin - All Records) -->
+        <record id="rule_hr_leave_admin" model="ir.rule">
+            <field name="name">Dayflow Leave: Admin All Records</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Payroll (Employee - Own Records Only) -->
+        <record id="rule_dayflow_payroll_employee" model="ir.rule">
+            <field name="name">Dayflow Payroll: Employee Own Records</field>
+            <field name="model_id" ref="model_dayflow_payroll"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_employee'))]"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Payroll (Admin - All Records) -->
+        <record id="rule_dayflow_payroll_admin" model="ir.rule">
+            <field name="name">Dayflow Payroll: Admin All Records</field>
+            <field name="model_id" ref="model_dayflow_payroll"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Documents (Employee - Own Records Only) -->
+        <record id="rule_dayflow_document_employee" model="ir.rule">
+            <field name="name">Dayflow Document: Employee Own Records</field>
+            <field name="model_id" ref="model_dayflow_document"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_employee'))]"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Documents (Admin - All Records) -->
+        <record id="rule_dayflow_document_admin" model="ir.rule">
+            <field name="name">Dayflow Document: Admin All Records</field>
+            <field name="model_id" ref="model_dayflow_document"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule: Employee Profile (Employee - Own Profile Only) -->
+        <record id="rule_hr_employee_dayflow_employee" model="ir.rule">
+            <field name="name">Dayflow Employee: Employee Own Profile</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_employee'))]"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule: Employee Profile (Admin - All Profiles) -->
+        <record id="rule_hr_employee_dayflow_admin" model="ir.rule">
+            <field name="name">Dayflow Employee: Admin All Profiles</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="groups" eval="[(4, ref('group_dayflow_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
     </data>
 </odoo>
