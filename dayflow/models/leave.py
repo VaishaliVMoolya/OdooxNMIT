@@ -29,6 +29,17 @@ class HrLeave(models.Model):
         help='Indicates whether medical document/certificate is attached for Sick Leave'
     )
 
+    is_half_day = fields.Boolean(
+        string='Half-Day Leave',
+        default=False,
+        help='Indicates if leave is for half-day (0.5 day deduction)'
+    )
+    half_day_period = fields.Selection([
+        ('am', 'First Half (Morning)'),
+        ('pm', 'Second Half (Afternoon)'),
+    ], string='Half-Day Session', default='am',
+       help='Session of the half-day leave')
+
     remarks = fields.Text(string='Employee Remarks / Reason')
     admin_comments = fields.Text(string='HR / Admin Decision Comments')
     approved_by_id = fields.Many2one('res.users', string='Approved/Reviewed By', readonly=True)
@@ -158,19 +169,25 @@ class HrLeave(models.Model):
                 ], limit=1)
 
                 leave_label = dict(self._fields['dayflow_leave_type'].selection).get(self.dayflow_leave_type, 'Leave')
+                target_status = 'half_day' if self.is_half_day else 'leave'
+                remark_text = _("Approved %s (%s - %s)") % (
+                    leave_label,
+                    _("Half-Day %s") % (self.half_day_period.upper() if self.half_day_period else 'AM') if self.is_half_day else _("Full Day"),
+                    self.remarks or ''
+                )
 
                 if existing_attendance:
                     existing_attendance.write({
-                        'dayflow_status': 'leave',
-                        'remarks': _("Approved %s (%s)") % (leave_label, self.remarks or ''),
+                        'dayflow_status': target_status,
+                        'remarks': remark_text,
                     })
                 else:
                     attendance_obj.create({
                         'employee_id': self.employee_id.id,
                         'check_in': check_in_dt,
                         'check_out': check_out_dt,
-                        'dayflow_status': 'leave',
-                        'remarks': _("Approved %s (%s)") % (leave_label, self.remarks or ''),
+                        'dayflow_status': target_status,
+                        'remarks': remark_text,
                     })
 
             current_date += timedelta(days=1)

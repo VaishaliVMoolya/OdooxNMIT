@@ -27,17 +27,29 @@ class HrAttendance(models.Model):
         compute='_compute_hours_breakdown',
         store=True,
         default=0.0,
-        help='Effective worked hours'
+        help='Effective worked hours after break deduction'
+    )
+    break_hours = fields.Float(
+        string='Break Duration (Hours)',
+        default=0.0,
+        help='Total break duration taken during the workday'
+    )
+    is_on_break = fields.Boolean(
+        string='Currently On Break',
+        default=False,
+        help='Indicates whether employee is currently on break'
     )
     remarks = fields.Text(string='Remarks')
 
-    @api.depends('worked_hours', 'check_in', 'check_out')
+    @api.depends('worked_hours', 'break_hours', 'check_in', 'check_out')
     def _compute_hours_breakdown(self):
         for record in self:
-            hours = record.worked_hours or 0.0
-            record.effective_hours = round(hours, 2)
-            if hours > 8.0:
-                record.extra_hours = round(hours - 8.0, 2)
+            total_hours = record.worked_hours or 0.0
+            break_time = record.break_hours or 0.0
+            effective = max(0.0, total_hours - break_time)
+            record.effective_hours = round(effective, 2)
+            if effective > 8.0:
+                record.extra_hours = round(effective - 8.0, 2)
             else:
                 record.extra_hours = 0.0
 
@@ -122,3 +134,15 @@ class HrAttendance(models.Model):
     def action_check_out(self):
         """Form view button trigger for Check Out."""
         return self.employee_check_out()
+
+    def action_start_break(self):
+        """Toggle break mode on active attendance."""
+        self.ensure_one()
+        self.write({'is_on_break': True})
+        return True
+
+    def action_end_break(self):
+        """End break mode on active attendance."""
+        self.ensure_one()
+        self.write({'is_on_break': False})
+        return True
