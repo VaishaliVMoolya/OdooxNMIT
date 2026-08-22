@@ -22,6 +22,7 @@
         'data/mail_template_data.xml',
         'views/dashboard_views.xml',
         'views/menu_views.xml',
+        'views/landing_templates.xml',
         'views/auth_login_templates.xml',
         'views/account_provision_wizard_views.xml',
         'views/employee_views.xml',
@@ -42,6 +43,10 @@
         'web.assets_frontend': [
             'dayflow/static/src/scss/dayflow_auth.scss',
             'dayflow/static/src/js/dayflow_login.js',
+        ],
+        'dayflow.assets_landing': [
+            'dayflow/static/src/scss/dayflow_landing.scss',
+            'dayflow/static/src/js/dayflow_landing.js',
         ],
     },
     'installable': True,
