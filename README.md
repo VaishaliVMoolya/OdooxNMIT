@@ -26,14 +26,6 @@ A lightweight standalone Python preview server is included to instantly launch a
    http://localhost:8000
    ```
 
-3. **Demo Accounts & Credentials:**
-
-| Role | Username / Login ID | Password | Access Scope |
-| :--- | :--- | :--- | :--- |
-| **HR / Admin Manager** | `admin` | `admin123` | Full Executive Console, Organization Directory, Time Off Decision Hub, Document Verification, Payroll Management |
-| **Employee (John Doe)** | `john` | `john123` | Employee Dashboard, Live Check-In / Break Stopwatch, Leave Calendar & Requests, Personal Documents, Personal Wage Slip |
-| **Employee (Robert Taylor)** | `robert` | `robert123` | Employee Self-Service, Attendance Logs, Time Off History |
-
 ---
 
 ### Option 2: Native Odoo Module Deployment
@@ -112,36 +104,32 @@ OdooxNMIT/
 
 ### 1. Authentication & Role-Based Access Control (RBAC)
 * **Dual Roles:** `Employee` vs. `Admin / HR Manager`.
-* **Account Provisioning Wizard:** Auto-generates unique employee credentials and login IDs with automated email invitations.
-* **Row-Level Security:** Record rules ensure employees only access their own attendance, time off, and salary records, while HR Admins maintain organization-wide governance.
+* **Account Provisioning Wizard:** Auto-generates employee credentials with automated email invitations.
+* **Row-Level Security:** Record rules isolate employee records while providing organization-wide management to HR Admins.
 
 ### 2. Employee Profile & Document Compliance
-* Complete employee directory with job positions, department filtering, and detailed personal/banking tabs.
-* Document management system supporting ID proofs, contracts, and medical certificates with dedicated HR approval/rejection workflows.
+* Employee directory with job positions, department filtering, and personal/banking details.
+* Document management system supporting ID proofs, contracts, and certificates with verification workflows.
 
 ### 3. Attendance & Break Time Tracking
 * **Real-time Stopwatch:** Tracks live work duration from check-in to check-out.
-* **Break Tracking:** `Take a Break` / `Resume Work` toggle calculating exact **Effective Working Hours** vs. **Total Elapsed Time**.
-* **Daily / Weekly Logs:** Automatic categorization into `Present`, `Half-day`, `Absent`, and `Leave`.
+* **Break Tracking:** Calculates exact **Effective Working Hours** vs. **Total Elapsed Time**.
+* **Categorization:** Automatic classification into `Present`, `Half-day`, `Absent`, and `Leave`.
 * **Overtime Computation:** Extra hours automatically recorded for shifts exceeding 8.0 hours.
 
 ### 4. Time Off & Leave Management Hub
-* **Multi-Type Balances:** Real-time tracking of Paid Time Off (24d), Sick Leave (7d), and Unpaid Leaves.
-* **Half-Day Leave Support:** Supports `Full Day (1.0d)`, `First Half AM (0.5d)`, and `Second Half PM (0.5d)`.
-* **Automatic Attendance Synchronization:** Approving a leave application automatically marks attendance as `Leave` or `Half-day` for the requested date span.
+* **Multi-Type Balances:** Tracking of Paid Time Off, Sick Leave, and Unpaid Leaves.
+* **Half-Day Leave Support:** Supports Full-Day and Half-Day (0.5d) leave sessions.
+* **Automatic Attendance Synchronization:** Approving a leave automatically marks attendance as `Leave` or `Half-day`.
 * **National Holiday Calendar:** Highlights gazetted public holidays and auto-excludes non-working days.
 
 ### 5. Payroll & Executive Attendance Ledger
 * **Monthly Attendance & Leave Payroll Ledger:** Consolidated ledger calculating:
   $$\text{Payable Days} = \text{Present Days} + (0.5 \times \text{Half Days}) + \text{Approved Paid Leaves}$$
-* **Salary Structure Engine:** Calculates Basic Wage, HRA, Standard Allowance, Bonus, LTA, and statutory deductions (PF, Professional Tax, Insurance) with real-time Net Pay computation.
+* **Salary Structure Engine:** Calculates Basic Wage, HRA, allowances, and statutory deductions with Net Pay computation.
 
 ### 6. Email & Notification Alert Engine
-* Automated notifications for:
-  * Security login alerts (routed strictly to HR Administrators).
-  * Leave application submissions (alerts HR of pending queue).
-  * Leave approval and rejection notices (with HR comments sent to employee).
-  * Account provisioning welcome invitations.
+* Automated notifications for security login alerts, leave application queue updates, and account invitations.
 
 ---
 
