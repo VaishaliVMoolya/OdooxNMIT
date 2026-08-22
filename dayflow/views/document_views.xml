@@ -8,7 +8,7 @@
             <tree string="Employee Documents">
                 <field name="name"/>
                 <field name="employee_id"/>
-                <field name="document_type"/>
+                <field name="document_type" widget="badge"/>
                 <field name="file_name"/>
                 <field name="upload_date"/>
             </tree>
@@ -24,21 +24,43 @@
                 <sheet>
                     <group>
                         <group string="Document Info">
-                            <field name="name"/>
+                            <field name="name" placeholder="e.g. Employment Contract 2026"/>
                             <field name="employee_id"/>
                             <field name="document_type"/>
                             <field name="upload_date"/>
                         </group>
-                        <group string="Attachment">
+                        <group string="Attachment / File">
                             <field name="document_file" filename="file_name"/>
                             <field name="file_name"/>
                         </group>
                     </group>
-                    <group string="Notes">
-                        <field name="notes"/>
+                    <group string="Notes &amp; Description">
+                        <field name="notes" placeholder="Enter document verification remarks or notes..."/>
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- Dayflow Document Search View -->
+    <record id="view_dayflow_document_search" model="ir.ui.view">
+        <field name="name">dayflow.document.search</field>
+        <field name="model">dayflow.document</field>
+        <field name="arch" type="xml">
+            <search string="Search Employee Documents">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="file_name"/>
+                <separator/>
+                <filter string="ID Proof" name="type_id_proof" domain="[('document_type', '=', 'id_proof')]"/>
+                <filter string="Contract" name="type_contract" domain="[('document_type', '=', 'contract')]"/>
+                <filter string="Certificate" name="type_certificate" domain="[('document_type', '=', 'certificate')]"/>
+                <filter string="Other" name="type_other" domain="[('document_type', '=', 'other')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="group_by_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Document Type" name="group_by_type" context="{'group_by': 'document_type'}"/>
+                </group>
+            </search>
         </field>
     </record>
 </odoo>
